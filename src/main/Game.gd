@@ -7,6 +7,8 @@ const Player = preload("res://player/Player.tscn")
 
 enum MPMode { SOLO, CLIENT, SERVER, REMOTE }
 
+enum PlayerClass { WARRIOR, ARCHER, MAGE }
+
 var mp_mode = MPMode.SOLO
 
 func start_server():

@@ -12,8 +12,9 @@ func _ready():
 func _on_connected():
 	var player = Game.Player.instance()
 	player.name = str(get_tree().get_network_unique_id())
-	player.init(Game.MPMode.CLIENT)
 	level.add_child(player)
+	player.init(Game.MPMode.CLIENT, Game.PlayerClass.WARRIOR)
+	player.set_network_master(get_tree().get_network_unique_id())
 	
 func _on_disconnected():
 	pass

@@ -20,6 +20,9 @@ func _physics_process(delta):
 				sync_move = false
 
 func _unhandled_input(event):
+	
+	# movement
+	
 	if event.is_action_pressed("up"):
 		move_v = -1
 		_apply_movement()
@@ -29,6 +32,7 @@ func _unhandled_input(event):
 		else:
 			move_v = 0
 		_apply_movement()
+		
 	elif event.is_action_pressed("down"):
 		move_v = 1
 		_apply_movement()
@@ -38,6 +42,7 @@ func _unhandled_input(event):
 		else:
 			move_v = 0
 		_apply_movement()
+		
 	elif event.is_action_pressed("left"):
 		move_h = -1
 		_apply_movement()
@@ -47,6 +52,7 @@ func _unhandled_input(event):
 		else:
 			move_h = 0
 		_apply_movement()
+		
 	elif event.is_action_pressed("right"):
 		move_h = 1
 		_apply_movement()
@@ -56,6 +62,28 @@ func _unhandled_input(event):
 		else:
 			move_h = 0
 		_apply_movement()
+		
+	# actions
+		
+	elif event.is_action_pressed("attack1"):
+		owner.player_class.attack1_start()
+	elif event.is_action_released("attack1"):
+		owner.player_class.attack1_end()
+		
+	elif event.is_action_pressed("attack2"):
+		owner.player_class.attack2_start()
+	elif event.is_action_released("attack2"):
+		owner.player_class.attack2_end()
+		
+	elif event.is_action_pressed("ultimate"):
+		owner.player_class.ultimate_start()
+	elif event.is_action_released("ultimate"):
+		owner.player_class.ultimate_end()
+		
+	elif event.is_action_pressed("movement"):
+		owner.player_class.movement_start()
+	elif event.is_action_released("movement"):
+		owner.player_class.movement_end()
 		
 func _apply_movement():
 	print(move_h, ' ', move_v)

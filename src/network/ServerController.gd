@@ -11,8 +11,9 @@ func _on_player_connected(id):
 	print("Player connected: ", id)
 	var player = Game.Player.instance()
 	player.name = str(id)
-	player.init(Game.MPMode.SERVER)
 	level.add_child(player)
+	player.init(Game.MPMode.SERVER, Game.PlayerClass.WARRIOR)
+	player.set_network_master(id)
 	
 func _on_player_disconnected(id):
 	print("Player disconnected: ", id)

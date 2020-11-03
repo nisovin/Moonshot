@@ -16,11 +16,12 @@ _global_script_class_icons={
 [application]
 
 config/name="Moonshot"
+run/main_scene="res://bootstrap/Bootstrap.tscn"
 config/icon="res://icon.png"
 
 [autoload]
 
-Game="*res://Game.gd"
+Game="*res://main/Game.gd"
 
 [input]
 
