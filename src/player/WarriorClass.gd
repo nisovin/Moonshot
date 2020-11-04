@@ -2,8 +2,8 @@ extends Node2D
 
 enum WarriorState { NORMAL, AIMING_RUSH, RUSHING }
 
-const RUSH_MIN_DISTANCE = 100
-const RUSH_MAX_DISTANCE = 300
+const RUSH_MIN_DISTANCE = 50
+const RUSH_MAX_DISTANCE = 150
 const RUSH_CHARGE_TIME = 400
 const RUSH_SPEED = 800
 const RUSH_MAX_TIME = 750
@@ -16,6 +16,8 @@ var rush_direction = Vector2.ZERO
 var rush_max_distance = 0
 
 onready var rush_arrow = $RushArrow
+onready var attack1area = $Attack1Area
+onready var attack2area = $Attack2Area
 
 func _ready():
 	rush_arrow.visible = false
@@ -28,7 +30,19 @@ func is_moving():
 	return state == WarriorState.RUSHING
 
 func attack1_start():
-	pass
+	print("hi")
+	var hit_list = []
+	for body in attack1area.get_overlapping_bodies():
+		if body.is_in_group("enemy"):
+			hit_list.append(owner.position, body.name)
+	rpc("attack1", owner.position, get_action_direction(), hit_list)
+
+remotesync func attack1(pos, dir, enemies_hit):
+	print("attack", dir)
+	owner.position = pos
+	owner.set_facing(dir.normalized())
+	for id in enemies_hit:
+		pass
 	
 func attack1_end():
 	pass
@@ -65,12 +79,8 @@ func movement_end():
 
 func update_rush_arrow():
 	rush_arrow.scale.x = get_rush_distance() / RUSH_MIN_DISTANCE
-	if Game.using_controller:
-		var v = Vector2(Input.get_joy_axis(Game.controller_index, JOY_AXIS_0), Input.get_joy_axis(Game.controller_index, JOY_AXIS_1))
-		if v.length() > 0.5:
-			rush_arrow.rotation = v.angle()
-	else:
-		var v = get_global_mouse_position() - owner.global_position
+	var v = get_action_direction()
+	if v != Vector2.ZERO:
 		rush_arrow.rotation = v.angle()
 
 func get_rush_distance():
@@ -100,3 +110,19 @@ func _physics_process(delta):
 		if is_network_master():
 			if col or OS.get_ticks_msec() > rush_start_time + RUSH_MAX_TIME or owner.position.distance_squared_to(rush_start_position) > rush_max_distance * rush_max_distance:
 				rpc("end_rush", owner.position, col != null)
+	else:
+		if owner.is_network_master():
+			var v = get_action_direction()
+			if v != Vector2.ZERO:
+				attack1area.rotation = v.angle()
+				
+func get_action_direction():
+	if Game.using_controller:
+		var v = Vector2(Input.get_joy_axis(Game.controller_index, JOY_AXIS_0), Input.get_joy_axis(Game.controller_index, JOY_AXIS_1))
+		if v.length() > 0.5:
+			return v
+		else:
+			return Vector2.ZERO
+	else:
+		return owner.get_local_mouse_position()
+	

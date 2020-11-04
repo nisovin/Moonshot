@@ -42,31 +42,37 @@ func init(network_mode, selected_class):
 func _physics_process(delta):
 	if state == PlayerState.NORMAL:
 		var v = move_and_slide(move_dir * current_speed)
-#	if state == PlayerState.NORMAL:
-#		if v != Vector2.ZERO:
-#			sprite.play("walk_" + facing)
-#		else:
-#			sprite.play("idle_" + facing)
+		if state == PlayerState.NORMAL:
+			if v != Vector2.ZERO:
+				sprite.play("walk_" + facing)
+			else:
+				sprite.play("idle_" + facing)
 
 func pause_movement():
 	state = PlayerState.ABILITY
+	sprite.play("idle_" + facing)
 	
 func resume_movement():
 	state = PlayerState.NORMAL
+	sprite.play("idle_" + facing)
 
 remotesync func set_movement(x, y):
 	move_dir = Vector2(x, y).normalized()
 	if x != 0 or y != 0:
-		if abs(move_dir.x) >= abs(move_dir.y):
-			if x > 0:
-				facing = "right"
-			else:
-				facing = "left"
+		set_facing(move_dir)
+		
+func set_facing(v):
+	if abs(v.x) >= abs(v.y):
+		if v.x > 0:
+			facing = "right"
 		else:
-			if y > 0:
-				facing = "down"
-			else:
-				facing = "up"
+			facing = "left"
+	else:
+		if v.y > 0:
+			facing = "down"
+		else:
+			facing = "up"
+	
 		
 
 puppet func update_position(pos):

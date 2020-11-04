@@ -29,6 +29,15 @@ gdscript/warnings/unused_argument=false
 gdscript/warnings/unused_signal=false
 gdscript/warnings/return_value_discarded=false
 
+[display]
+
+window/size/width=512
+window/size/height=288
+window/size/test_width=1280
+window/size/test_height=720
+window/stretch/mode="2d"
+window/stretch/aspect="expand"
+
 [input]
 
 up={
@@ -84,12 +93,6 @@ movement={
 , Object(InputEventJoypadButton,"resource_local_to_scene":false,"resource_name":"","device":-1,"button_index":2,"pressure":0.0,"pressed":false,"script":null)
  ]
 }
-
-[layer_names]
-
-2d_physics/layer_1="walls"
-2d_physics/layer_2="players"
-2d_physics/layer_3="enemies"
 
 [physics]
 
