@@ -1,9 +1,19 @@
 extends KinematicBody2D
 
+enum PlayerState { LOADING, NORMAL, ABILITY, DEAD }
+
+var state = PlayerState.NORMAL
 var move_dir = Vector2.ZERO
 var current_speed = 100
+var facing = "down"
 
-var player_class
+var player_class = null
+
+onready var sprite = $AnimatedSprite
+
+func _ready():
+	if player_class == null:
+		player_class = $WarriorClass
 
 func init(network_mode, selected_class):
 	if network_mode == Game.MPMode.REMOTE:
@@ -14,7 +24,6 @@ func init(network_mode, selected_class):
 	elif network_mode == Game.MPMode.SERVER:
 		# server
 		set_physics_process(false)
-		print("OK")
 		$RemoteController.queue_free()
 		$LocalController.queue_free()
 		$Camera2D.queue_free()
@@ -27,18 +36,39 @@ func init(network_mode, selected_class):
 	if selected_class == Game.PlayerClass.WARRIOR:
 		player_class = $WarriorClass
 		$ArcherClass.queue_free()
+		
+	player_class.init(network_mode)
 
 func _physics_process(delta):
-	move_and_slide(move_dir * current_speed)
-	print(move_dir)
+	if state == PlayerState.NORMAL:
+		var v = move_and_slide(move_dir * current_speed)
+#	if state == PlayerState.NORMAL:
+#		if v != Vector2.ZERO:
+#			sprite.play("walk_" + facing)
+#		else:
+#			sprite.play("idle_" + facing)
+
+func pause_movement():
+	state = PlayerState.ABILITY
+	
+func resume_movement():
+	state = PlayerState.NORMAL
 
 remotesync func set_movement(x, y):
-	print("movement ", move_dir)
 	move_dir = Vector2(x, y).normalized()
+	if x != 0 or y != 0:
+		if abs(move_dir.x) >= abs(move_dir.y):
+			if x > 0:
+				facing = "right"
+			else:
+				facing = "left"
+		else:
+			if y > 0:
+				facing = "down"
+			else:
+				facing = "up"
+		
 
 puppet func update_position(pos):
 	if Game.mp_mode == Game.MPMode.SERVER or move_dir == Vector2.ZERO or position.distance_squared_to(pos) > 25:
 		position = pos
-
-remotesync func sword_attack():
-	pass

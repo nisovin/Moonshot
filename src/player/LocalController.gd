@@ -1,5 +1,8 @@
 extends Node
 
+const JOY_SNAP = PI / 8
+const JOY_DEADZONE = 0.5
+
 var move_h = 0
 var move_v = 0
 var sync_move = false
@@ -8,9 +11,9 @@ var tick = 0
 
 func _physics_process(delta):
 	tick += 1
-	if tick > 5:
+	if tick >= 4:
 		tick = 0
-	var has_motion = owner.move_dir != Vector2.ZERO and owner.current_speed > 0
+	var has_motion = (owner.move_dir != Vector2.ZERO and owner.current_speed > 0) or owner.player_class.is_moving()
 	if has_motion or sync_move:
 		if tick == 0 and get_tree().has_network_peer():
 			owner.rpc_unreliable("update_position", owner.position)
@@ -20,6 +23,37 @@ func _physics_process(delta):
 				sync_move = false
 
 func _unhandled_input(event):
+	
+	# joystick
+	
+	if event is InputEventJoypadMotion:
+		if event.axis == JOY_AXIS_0 or event.axis == JOY_AXIS_1:
+			var v = Vector2(Input.get_joy_axis(event.device, JOY_AXIS_0), Input.get_joy_axis(event.device, JOY_AXIS_1))
+			var l = v.length()
+			if l < JOY_DEADZONE:
+				v = Vector2.ZERO
+			else:
+				var a = round(v.angle() / JOY_SNAP) * JOY_SNAP
+				v = Vector2.RIGHT.rotated(a)
+				if not Game.using_controller:
+					Game.using_controller = true
+					Game.controller_index = event.index
+					Game.emit_signal("input_method_changed", "joy")
+			if move_h != v.x or move_v != v.y:
+				move_h = v.x
+				move_v = v.y
+				_apply_movement()
+			#owner.player_class.aim(v)
+	
+	# keyboard vs controller
+	
+	if (event is InputEventKey or event is InputEventMouseButton) and Game.using_controller:
+		Game.using_controller = false
+		Game.emit_signal("input_method_changed", "key")
+	if event is InputEventJoypadButton and not Game.using_controller:
+		Game.using_controller = true
+		Game.controller_index = event.index
+		Game.emit_signal("input_method_changed", "joy")
 	
 	# movement
 	
@@ -86,7 +120,6 @@ func _unhandled_input(event):
 		owner.player_class.movement_end()
 		
 func _apply_movement():
-	print(move_h, ' ', move_v)
 	if get_tree().has_network_peer():
 		owner.rpc("set_movement", move_h, move_v)
 	else:

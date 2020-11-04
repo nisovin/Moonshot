@@ -1,15 +1,19 @@
 extends Node
 
+signal input_method_changed
+
 const PORT = 20500
 const MAX_PLAYERS = 20
 
 const Player = preload("res://player/Player.tscn")
 
-enum MPMode { SOLO, CLIENT, SERVER, REMOTE }
+enum MPMode { SOLO, CLIENT, SERVER, HOST, REMOTE }
 
 enum PlayerClass { WARRIOR, ARCHER, MAGE }
 
 var mp_mode = MPMode.SOLO
+var using_controller = false
+var controller_index = 0
 
 func start_server():
 	mp_mode = MPMode.SERVER
@@ -43,7 +47,7 @@ func start_client():
 	peer.create_client("127.0.0.1", PORT)
 	get_tree().network_peer = peer
 
-func start_solo():
+func start_host():
 	mp_mode = MPMode.SOLO
 	var level = preload("res://Level.tscn").instance()
 	add_child(level)

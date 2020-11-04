@@ -1,20 +1,30 @@
-[gd_scene load_steps=5 format=2]
+[gd_scene load_steps=8 format=2]
 
 [ext_resource path="res://player/LocalController.gd" type="Script" id=1]
 [ext_resource path="res://player/Player.gd" type="Script" id=2]
 [ext_resource path="res://player/WarriorClass.gd" type="Script" id=3]
+[ext_resource path="res://player/playertemp.png" type="Texture" id=4]
 
 [sub_resource type="CircleShape2D" id=1]
+radius = 11.6095
+
+[sub_resource type="AtlasTexture" id=3]
+atlas = ExtResource( 4 )
+region = Rect2( 0, 0, 32, 64 )
+
+[sub_resource type="SpriteFrames" id=2]
+animations = [ {
+"frames": [ SubResource( 3 ) ],
+"loop": true,
+"name": "default",
+"speed": 5.0
+} ]
 
 [node name="Player" type="KinematicBody2D"]
 script = ExtResource( 2 )
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
 shape = SubResource( 1 )
-
-[node name="Polygon2D" type="Polygon2D" parent="."]
-color = Color( 0, 0.615686, 0.94902, 1 )
-polygon = PoolVector2Array( 6.15253, -10.3232, 6.74713, 4.5419, -7.52335, 6.92032, -5.73953, -5.56635 )
 
 [node name="Camera2D" type="Camera2D" parent="."]
 
@@ -23,7 +33,20 @@ script = ExtResource( 1 )
 
 [node name="RemoteController" type="Node" parent="."]
 
-[node name="WarriorClass" type="Node" parent="."]
+[node name="WarriorClass" type="Node2D" parent="."]
 script = ExtResource( 3 )
 
+[node name="RushArrow" type="Polygon2D" parent="WarriorClass"]
+color = Color( 0.0117647, 0.847059, 0.0627451, 1 )
+polygon = PoolVector2Array( -0.25, -2.875, 94.1981, -1.36163, 94.5318, -4.19816, 99.5375, 0.557205, 94.365, 3.14346, 94.2815, 0.890915, -0.125, 2.5 )
+
+[node name="Attack1Area" type="Area2D" parent="WarriorClass"]
+
+[node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="WarriorClass/Attack1Area"]
+polygon = PoolVector2Array( 10, -10, 10, 10, 50, 30, 50, -30 )
+
 [node name="ArcherClass" type="Node" parent="."]
+
+[node name="AnimatedSprite" type="AnimatedSprite" parent="."]
+position = Vector2( 0, -24 )
+frames = SubResource( 2 )
