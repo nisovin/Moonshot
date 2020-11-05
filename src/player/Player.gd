@@ -2,11 +2,15 @@ extends KinematicBody2D
 
 enum PlayerState { LOADING, NORMAL, ABILITY, DEAD }
 
-var state = PlayerState.NORMAL
-var move_dir = Vector2.ZERO
-var current_speed = 100
-var facing = "down"
+const SERIALIZE_FIELDS = [ "state", "move_dir", "current_speed", "facing", "facing_dir", "class_id", "global_position" ]
 
+var state: int = PlayerState.NORMAL
+var move_dir := Vector2.ZERO
+var current_speed := 100
+var facing := "down"
+var facing_dir := Vector2.ZERO
+
+var class_id: int = Game.PlayerClass.WARRIOR
 var player_class = null
 
 onready var sprite = $AnimatedSprite
@@ -15,29 +19,37 @@ func _ready():
 	if player_class == null:
 		player_class = $WarriorClass
 
-func init(network_mode, selected_class):
-	if network_mode == Game.MPMode.REMOTE:
-		# remote player
-		$LocalController.queue_free()
-		$Camera2D.queue_free()
-		$CollisionShape2D.queue_free()
-	elif network_mode == Game.MPMode.SERVER:
-		# server
-		set_physics_process(false)
-		$RemoteController.queue_free()
-		$LocalController.queue_free()
-		$Camera2D.queue_free()
-		$CollisionShape2D.queue_free()
-	else:
-		# local player
-		$RemoteController.queue_free()
-		$Camera2D.current = true
-		
-	if selected_class == Game.PlayerClass.WARRIOR:
+func load_data(data):
+	for field in SERIALIZE_FIELDS:
+		if field in data:
+			set(field, data[field])
+	if "nameplate" in data:
+		$Nameplate.text = data.nameplate
+			
+	if class_id == Game.PlayerClass.WARRIOR:
 		player_class = $WarriorClass
 		$ArcherClass.queue_free()
+	if "class_data" in data:
+		player_class.load_data(data.class_data)
 		
-	player_class.init(network_mode)
+	if name == str(get_tree().get_network_unique_id()):
+		$Camera2D.current = true
+		$Nameplate.visible = false
+	else:
+		$LocalController.queue_free()
+		$Camera2D.queue_free()
+		$CollisionShape2D.queue_free()
+		if Game.mp_mode == Game.MPMode.SERVER:
+			set_physics_process(false)
+
+func get_data():
+	var data = {}
+	data.id = int(name)
+	data.nameplate = $Nameplate.text
+	for field in SERIALIZE_FIELDS:
+		data[field] = get(field)
+	data.class_data = player_class.get_data()
+	return data
 
 func _physics_process(delta):
 	if state == PlayerState.NORMAL:
@@ -62,6 +74,7 @@ remotesync func set_movement(x, y):
 		set_facing(move_dir)
 		
 func set_facing(v):
+	facing_dir = v
 	if abs(v.x) >= abs(v.y):
 		if v.x > 0:
 			facing = "right"

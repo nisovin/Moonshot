@@ -47,12 +47,16 @@ func start_client():
 	peer.create_client("127.0.0.1", PORT)
 	get_tree().network_peer = peer
 
-func start_host():
+func start_solo():
 	mp_mode = MPMode.SOLO
+	
 	var level = preload("res://Level.tscn").instance()
 	add_child(level)
 	
 	var peer = NetworkedMultiplayerENet.new()
-	peer.create_server(PORT, 0)
+	peer.create_server(PORT, 1)
 	get_tree().network_peer = peer
 	get_tree().refuse_new_network_connections = true
+
+	level.add_player_from_data({"class_id": Game.PlayerClass.WARRIOR, "id": get_tree().get_network_unique_id()})
+

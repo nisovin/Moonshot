@@ -1,6 +1,12 @@
 extends Node2D
 
-enum WarriorState { NORMAL, AIMING_RUSH, RUSHING }
+enum WarriorState { NORMAL, SWINGING_SWORD, AIMING_RUSH, RUSHING }
+
+const SERIALIZE_FIELDS = [ "state" ]
+
+const ATTACK_SWING_TIME = 0.25
+const ATTACK_SWING_ANGLE = PI * 0.8
+const ATTACK_MOVE_SPEED = 25
 
 const RUSH_MIN_DISTANCE = 50
 const RUSH_MAX_DISTANCE = 150
@@ -10,24 +16,40 @@ const RUSH_MAX_TIME = 750
 
 var state = WarriorState.NORMAL
 
+var attack_swing_dir = 1
+var attack_move_dir = Vector2.ZERO
+
 var rush_start_position = Vector2.ZERO
 var rush_start_time = 0
 var rush_direction = Vector2.ZERO
 var rush_max_distance = 0
 
-onready var rush_arrow = $RushArrow
+onready var attack1sword = $SwordSwing
+onready var attack1tween = $SwordSwing/Tween
 onready var attack1area = $Attack1Area
+
 onready var attack2area = $Attack2Area
+onready var rush_arrow = $RushArrow
 
 func _ready():
+	attack1sword.visible = false
 	rush_arrow.visible = false
 
-func init(network_mode):
-	if network_mode == Game.MPMode.SERVER:
+func get_data():
+	var data = {}
+	for field in SERIALIZE_FIELDS:
+		data[field] = get(field)
+	return data
+
+func load_data(data):
+	if Game.mp_mode == Game.MPMode.SERVER:
 		set_physics_process(false)
+	for field in SERIALIZE_FIELDS:
+		if field in data:
+			set(field, data[field])
 
 func is_moving():
-	return state == WarriorState.RUSHING
+	return state == WarriorState.RUSHING or state == WarriorState.SWINGING_SWORD
 
 func attack1_start():
 	print("hi")
@@ -35,12 +57,36 @@ func attack1_start():
 	for body in attack1area.get_overlapping_bodies():
 		if body.is_in_group("enemy"):
 			hit_list.append(owner.position, body.name)
-	rpc("attack1", owner.position, get_action_direction(), hit_list)
+	call("attack1", owner.position, get_action_direction(), hit_list)
+	
 
 remotesync func attack1(pos, dir, enemies_hit):
 	print("attack", dir)
 	owner.position = pos
-	owner.set_facing(dir.normalized())
+	attack_move_dir = dir.normalized()
+	owner.set_facing(attack_move_dir)
+	var start_angle = 0
+	var end_angle = 0
+	if attack_swing_dir == 1:
+		start_angle = dir.angle() - ATTACK_SWING_ANGLE / 2
+		end_angle = start_angle + ATTACK_SWING_ANGLE
+		attack_swing_dir = -1
+	else:
+		start_angle = dir.angle() + ATTACK_SWING_ANGLE / 2
+		end_angle = start_angle - ATTACK_SWING_ANGLE
+		attack_swing_dir = 1
+		
+	owner.pause_movement()
+	state = WarriorState.SWINGING_SWORD
+	attack1sword.visible = true
+	attack1sword.z_index = 1 if owner.facing == "down" else 0
+	attack1tween.interpolate_property(attack1sword, "rotation", start_angle, end_angle, ATTACK_SWING_TIME)
+	attack1tween.start()
+	yield(get_tree().create_timer(ATTACK_SWING_TIME), "timeout")
+	attack1sword.visible = false
+	owner.resume_movement()
+	state = WarriorState.NORMAL
+	
 	for id in enemies_hit:
 		pass
 	
@@ -82,6 +128,7 @@ func update_rush_arrow():
 	var v = get_action_direction()
 	if v != Vector2.ZERO:
 		rush_arrow.rotation = v.angle()
+		owner.set_facing(v)
 
 func get_rush_distance():
 	var time = float(clamp(OS.get_ticks_msec() - rush_start_time, 0, RUSH_CHARGE_TIME))
@@ -110,6 +157,8 @@ func _physics_process(delta):
 		if is_network_master():
 			if col or OS.get_ticks_msec() > rush_start_time + RUSH_MAX_TIME or owner.position.distance_squared_to(rush_start_position) > rush_max_distance * rush_max_distance:
 				rpc("end_rush", owner.position, col != null)
+	elif state == WarriorState.SWINGING_SWORD:
+		owner.move_and_collide(attack_move_dir * ATTACK_MOVE_SPEED * delta)
 	else:
 		if owner.is_network_master():
 			var v = get_action_direction()
@@ -121,8 +170,10 @@ func get_action_direction():
 		var v = Vector2(Input.get_joy_axis(Game.controller_index, JOY_AXIS_0), Input.get_joy_axis(Game.controller_index, JOY_AXIS_1))
 		if v.length() > 0.5:
 			return v
+		elif owner.facing_dir != Vector2.ZERO:
+			return owner.facing_dir
 		else:
-			return Vector2.ZERO
+			return Vector2.UP
 	else:
 		return owner.get_local_mouse_position()
 	

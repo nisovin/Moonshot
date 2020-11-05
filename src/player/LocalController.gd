@@ -37,7 +37,7 @@ func _unhandled_input(event):
 				v = Vector2.RIGHT.rotated(a)
 				if not Game.using_controller:
 					Game.using_controller = true
-					Game.controller_index = event.index
+					Game.controller_index = event.device
 					Game.emit_signal("input_method_changed", "joy")
 			if move_h != v.x or move_v != v.y:
 				move_h = v.x
@@ -52,7 +52,7 @@ func _unhandled_input(event):
 		Game.emit_signal("input_method_changed", "key")
 	if event is InputEventJoypadButton and not Game.using_controller:
 		Game.using_controller = true
-		Game.controller_index = event.index
+		Game.controller_index = event.device
 		Game.emit_signal("input_method_changed", "joy")
 	
 	# movement
