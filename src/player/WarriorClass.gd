@@ -52,16 +52,15 @@ func is_moving():
 	return state == WarriorState.RUSHING or state == WarriorState.SWINGING_SWORD
 
 func attack1_start():
-	print("hi")
 	var hit_list = []
 	for body in attack1area.get_overlapping_bodies():
-		if body.is_in_group("enemy"):
-			hit_list.append(owner.position, body.name)
+		if body.is_in_group("enemies"):
+			hit_list.append(int(body.name))
 	call("attack1", owner.position, get_action_direction(), hit_list)
 	
 
 remotesync func attack1(pos, dir, enemies_hit):
-	print("attack", dir)
+	print("attack", dir, enemies_hit)
 	owner.position = pos
 	attack_move_dir = dir.normalized()
 	owner.set_facing(attack_move_dir)
@@ -76,19 +75,30 @@ remotesync func attack1(pos, dir, enemies_hit):
 		end_angle = start_angle - ATTACK_SWING_ANGLE
 		attack_swing_dir = 1
 		
+	# pause
 	owner.pause_movement()
 	state = WarriorState.SWINGING_SWORD
+	
+	# anim
 	attack1sword.visible = true
 	attack1sword.z_index = 1 if owner.facing == "down" else 0
 	attack1tween.interpolate_property(attack1sword, "rotation", start_angle, end_angle, ATTACK_SWING_TIME)
 	attack1tween.start()
+	
+	# hit enemies
+	for id in enemies_hit:
+		var enemy = Game.get_enemy_by_id(id)
+		if enemy != null:
+			enemy.knockback(owner.position.direction_to(enemy.position) * 300, 0.1, 0.2)
+		
+	# end anim
 	yield(get_tree().create_timer(ATTACK_SWING_TIME), "timeout")
 	attack1sword.visible = false
+	
+	# unpause
 	owner.resume_movement()
 	state = WarriorState.NORMAL
 	
-	for id in enemies_hit:
-		pass
 	
 func attack1_end():
 	pass

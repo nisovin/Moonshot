@@ -9,11 +9,11 @@ func _ready():
 
 func _on_player_connected(id):
 	print("Player connected: ", id)
-	var player = Game.Player.instance()
-	player.name = str(id)
-	level.add_player(player)
-	player.init(Game.MPMode.SERVER, Game.PlayerClass.WARRIOR)
-	player.set_network_master(id)
+	
+	var data = {}
+	data.version = Game.VERSION
+	data.game_state = level.get_game_state()
+	level.rpc_id(id, "load_game_state", data)
 	
 func _on_player_disconnected(id):
 	print("Player disconnected: ", id)
