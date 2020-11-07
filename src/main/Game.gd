@@ -69,3 +69,10 @@ func start_solo():
 
 func get_enemy_by_id(id):
 	return level.get_enemy_by_id(id)
+
+func sort_children(node: Node, obj: Object, function: String):
+	var children = node.get_children()
+	children.sort_custom(obj, function)
+	for i in children.size():
+		node.move_child(children[i], i)
+		

@@ -45,7 +45,7 @@ func _physics_process(delta):
 		direction = target_direction + separation_direction * 0.7 + alignment_direction * 0.5
 		direction = direction.normalized()
 		
-		move_and_slide(direction * 50)
+		move_and_slide(direction * 30)
 	
 func ai_tick():
 	if target == null:

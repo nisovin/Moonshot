@@ -10,7 +10,7 @@
 radius = 8.15757
 
 [sub_resource type="CircleShape2D" id=2]
-radius = 30.0724
+radius = 45.0468
 
 [sub_resource type="AtlasTexture" id=3]
 atlas = ExtResource( 4 )
@@ -143,14 +143,14 @@ script = ExtResource( 3 )
 
 [node name="Polygon2D" type="Polygon2D" parent="WarriorClass/SwordSwing"]
 color = Color( 0.992157, 1, 0, 1 )
-polygon = PoolVector2Array( 0.673368, 0.745442, 0.645527, -0.535225, 28.681, -0.618747, 30.1009, 0.0772676, 28.681, 0.661921 )
+polygon = PoolVector2Array( 0.673368, 0.745442, 0.645527, -0.535225, 42.8268, -0.624058, 45.0067, -0.0681534, 42.8268, 0.635862 )
 
 [node name="Attack1Area" type="Area2D" parent="WarriorClass"]
 collision_layer = 0
 collision_mask = 4
 
 [node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="WarriorClass/Attack1Area"]
-polygon = PoolVector2Array( 15, 26, 32, 0, 15, -26, -8, 0 )
+polygon = PoolVector2Array( 18, 40, 50, 0, 18, -40, -8, 0 )
 
 [node name="Attack2Area" type="Area2D" parent="WarriorClass"]
 
