@@ -1,9 +1,11 @@
-[gd_scene load_steps=8 format=2]
+[gd_scene load_steps=10 format=2]
 
 [ext_resource path="res://Level.gd" type="Script" id=1]
 [ext_resource path="res://temp_level_art.png" type="Texture" id=2]
 [ext_resource path="res://white_square.png" type="Texture" id=3]
 [ext_resource path="res://EnemyController.gd" type="Script" id=4]
+[ext_resource path="res://NavMap.gd" type="Script" id=5]
+[ext_resource path="res://NavPoint.gd" type="Script" id=6]
 
 [sub_resource type="CanvasItemMaterial" id=1]
 
@@ -120,7 +122,7 @@ script = ExtResource( 4 )
 
 [node name="icon" type="Sprite" parent="."]
 material = SubResource( 1 )
-position = Vector2( 240.693, 12.342 )
+position = Vector2( 273.656, 111.23 )
 texture = ExtResource( 2 )
 
 [node name="Entities" type="YSort" parent="."]
@@ -149,4 +151,46 @@ color = Color( 0.784314, 0.588235, 0, 0 )
 mode = 1
 
 [node name="EnemySpawn" type="Position2D" parent="."]
-position = Vector2( 279.432, -4.83109 )
+position = Vector2( 464.577, 84.2573 )
+
+[node name="NavMap" type="Node2D" parent="."]
+script = ExtResource( 5 )
+
+[node name="Position2D2" type="Position2D" parent="NavMap"]
+position = Vector2( 189.316, 104.235 )
+script = ExtResource( 6 )
+connections = [ "Position2D3", "Position2D13" ]
+
+[node name="Position2D3" type="Position2D" parent="NavMap"]
+position = Vector2( 187.98, 144.771 )
+script = ExtResource( 6 )
+connections = [ "Position2D2", "Position2D13" ]
+
+[node name="Position2D12" type="Position2D" parent="NavMap"]
+script = ExtResource( 6 )
+
+[node name="Position2D13" type="Position2D" parent="NavMap"]
+position = Vector2( 242.694, 99.587 )
+script = ExtResource( 6 )
+connections = [ "Position2D2", "Position2D14", "Position2D3" ]
+
+[node name="Position2D14" type="Position2D" parent="NavMap"]
+position = Vector2( 296.593, 94.2416 )
+script = ExtResource( 6 )
+connections = [ "Position2D13", "Position2D16", "Position2D15" ]
+
+[node name="Position2D15" type="Position2D" parent="NavMap"]
+position = Vector2( 331.338, 104.932 )
+script = ExtResource( 6 )
+connections = [ "Position2D16", "Position2D14" ]
+
+[node name="Position2D16" type="Position2D" parent="NavMap"]
+position = Vector2( 334.457, 70.1873 )
+script = ExtResource( 6 )
+connections = [ "Position2D14", "Position2D15" ]
+
+[node name="Position2D" type="Position2D" parent="."]
+position = Vector2( 466.628, 164.147 )
+
+[node name="Line2D" type="Line2D" parent="."]
+default_color = Color( 1, 0, 0, 1 )

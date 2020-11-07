@@ -3,11 +3,45 @@ extends Node2D
 onready var players_node = $Entities/Players
 onready var enemies_node = $Entities/Enemies
 
+var nav: AStar2D
+
+var MouseFree = true
+func _process(delta):
+	if Input.is_action_just_pressed("ui_cancel"):
+		if not MouseFree:
+			Input.set_mouse_mode(Input.MOUSE_MODE_VISIBLE)
+			MouseFree = true
+		else:
+			Input.set_mouse_mode(Input.MOUSE_MODE_CONFINED)
+			MouseFree = false
+
 func _ready():
 	$AnimationPlayer.play("daynight")
+	
+	var nav_map = $NavMap
+	nav = AStar2D.new()
+	var points = {}
+	for i in nav_map.get_child_count():
+		var n = nav_map.get_child(i)
+		nav.add_point(i, n.position, n.weight)
+		points[n.name] = i
+	for i in nav_map.get_child_count():
+		var n = nav_map.get_child(i)
+		for c in n.connections:
+			var j = points[c]
+			nav.connect_points(i, j, true)
+
+func _unhandled_key_input(event):
+	if event.scancode == KEY_F2 and event.pressed:
+		var path = $Navigation2D.get_simple_path($EnemySpawn.position, $Position2D.position, true)
+		$Line2D.points = path
+		print(path)
+	if event.scancode == KEY_F3 and event.pressed:
+		$Navigation2D/Wall.enabled = !$Navigation2D/Wall.enabled
+		
 
 func start_server():
-	$EnemyController.start_server()
+	$EnemyController.start_server(nav)
 
 func time_event(event):
 	print("time event ", event)

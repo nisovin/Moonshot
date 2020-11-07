@@ -3,9 +3,12 @@ extends Node
 onready var enemy_spawn_point = owner.get_node("EnemySpawn")
 onready var enemies_node = owner.get_node("Entities/Enemies")
 
+var nav
+
 var next_enemy_id = 1
 
-func start_server():
+func start_server(nav):
+	self.nav = nav
 	while true:
 		yield(get_tree().create_timer(2), "timeout")
 		if enemies_node.get_child_count() < 10:

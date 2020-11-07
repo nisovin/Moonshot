@@ -24,7 +24,7 @@ func load_data(data):
 		if field in data:
 			set(field, data[field])
 	if "nameplate" in data:
-		$Nameplate.text = data.nameplate
+		$AnimatedSprite/Nameplate.text = data.nameplate
 			
 	if class_id == Game.PlayerClass.WARRIOR:
 		player_class = $WarriorClass
@@ -34,7 +34,7 @@ func load_data(data):
 		
 	if name == str(get_tree().get_network_unique_id()):
 		$Camera2D.current = true
-		$Nameplate.visible = false
+		$AnimatedSprite/Nameplate.visible = false
 	else:
 		$LocalController.queue_free()
 		$Camera2D.queue_free()

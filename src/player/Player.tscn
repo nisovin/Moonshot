@@ -1,9 +1,10 @@
-[gd_scene load_steps=24 format=2]
+[gd_scene load_steps=25 format=2]
 
 [ext_resource path="res://player/LocalController.gd" type="Script" id=1]
 [ext_resource path="res://player/Player.gd" type="Script" id=2]
 [ext_resource path="res://player/WarriorClass.gd" type="Script" id=3]
 [ext_resource path="res://player/playersheet.png" type="Texture" id=4]
+[ext_resource path="res://MovementSmoother.gd" type="Script" id=5]
 
 [sub_resource type="CircleShape2D" id=1]
 radius = 8.15757
@@ -25,51 +26,51 @@ region = Rect2( 52, 36, 26, 36 )
 
 [sub_resource type="AtlasTexture" id=6]
 atlas = ExtResource( 4 )
-region = Rect2( 0, 0, 26, 36 )
+region = Rect2( 0, 108, 26, 36 )
 
 [sub_resource type="AtlasTexture" id=7]
 atlas = ExtResource( 4 )
-region = Rect2( 26, 0, 26, 36 )
+region = Rect2( 26, 108, 26, 36 )
 
 [sub_resource type="AtlasTexture" id=8]
 atlas = ExtResource( 4 )
-region = Rect2( 52, 0, 26, 36 )
+region = Rect2( 52, 108, 26, 36 )
 
 [sub_resource type="AtlasTexture" id=9]
 atlas = ExtResource( 4 )
-region = Rect2( 0, 72, 26, 36 )
+region = Rect2( 0, 0, 26, 36 )
 
 [sub_resource type="AtlasTexture" id=10]
 atlas = ExtResource( 4 )
-region = Rect2( 26, 72, 26, 36 )
+region = Rect2( 26, 0, 26, 36 )
 
 [sub_resource type="AtlasTexture" id=11]
 atlas = ExtResource( 4 )
-region = Rect2( 52, 72, 26, 36 )
+region = Rect2( 52, 0, 26, 36 )
 
 [sub_resource type="AtlasTexture" id=12]
 atlas = ExtResource( 4 )
-region = Rect2( 26, 108, 26, 36 )
+region = Rect2( 0, 72, 26, 36 )
 
 [sub_resource type="AtlasTexture" id=13]
 atlas = ExtResource( 4 )
-region = Rect2( 26, 0, 26, 36 )
+region = Rect2( 26, 72, 26, 36 )
 
 [sub_resource type="AtlasTexture" id=14]
 atlas = ExtResource( 4 )
-region = Rect2( 26, 72, 26, 36 )
+region = Rect2( 52, 72, 26, 36 )
 
 [sub_resource type="AtlasTexture" id=15]
 atlas = ExtResource( 4 )
-region = Rect2( 0, 108, 26, 36 )
+region = Rect2( 26, 108, 26, 36 )
 
 [sub_resource type="AtlasTexture" id=16]
 atlas = ExtResource( 4 )
-region = Rect2( 26, 108, 26, 36 )
+region = Rect2( 26, 0, 26, 36 )
 
 [sub_resource type="AtlasTexture" id=17]
 atlas = ExtResource( 4 )
-region = Rect2( 52, 108, 26, 36 )
+region = Rect2( 26, 72, 26, 36 )
 
 [sub_resource type="AtlasTexture" id=18]
 atlas = ExtResource( 4 )
@@ -84,33 +85,33 @@ animations = [ {
 }, {
 "frames": [ SubResource( 6 ), SubResource( 7 ), SubResource( 8 ), SubResource( 7 ) ],
 "loop": true,
-"name": "walk_down",
+"name": "walk_up",
 "speed": 10.0
 }, {
 "frames": [ SubResource( 9 ), SubResource( 10 ), SubResource( 11 ), SubResource( 10 ) ],
 "loop": true,
+"name": "walk_down",
+"speed": 10.0
+}, {
+"frames": [ SubResource( 12 ), SubResource( 13 ), SubResource( 14 ), SubResource( 13 ) ],
+"loop": true,
 "name": "walk_right",
 "speed": 10.0
 }, {
-"frames": [ SubResource( 12 ) ],
+"frames": [ SubResource( 15 ) ],
 "loop": true,
 "name": "idle_up",
 "speed": 5.0
 }, {
-"frames": [ SubResource( 13 ) ],
+"frames": [ SubResource( 16 ) ],
 "loop": true,
 "name": "idle_down",
 "speed": 5.0
 }, {
-"frames": [ SubResource( 14 ) ],
+"frames": [ SubResource( 17 ) ],
 "loop": true,
 "name": "idle_right",
 "speed": 5.0
-}, {
-"frames": [ SubResource( 15 ), SubResource( 16 ), SubResource( 17 ), SubResource( 16 ) ],
-"loop": true,
-"name": "walk_up",
-"speed": 10.0
 }, {
 "frames": [ SubResource( 18 ) ],
 "loop": true,
@@ -167,12 +168,13 @@ polygon = PoolVector2Array( -0.25, -2.875, 46.25, -1.5, 46.1667, -3.51117, 49.86
 position = Vector2( 0, -15 )
 frames = SubResource( 19 )
 animation = "idle_down"
+script = ExtResource( 5 )
 
-[node name="Nameplate" type="Label" parent="."]
+[node name="Nameplate" type="Label" parent="AnimatedSprite"]
 margin_left = -42.9908
-margin_top = -44.4624
+margin_top = -29.4624
 margin_right = 43.0092
-margin_bottom = -30.4624
+margin_bottom = -15.4624
 text = "Player"
 align = 1
 __meta__ = {

@@ -123,10 +123,6 @@ movement={
 2d_physics/layer_2="Players"
 2d_physics/layer_3="Enemies"
 
-[physics]
-
-common/physics_fps=30
-
 [rendering]
 
 environment/default_environment="res://default_env.tres"

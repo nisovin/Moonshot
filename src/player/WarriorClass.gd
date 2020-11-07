@@ -89,7 +89,7 @@ remotesync func attack1(pos, dir, enemies_hit):
 	for id in enemies_hit:
 		var enemy = Game.get_enemy_by_id(id)
 		if enemy != null:
-			enemy.knockback(owner.position.direction_to(enemy.position) * 300, 0.1, 0.2)
+			enemy.knockback(owner.position.direction_to(enemy.position) * 300, 0.1, 0.4)
 		
 	# end anim
 	yield(get_tree().create_timer(ATTACK_SWING_TIME), "timeout")
