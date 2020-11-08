@@ -56,7 +56,7 @@ func attack1_start():
 	for body in attack1area.get_overlapping_bodies():
 		if body.is_in_group("enemies"):
 			hit_list.append(int(body.name))
-	call("attack1", owner.position, get_action_direction(), hit_list)
+	rpc("attack1", owner.position, get_action_direction(), hit_list)
 	
 
 remotesync func attack1(pos, dir, enemies_hit):
@@ -138,7 +138,7 @@ func update_rush_arrow():
 	var v = get_action_direction()
 	if v != Vector2.ZERO:
 		rush_arrow.rotation = v.angle()
-		owner.set_facing(v)
+		owner.set_facing(v, true)
 
 func get_rush_distance():
 	var time = float(clamp(OS.get_ticks_msec() - rush_start_time, 0, RUSH_CHARGE_TIME))
@@ -146,6 +146,8 @@ func get_rush_distance():
 
 remotesync func start_rush(start_pos, rush_dir, max_dist):
 	owner.position = start_pos
+	owner.set_facing(rush_dir, true)
+	print(rush_dir)
 	rush_start_time = OS.get_ticks_msec()
 	rush_start_position = start_pos
 	rush_direction = rush_dir

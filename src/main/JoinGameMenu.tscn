@@ -1,0 +1,63 @@
+[gd_scene load_steps=2 format=2]
+
+[ext_resource path="res://main/JoinGameMenu.gd" type="Script" id=1]
+
+[node name="JoinGameMenu" type="Control"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+script = ExtResource( 1 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="CenterContainer" type="CenterContainer" parent="."]
+anchor_right = 1.0
+anchor_bottom = 1.0
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="VBoxContainer" type="VBoxContainer" parent="CenterContainer"]
+margin_left = 204.0
+margin_top = 84.0
+margin_right = 308.0
+margin_bottom = 204.0
+
+[node name="NameField" type="LineEdit" parent="CenterContainer/VBoxContainer"]
+margin_right = 104.0
+margin_bottom = 24.0
+max_length = 12
+placeholder_text = "Name"
+placeholder_alpha = 0.5
+caret_blink = true
+
+[node name="Warrior" type="Button" parent="CenterContainer/VBoxContainer"]
+margin_top = 28.0
+margin_right = 104.0
+margin_bottom = 48.0
+text = "Join as Warrior"
+
+[node name="Archer" type="Button" parent="CenterContainer/VBoxContainer"]
+margin_top = 52.0
+margin_right = 104.0
+margin_bottom = 72.0
+disabled = true
+text = "Join as Archer"
+
+[node name="Priest" type="Button" parent="CenterContainer/VBoxContainer"]
+margin_top = 76.0
+margin_right = 104.0
+margin_bottom = 96.0
+disabled = true
+text = "Join as Priest"
+
+[node name="Disconnect" type="Button" parent="CenterContainer/VBoxContainer"]
+margin_top = 100.0
+margin_right = 104.0
+margin_bottom = 120.0
+text = "Disconnect"
+[connection signal="text_changed" from="CenterContainer/VBoxContainer/NameField" to="." method="_on_NameField_text_changed"]
+[connection signal="pressed" from="CenterContainer/VBoxContainer/Warrior" to="." method="_on_Warrior_pressed"]
+[connection signal="pressed" from="CenterContainer/VBoxContainer/Archer" to="." method="_on_Archer_pressed"]
+[connection signal="pressed" from="CenterContainer/VBoxContainer/Priest" to="." method="_on_Priest_pressed"]
+[connection signal="pressed" from="CenterContainer/VBoxContainer/Disconnect" to="." method="_on_Disconnect_pressed"]

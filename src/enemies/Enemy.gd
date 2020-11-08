@@ -1,5 +1,8 @@
 extends KinematicBody2D
 
+const SERIALIZE_FIELDS = [ "global_position" ]
+
+var last_ai_tick = 0
 var target = null
 
 var direction = Vector2.ZERO
@@ -12,7 +15,16 @@ func _ready():
 	pass
 
 func load_data(data):
-	pass
+	for field in SERIALIZE_FIELDS:
+		if field in data:
+			set(field, data[field])
+
+func get_data():
+	var data = {}
+	data.id = int(name)
+	for field in SERIALIZE_FIELDS:
+		data[field] = get(field)
+	return data
 
 func knockback(strength, dur, stun):
 	knockback_strength = strength
@@ -52,4 +64,9 @@ func ai_tick():
 		var players = get_tree().get_nodes_in_group("players")
 		if players.size() > 0:
 			target = players[0]
-	
+			target.connect("became_untargetable", self, "remove_target")
+
+func remove_target(t):
+	if target == t:
+		target.disconnect("became_untargetable", self, "remove_target")
+		target = null

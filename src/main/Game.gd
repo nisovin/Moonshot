@@ -18,18 +18,22 @@ var using_controller = false
 var controller_index = 0
 var level
 
+onready var centered_message = $CanvasLayer/CenteredMessage/Label
+onready var multiplayer_controller = $MultiplayerController
+
+func _ready():
+	centered_message.visible = false
+
 func start_server():
 	mp_mode = MPMode.SERVER
-	Engine.iterations_per_second = 20
+	Engine.iterations_per_second = 30
+	Engine.target_fps = 30
 	
 	level = preload("res://Level.tscn").instance()
 	add_child(level)
 	
-	var ctrl = Node2D.new()
-	ctrl.name = "ServerController"
-	ctrl.set_script(load("res://network/ServerController.gd"))
-	add_child(ctrl)
-	ctrl.level = level
+	multiplayer_controller.level = level
+	multiplayer_controller.init_server()
 	
 	var peer = NetworkedMultiplayerENet.new()
 	peer.create_server(PORT, MAX_PLAYERS)
@@ -37,26 +41,32 @@ func start_server():
 	
 	level.start_server()
 	
+func start_menu():
+	add_child(load("res://main/MainMenu.tscn").instance())
+	
 func start_client():
 	mp_mode = MPMode.CLIENT
 	level = preload("res://Level.tscn").instance()
 	add_child(level)
+	level.visible = false
 	
-	var ctrl = Node2D.new()
-	ctrl.name = "ClientController"
-	ctrl.set_script(load("res://network/ClientController.gd"))
-	add_child(ctrl)
-	ctrl.level = level
+	multiplayer_controller.level = level
+	multiplayer_controller.init_client()
 	
 	var peer = NetworkedMultiplayerENet.new()
-	peer.create_client("127.0.0.1", PORT)
+	peer.create_client("minecraft.nisovin.com", PORT)
 	get_tree().network_peer = peer
+	
+func join_game(clss):
+	pass
 
 func start_solo():
 	mp_mode = MPMode.SOLO
 	
 	level = preload("res://Level.tscn").instance()
 	add_child(level)
+	
+	multiplayer_controller.queue_free()
 	
 	var peer = NetworkedMultiplayerENet.new()
 	peer.create_server(PORT, 1)
@@ -67,12 +77,15 @@ func start_solo():
 
 	level.start_server()
 
+func show_centered_message(text):
+	centered_message.text = text
+	centered_message.visible = true
+	
+func hide_centered_message():
+	centered_message.visible = false
+
+func get_player_by_id(id):
+	return level.get_player_by_id(id)
+
 func get_enemy_by_id(id):
 	return level.get_enemy_by_id(id)
-
-func sort_children(node: Node, obj: Object, function: String):
-	var children = node.get_children()
-	children.sort_custom(obj, function)
-	for i in children.size():
-		node.move_child(children[i], i)
-		

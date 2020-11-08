@@ -11,7 +11,7 @@ var tick = 0
 
 func _physics_process(delta):
 	tick += 1
-	if tick >= 4:
+	if tick >= 10:
 		tick = 0
 	var has_motion = (owner.move_dir != Vector2.ZERO and owner.current_speed > 0) or owner.player_class.is_moving()
 	if has_motion or sync_move:
