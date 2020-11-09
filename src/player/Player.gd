@@ -4,8 +4,9 @@ signal became_untargetable
 
 enum PlayerState { LOADING, NORMAL, ABILITY, DEAD }
 
-const SERIALIZE_FIELDS = [ "state", "move_dir", "current_speed", "facing", "facing_dir", "class_id", "global_position" ]
+const SERIALIZE_FIELDS = [ "player_name", "state", "move_dir", "current_speed", "facing", "facing_dir", "class_id", "global_position" ]
 
+var player_name = "Player"
 var state: int = PlayerState.NORMAL
 var move_dir := Vector2.ZERO
 var current_speed := 100
@@ -27,14 +28,12 @@ func load_data(data):
 	for field in SERIALIZE_FIELDS:
 		if field in data:
 			set(field, data[field])
-	if "player_name" in data:
-		nameplate.text = data.player_name
+	nameplate.text = player_name
 			
 	if class_id == Game.PlayerClass.WARRIOR:
 		player_class = $WarriorClass
 		$ArcherClass.queue_free()
-	if "class_data" in data:
-		player_class.load_data(data.class_data)
+	player_class.load_data(data.class_data if data.has("class_data") else null)
 		
 	if name == str(get_tree().get_network_unique_id()):
 		$Camera2D.current = true
@@ -50,7 +49,6 @@ func load_data(data):
 func get_data():
 	var data = {}
 	data.id = int(name)
-	data.player_name = nameplate.text
 	for field in SERIALIZE_FIELDS:
 		data[field] = get(field)
 	data.class_data = player_class.get_data()
@@ -75,10 +73,11 @@ func resume_movement():
 	state = PlayerState.NORMAL
 	sprite.play("idle_" + facing)
 
-remotesync func set_movement(x, y):
+remotesync func set_movement(x, y, pos):
 	move_dir = Vector2(x, y).normalized()
 	if x != 0 or y != 0:
 		set_facing(move_dir)
+	position = pos
 		
 func set_facing(v, set_anim = false):
 	facing_dir = v
@@ -100,7 +99,7 @@ puppet func update_position(pos):
 		position = pos
 	else:
 		var d = position.distance_squared_to(pos)
-		if d > 16:
+		if d > 25:
 			position = pos
 		if d > 256:
 			visual.teleport()

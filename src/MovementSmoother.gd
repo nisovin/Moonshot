@@ -19,6 +19,7 @@ func enable_smoothing():
 	if sprite_parent != null:
 		get_parent().remove_child(self)
 		sprite_parent.add_child(self)
+		global_position = follow.global_position
 		set_process(true)
 		set_physics_process(true)
 		enabled = true

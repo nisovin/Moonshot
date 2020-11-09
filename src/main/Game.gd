@@ -17,6 +17,7 @@ var mp_mode = MPMode.SOLO
 var using_controller = false
 var controller_index = 0
 var level
+var lock_player_input = false
 
 onready var centered_message = $CanvasLayer/CenteredMessage/Label
 onready var multiplayer_controller = $MultiplayerController
@@ -29,7 +30,7 @@ func start_server():
 	Engine.iterations_per_second = 30
 	Engine.target_fps = 30
 	
-	level = preload("res://Level.tscn").instance()
+	level = preload("res://main/Level.tscn").instance()
 	add_child(level)
 	
 	multiplayer_controller.level = level
@@ -46,7 +47,7 @@ func start_menu():
 	
 func start_client():
 	mp_mode = MPMode.CLIENT
-	level = preload("res://Level.tscn").instance()
+	level = preload("res://main/Level.tscn").instance()
 	add_child(level)
 	level.visible = false
 	
@@ -63,7 +64,7 @@ func join_game(clss):
 func start_solo():
 	mp_mode = MPMode.SOLO
 	
-	level = preload("res://Level.tscn").instance()
+	level = preload("res://main/Level.tscn").instance()
 	add_child(level)
 	
 	multiplayer_controller.queue_free()

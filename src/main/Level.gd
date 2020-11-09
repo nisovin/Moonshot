@@ -1,25 +1,12 @@
 extends Node2D
 
+var chat_history = []
+
 onready var players_node = $Entities/Players
 onready var enemies_node = $Entities/Enemies
 
-var nav: AStar2D
-
 func _ready():
 	$AnimationPlayer.play("daynight")
-	
-	var nav_map = $NavMap
-	nav = AStar2D.new()
-	var points = {}
-	for i in nav_map.get_child_count():
-		var n = nav_map.get_child(i)
-		nav.add_point(i, n.position, n.weight)
-		points[n.name] = i
-	for i in nav_map.get_child_count():
-		var n = nav_map.get_child(i)
-		for c in n.connections:
-			var j = points[c]
-			nav.connect_points(i, j, true)
 
 func _unhandled_key_input(event):
 	if event.scancode == KEY_F2 and event.pressed:
@@ -31,10 +18,10 @@ func _unhandled_key_input(event):
 		
 
 func start_server():
-	$EnemyController.start_server(nav)
+	$EnemyManager.start_server()
 
 func time_event(event):
-	print("time event ", event)
+	print("Time: ", event)
 
 func add_new_player(data):
 	print("ADD NEW PLAYER")
@@ -53,8 +40,9 @@ func add_player_from_data(data):
 	player.set_network_master(int(data.id))
 
 func add_enemy_from_data(data):
+	print(data)
 	var enemy = Game.Enemy.instance()
-	enemy.name = str(enemy.id)
+	enemy.name = str(data.id)
 	enemies_node.add_child(enemy)
 	enemy.load_data(data)
 
@@ -98,3 +86,18 @@ func get_player_by_id(id):
 
 func get_enemy_by_id(id):
 	return enemies_node.get_node_or_null(str(id))
+
+master func send_chat(message):
+	var id = get_tree().get_rpc_sender_id()
+	var p = get_player_by_id(id)
+	if p != null:
+		var regex = RegEx.new()
+		regex.compile("[^A-Za-z0-9_\\-()!.?@#$%&*+=:;'\" ]")
+		message = regex.sub(message, "")
+		chat_history.append({"p": p.player_name, "m": message})
+		rpc("add_chat", p.player_name, message)
+		pass
+
+remotesync func add_chat(player_name, message):
+	$GUI.add_chat(player_name, message)
+	

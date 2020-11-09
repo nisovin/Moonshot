@@ -10,19 +10,21 @@ var sync_move = false
 var tick = 0
 
 func _physics_process(delta):
+	if Game.mp_mode == Game.MPMode.SOLO: return
 	tick += 1
-	if tick >= 10:
+	if tick >= 6:
 		tick = 0
 	var has_motion = (owner.move_dir != Vector2.ZERO and owner.current_speed > 0) or owner.player_class.is_moving()
 	if has_motion or sync_move:
 		if tick == 0 and get_tree().has_network_peer():
-			owner.rpc_unreliable("update_position", owner.position)
+			owner.rpc_unreliable_id(1, "update_position", owner.position)
 			if has_motion:
 				sync_move = true
 			else:
 				sync_move = false
 
 func _unhandled_input(event):
+	if Game.lock_player_input: return
 	
 	# joystick
 	
@@ -121,6 +123,6 @@ func _unhandled_input(event):
 		
 func _apply_movement():
 	if get_tree().has_network_peer():
-		owner.rpc("set_movement", move_h, move_v)
+		owner.rpc("set_movement", move_h, move_v, owner.position)
 	else:
-		owner.set_movement(move_h, move_v)
+		owner.set_movement(move_h, move_v, owner.position)

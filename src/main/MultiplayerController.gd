@@ -21,7 +21,7 @@ func init_client():
 # SERVER-SIDE
 
 func _on_server_player_connected(id):
-	print("Player connected: ", id)
+	print("Player connected: id=", id)
 	
 	var data = {}
 	data.version = Game.VERSION
@@ -29,15 +29,15 @@ func _on_server_player_connected(id):
 	rpc_id(id, "load_game_state", data)
 	
 func _on_server_player_disconnected(id):
-	print("Player disconnected: ", id)
+	print("Player disconnected: id=", id)
 	level.remove_player(id)
 
 remote func player_join(class_id, player_name: String):
-	print("JOIN ", class_id, " " , player_name)
 	var id = get_tree().get_rpc_sender_id()
 	if player_name.to_lower() == "nisovin":
 		rpc_id(id, "invalid_name")
 	else:
+		print("Player joined: id=", id, " name=" , player_name, " class=", class_id)
 		level.add_new_player({"id": id, "class_id": class_id, "player_name": player_name})
 
 
@@ -73,11 +73,18 @@ func _on_join_option_selected(option, player_name):
 	
 func _on_disconnected_from_server():
 	print("DISCONNECT")
+	level.queue_free()
 	Game.show_centered_message("Disconnected")
+	yield(get_tree().create_timer(5), "timeout")
+	Game.hide_centered_message()
+	Game.start_menu()
 	
 func _on_failed_to_connect():
-	Game.show_centered_message("Failed to connect")
-	print("FAILED TO CONNECT")
+	Game.show_centered_message("Failed to connect :(")
+	yield(get_tree().create_timer(5), "timeout")
+	Game.hide_centered_message()
+	level.queue_free()
+	Game.start_menu()
 
 remote func invalid_name():
 	print("INVALID NAME")

@@ -1,0 +1,61 @@
+extends CanvasLayer
+
+onready var chat_line = $Chat/ChatLine
+onready var scroll = $Chat/ScrollContainer
+onready var chat_container = $Chat/ScrollContainer/VBoxContainer
+onready var tween = $Tween
+
+var chatting = false
+
+func _ready():
+	scroll.get_v_scrollbar().modulate = Color.transparent
+	chat_line.modulate = Color.transparent
+
+func open_chat():
+	print("open")
+	Game.lock_player_input = true
+	chatting = true
+	tween.stop_all()
+	chat_line.grab_focus()
+	chat_line.modulate = Color.white
+	chat_line.mouse_filter = Control.MOUSE_FILTER_STOP
+	scroll.get_v_scrollbar().modulate = Color.white
+	scroll.mouse_filter = Control.MOUSE_FILTER_STOP
+	for c in chat_container.get_children():
+		c.modulate = Color.white
+
+func close_chat():
+	chat_line.release_focus()
+	chat_line.modulate = Color.transparent
+	chat_line.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	scroll.get_v_scrollbar().modulate = Color.transparent
+	scroll.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	for c in chat_container.get_children():
+		c.modulate = Color.transparent
+	Game.lock_player_input = false
+	chatting = false
+
+func add_chat(player_name, message):
+	var entry = preload("res://gui/ChatEntry.tscn").instance()
+	entry.parse_bbcode("[color=yellow]" + player_name + "[/color][color=#505050]:[/color] [color=#f0f0f0]" + message + "[/color]")
+	chat_container.add_child(entry)
+	yield(get_tree(), "idle_frame")
+	scroll.scroll_vertical = chat_container.rect_size.y + 100
+	if not chatting:
+		$Tween.interpolate_property(entry, "modulate", Color.white, Color.transparent, 2, Tween.TRANS_CUBIC, Tween.EASE_IN, 6)
+		$Tween.start()
+
+func _unhandled_input(event):
+	if event.is_action_pressed("chat") and not chatting:
+		open_chat()
+	elif event.is_action_pressed("ui_cancel") and chatting:
+		close_chat()
+
+func _on_ChatLine_text_entered(new_text):
+	if new_text == "":
+		close_chat()
+		return
+	chat_line.text = ""
+	close_chat()
+	yield(get_tree(), "idle_frame")
+	owner.rpc("send_chat", new_text)

@@ -9,8 +9,8 @@ const ATTACK_SWING_ANGLE = PI * 0.8
 const ATTACK_MOVE_SPEED = 25
 
 const RUSH_MIN_DISTANCE = 50
-const RUSH_MAX_DISTANCE = 150
-const RUSH_CHARGE_TIME = 400
+const RUSH_MAX_DISTANCE = 140
+const RUSH_CHARGE_TIME = 300
 const RUSH_SPEED = 800
 const RUSH_MAX_TIME = 750
 
@@ -44,9 +44,10 @@ func get_data():
 func load_data(data):
 	if Game.mp_mode == Game.MPMode.SERVER:
 		set_physics_process(false)
-	for field in SERIALIZE_FIELDS:
-		if field in data:
-			set(field, data[field])
+	if data != null:
+		for field in SERIALIZE_FIELDS:
+			if field in data:
+				set(field, data[field])
 
 func is_moving():
 	return state == WarriorState.RUSHING or state == WarriorState.SWINGING_SWORD
@@ -57,10 +58,8 @@ func attack1_start():
 		if body.is_in_group("enemies"):
 			hit_list.append(int(body.name))
 	rpc("attack1", owner.position, get_action_direction(), hit_list)
-	
 
 remotesync func attack1(pos, dir, enemies_hit):
-	print("attack", dir, enemies_hit)
 	owner.position = pos
 	attack_move_dir = dir.normalized()
 	owner.set_facing(attack_move_dir)
@@ -89,7 +88,12 @@ remotesync func attack1(pos, dir, enemies_hit):
 	for id in enemies_hit:
 		var enemy = Game.get_enemy_by_id(id)
 		if enemy != null:
-			enemy.knockback(owner.position.direction_to(enemy.position) * 300, 0.1, 0.4)
+			var knockback = owner.position.direction_to(enemy.position) * 300
+			var knockback_dur = 0.1
+			if enemy.is_network_master():
+				enemy.hit({"damage": 3, "knockback": knockback, "knockback_dur": knockback_dur, "stun": 0.5})
+			else:
+				enemy.local_knockback(knockback, knockback_dur)
 		
 	# end anim
 	yield(get_tree().create_timer(ATTACK_SWING_TIME), "timeout")
@@ -119,7 +123,6 @@ func movement_start():
 	if state != WarriorState.NORMAL: return
 	state = WarriorState.AIMING_RUSH
 	rush_start_time = OS.get_ticks_msec()
-	owner.pause_movement()
 	rush_arrow.visible = true
 	rush_arrow.scale.x = 1.0
 	if owner.move_dir != Vector2.ZERO:
@@ -127,6 +130,7 @@ func movement_start():
 	else:
 		rush_arrow.rotation = Vector2.UP.angle()
 	update_rush_arrow()
+	rpc("init_rush", owner.position)
 	
 func movement_end():
 	if state != WarriorState.AIMING_RUSH: return
@@ -144,10 +148,14 @@ func get_rush_distance():
 	var time = float(clamp(OS.get_ticks_msec() - rush_start_time, 0, RUSH_CHARGE_TIME))
 	return RUSH_MIN_DISTANCE + ((RUSH_MAX_DISTANCE - RUSH_MIN_DISTANCE) * (time / RUSH_CHARGE_TIME))
 
+remotesync func init_rush(pos):
+	owner.position = pos
+	owner.pause_movement()
+
 remotesync func start_rush(start_pos, rush_dir, max_dist):
 	owner.position = start_pos
 	owner.set_facing(rush_dir, true)
-	print(rush_dir)
+	print("start_rush ", rush_dir)
 	rush_start_time = OS.get_ticks_msec()
 	rush_start_position = start_pos
 	rush_direction = rush_dir
@@ -165,6 +173,7 @@ func _process(delta):
 
 func _physics_process(delta):
 	if state == WarriorState.RUSHING:
+		print("rushing!")
 		var col = owner.move_and_collide(rush_direction * RUSH_SPEED * delta)
 		if is_network_master():
 			if col or OS.get_ticks_msec() > rush_start_time + RUSH_MAX_TIME or owner.position.distance_squared_to(rush_start_position) > rush_max_distance * rush_max_distance:
