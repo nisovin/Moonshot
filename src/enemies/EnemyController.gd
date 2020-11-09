@@ -1,7 +1,7 @@
 extends Node
 
-const TARGET_RANGE = 16 * 25
-const REAQUIRE_RANGE = 16 * 10
+const TARGET_RANGE = 50 * 16
+const REAQUIRE_RANGE = 10 * 16
 const REAQUIRE_TIME = 5000 #milliseconds
 const SPEED = 25
 

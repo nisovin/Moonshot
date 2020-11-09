@@ -38,6 +38,7 @@ func load_data(data):
 	if name == str(get_tree().get_network_unique_id()):
 		$Camera2D.current = true
 		nameplate.visible = false
+		add_to_group("myself")
 	else:
 		$LocalController.queue_free()
 		$Camera2D.queue_free()
