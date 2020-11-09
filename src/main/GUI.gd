@@ -3,7 +3,7 @@ extends CanvasLayer
 onready var chat_line = $Chat/ChatLine
 onready var scroll = $Chat/ScrollContainer
 onready var chat_container = $Chat/ScrollContainer/VBoxContainer
-onready var tween = $Tween
+onready var chat_tween = $Chat/Tween
 
 var chatting = false
 
@@ -15,7 +15,7 @@ func open_chat():
 	print("open")
 	Game.lock_player_input = true
 	chatting = true
-	tween.stop_all()
+	chat_tween.stop_all()
 	chat_line.grab_focus()
 	chat_line.modulate = Color.white
 	chat_line.mouse_filter = Control.MOUSE_FILTER_STOP
@@ -37,13 +37,13 @@ func close_chat():
 
 func add_chat(player_name, message):
 	var entry = preload("res://gui/ChatEntry.tscn").instance()
-	entry.parse_bbcode("[color=yellow]" + player_name + "[/color][color=#505050]:[/color] [color=#f0f0f0]" + message + "[/color]")
+	entry.parse_bbcode("[color=#66cccc]" + player_name + "[/color] [color=#c0c0c0]>[/color] [color=#f0f0f0]" + message + "[/color]")
 	chat_container.add_child(entry)
 	yield(get_tree(), "idle_frame")
 	scroll.scroll_vertical = chat_container.rect_size.y + 100
 	if not chatting:
-		$Tween.interpolate_property(entry, "modulate", Color.white, Color.transparent, 2, Tween.TRANS_CUBIC, Tween.EASE_IN, 6)
-		$Tween.start()
+		chat_tween.interpolate_property(entry, "modulate", Color.white, Color.transparent, 2, Tween.TRANS_CUBIC, Tween.EASE_IN, 6)
+		chat_tween.start()
 
 func _unhandled_input(event):
 	if event.is_action_pressed("chat") and not chatting:

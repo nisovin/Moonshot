@@ -19,11 +19,16 @@ var controller_index = 0
 var level
 var lock_player_input = false
 
+var player_name_regex = RegEx.new()
+var chat_regex = RegEx.new()
+
 onready var centered_message = $CanvasLayer/CenteredMessage/Label
 onready var multiplayer_controller = $MultiplayerController
 
 func _ready():
 	centered_message.visible = false
+	player_name_regex.compile("[^A-Za-z0-9_ ]")
+	chat_regex.compile("[^A-Za-z0-9_\\-()!.?@#$%&*+=:;'\" ]")
 
 func start_server():
 	mp_mode = MPMode.SERVER

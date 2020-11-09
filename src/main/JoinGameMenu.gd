@@ -4,11 +4,8 @@ signal option_selected
 
 onready var name_field = $CenterContainer/VBoxContainer/NameField
 
-var name_regex = RegEx.new()
-
 func _ready():
 	name_field.grab_focus()
-	name_regex.compile("[^A-Za-z0-9_ ]")
 
 func choose(c):
 	name_field.text = name_field.text.strip_edges()
@@ -37,7 +34,7 @@ func _on_NameField_text_changed(new_text):
 	if new_text == " " or new_text == "_":
 		name_field.text = ""
 		return
-	var rep_text = name_regex.sub(new_text, "", true)
+	var rep_text = Game.player_name_regex.sub(new_text, "", true)
 	if rep_text.count(" ") > 1:
 		rep_text = rep_text.strip_edges()
 	if rep_text != new_text:

@@ -1,7 +1,7 @@
 extends Node
 
 onready var enemy_spawn_point = owner.get_node("EnemySpawn")
-onready var enemies_node = owner.get_node("Entities/Enemies")
+onready var enemies_node = owner.get_node("Walls/Entities/Enemies")
 
 var next_enemy_id = 1
 

@@ -43,7 +43,7 @@ remotesync func show_hit():
 	if not visual_anim.is_playing():
 		visual_anim.play("hurt")
 
-func local_knockback(vel, dur):
+func apply_local_knockback(vel, dur):
 	if dead: return
 	velocity = vel
 	local_knockback = dur

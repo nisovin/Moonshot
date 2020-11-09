@@ -2,11 +2,12 @@ extends Node2D
 
 var chat_history = []
 
-onready var players_node = $Entities/Players
-onready var enemies_node = $Entities/Enemies
+onready var daynight_anim = $DayNightCycle/AnimationPlayer
+onready var players_node = $Walls/Entities/Players
+onready var enemies_node = $Walls/Entities/Enemies
 
 func _ready():
-	$AnimationPlayer.play("daynight")
+	daynight_anim.play("daynight")
 
 func _unhandled_key_input(event):
 	if event.scancode == KEY_F2 and event.pressed:
@@ -24,7 +25,6 @@ func time_event(event):
 	print("Time: ", event)
 
 func add_new_player(data):
-	print("ADD NEW PLAYER")
 	add_player_from_data(data)
 	rpc("add_new_player_remote", data)
 
@@ -54,7 +54,7 @@ func remove_player(id):
 
 func get_game_state():
 	var game_state = {}
-	game_state.time = $AnimationPlayer.current_animation_position
+	game_state.time = daynight_anim.current_animation_position
 	game_state.players = []
 	game_state.enemies = []
 	for p in players_node.get_children():
@@ -68,8 +68,8 @@ func load_game_state(game_state):
 	print(typeof(game_state) == TYPE_DICTIONARY)
 	if "time" in game_state:
 		print("time")
-		$AnimationPlayer.play("daynight")
-		$AnimationPlayer.seek(game_state.time)
+		daynight_anim.play("daynight")
+		daynight_anim.seek(game_state.time)
 	if game_state.has("players"):
 		print("load players")
 		for p in game_state.players:
@@ -87,16 +87,16 @@ func get_player_by_id(id):
 func get_enemy_by_id(id):
 	return enemies_node.get_node_or_null(str(id))
 
-master func send_chat(message):
+master func send_chat(message: String):
 	var id = get_tree().get_rpc_sender_id()
 	var p = get_player_by_id(id)
 	if p != null:
-		var regex = RegEx.new()
-		regex.compile("[^A-Za-z0-9_\\-()!.?@#$%&*+=:;'\" ]")
-		message = regex.sub(message, "")
-		chat_history.append({"p": p.player_name, "m": message})
-		rpc("add_chat", p.player_name, message)
-		pass
+		if message.begins_with("/"):
+			pass
+		else:
+			message = Game.chat_regex.sub(message, "")
+			chat_history.append({"p": p.player_name, "m": message})
+			rpc("add_chat", p.player_name, message)
 
 remotesync func add_chat(player_name, message):
 	$GUI.add_chat(player_name, message)

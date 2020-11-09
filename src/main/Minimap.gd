@@ -1,6 +1,6 @@
 extends Control
 
-const SCALE = 16
+const SCALE = 32
 
 func _physics_process(delta):
 	update()
@@ -15,20 +15,22 @@ func _draw():
 	# draw bg
 	draw_rect(Rect2(Vector2.ZERO, rect_size), Color(0, 0, 0, 0.5))
 	
-	# draw players
-	for p in get_tree().get_nodes_in_group("enemies"):
-		if not p.dead:
-			var rel = p.position - myself.position
-			rel.x = round(rel.x / SCALE)
-			rel.y = round(rel.y / SCALE)
+	# draw enemies
+	for e in get_tree().get_nodes_in_group("enemies"):
+		if not e.dead:
+			var rel = e.position - myself.position
+			rel /= SCALE
+			rel.x = floor(rel.x) if rel.x < 0 else ceil(rel.x)
+			rel.y = floor(rel.y) if rel.y < 0 else ceil(rel.y)
 			draw_rect(Rect2(center + rel, Vector2.ONE), Color.red)
 			
 	# draw players
 	for p in get_tree().get_nodes_in_group("players"):
-		if p != myself:
+		if p != myself and not p.dead:
 			var rel = p.position - myself.position
-			rel.x = round(rel.x / SCALE)
-			rel.y = round(rel.y / SCALE)
+			rel /= SCALE
+			rel.x = floor(rel.x) if rel.x < 0 else ceil(rel.x)
+			rel.y = floor(rel.y) if rel.y < 0 else ceil(rel.y)
 			draw_rect(Rect2(center + rel, Vector2.ONE), Color.blue)
 			
 	# draw myself

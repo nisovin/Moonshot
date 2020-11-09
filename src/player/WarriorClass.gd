@@ -93,7 +93,7 @@ remotesync func attack1(pos, dir, enemies_hit):
 			if enemy.is_network_master():
 				enemy.hit({"damage": 3, "knockback": knockback, "knockback_dur": knockback_dur, "stun": 0.5})
 			else:
-				enemy.local_knockback(knockback, knockback_dur)
+				enemy.apply_local_knockback(knockback, knockback_dur)
 		
 	# end anim
 	yield(get_tree().create_timer(ATTACK_SWING_TIME), "timeout")
