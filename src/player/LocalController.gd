@@ -102,24 +102,24 @@ func _unhandled_input(event):
 	# actions
 		
 	elif event.is_action_pressed("attack1"):
-		owner.player_class.attack1_start()
+		owner.player_class.attack1_press()
 	elif event.is_action_released("attack1"):
-		owner.player_class.attack1_end()
+		owner.player_class.attack1_release()
 		
 	elif event.is_action_pressed("attack2"):
-		owner.player_class.attack2_start()
+		owner.player_class.attack2_press()
 	elif event.is_action_released("attack2"):
-		owner.player_class.attack2_end()
+		owner.player_class.attack2_release()
 		
 	elif event.is_action_pressed("ultimate"):
-		owner.player_class.ultimate_start()
+		owner.player_class.ultimate_press()
 	elif event.is_action_released("ultimate"):
-		owner.player_class.ultimate_end()
+		owner.player_class.ultimate_release()
 		
 	elif event.is_action_pressed("movement"):
-		owner.player_class.movement_start()
+		owner.player_class.movement_press()
 	elif event.is_action_released("movement"):
-		owner.player_class.movement_end()
+		owner.player_class.movement_release()
 		
 func _apply_movement():
 	if get_tree().has_network_peer():

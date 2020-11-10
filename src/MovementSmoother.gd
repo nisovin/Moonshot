@@ -1,6 +1,7 @@
 extends Node2D
 
 export(NodePath) var follow_path
+export(float) var smooth_time = 0.1
 
 var enabled = false
 var follow = null
@@ -40,7 +41,7 @@ func _process(delta):
 		discrep = Vector2.ZERO
 		w = 0
 	elif new_discrep.is_equal_approx(discrep):
-		w += delta * 10
+		w += delta * (1/smooth_time)
 		if w > 1:
 			global_position = target_pos
 			discrep = Vector2.ZERO
@@ -48,5 +49,5 @@ func _process(delta):
 		else:
 			global_position = lerp(global_position, target_pos, w)
 	else:
-		w = delta * 10
+		w = delta * (1/smooth_time)
 		global_position = lerp(global_position, target_pos, w)

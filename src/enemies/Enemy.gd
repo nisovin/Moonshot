@@ -3,8 +3,8 @@ extends KinematicBody2D
 const SERIALIZE_FIELDS = [ "global_position", "velocity" ]
 
 var velocity = Vector2.ZERO
+var move_duration = 0
 
-var local_knockback = 0
 var dead = false
 
 var controller
@@ -30,10 +30,10 @@ func get_data():
 		data[field] = get(field)
 	return data
 
-remotesync func set_movement(vel, pos):
+remotesync func set_movement(vel, pos, dur = 0):
 	position = pos
 	velocity = vel
-	local_knockback = 0
+	move_duration = dur
 
 func hit(data):
 	if controller.hit(data):
@@ -46,7 +46,12 @@ remotesync func show_hit():
 func apply_local_knockback(vel, dur):
 	if dead: return
 	velocity = vel
-	local_knockback = dur
+	move_duration = dur
+	
+func apply_local_stun(dur):
+	if dead: return
+	velocity = Vector2.ZERO
+	move_duration = dur
 	
 func _physics_process(delta):
 	if velocity == Vector2.ZERO: return
@@ -55,10 +60,9 @@ func _physics_process(delta):
 	visual.move(position - before)
 	if col and is_network_master():
 		controller.collide(col)
-	if local_knockback > 0:
-		local_knockback -= delta
-		if local_knockback <= 0:
-			local_knockback = 0
+	if move_duration > 0:
+		move_duration -= delta
+		if move_duration <= 0:
 			velocity = Vector2.ZERO
 	
 func ai_tick():

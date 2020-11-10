@@ -12,6 +12,7 @@ var move_dir := Vector2.ZERO
 var current_speed := 100
 var facing := "down"
 var facing_dir := Vector2.ZERO
+var dead = false
 
 var class_id: int = Game.PlayerClass.WARRIOR
 var player_class = null
@@ -39,6 +40,7 @@ func load_data(data):
 		$Camera2D.current = true
 		nameplate.visible = false
 		add_to_group("myself")
+		Game.player = self
 	else:
 		$LocalController.queue_free()
 		$Camera2D.queue_free()

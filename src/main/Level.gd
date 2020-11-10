@@ -75,8 +75,6 @@ func load_game_state(game_state):
 		for p in game_state.players:
 			print(p)
 			add_player_from_data(p)
-	else:
-		print("no players")
 	if "enemies" in game_state:
 		for e in game_state.enemies:
 			add_enemy_from_data(e)

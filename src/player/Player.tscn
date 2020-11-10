@@ -1,4 +1,4 @@
-[gd_scene load_steps=27 format=2]
+[gd_scene load_steps=30 format=2]
 
 [ext_resource path="res://player/LocalController.gd" type="Script" id=1]
 [ext_resource path="res://player/Player.gd" type="Script" id=2]
@@ -10,8 +10,23 @@
 [sub_resource type="CircleShape2D" id=1]
 radius = 8.15757
 
+[sub_resource type="CircleShape2D" id=22]
+radius = 40.0
+
 [sub_resource type="CircleShape2D" id=2]
-radius = 45.0468
+radius = 56.0
+
+[sub_resource type="ParticlesMaterial" id=23]
+flag_disable_z = true
+spread = 180.0
+gravity = Vector3( 0, 0, 0 )
+initial_velocity = 270.0
+orbit_velocity = 0.0
+orbit_velocity_random = 0.0
+scale = 2.0
+
+[sub_resource type="CircleShape2D" id=21]
+radius = 32.0
 
 [sub_resource type="AtlasTexture" id=3]
 atlas = ExtResource( 4 )
@@ -27,11 +42,11 @@ region = Rect2( 52, 36, 26, 36 )
 
 [sub_resource type="AtlasTexture" id=6]
 atlas = ExtResource( 4 )
-region = Rect2( 26, 72, 26, 36 )
+region = Rect2( 26, 108, 26, 36 )
 
 [sub_resource type="AtlasTexture" id=7]
 atlas = ExtResource( 4 )
-region = Rect2( 26, 0, 26, 36 )
+region = Rect2( 26, 72, 26, 36 )
 
 [sub_resource type="AtlasTexture" id=8]
 atlas = ExtResource( 4 )
@@ -47,23 +62,23 @@ region = Rect2( 52, 0, 26, 36 )
 
 [sub_resource type="AtlasTexture" id=11]
 atlas = ExtResource( 4 )
-region = Rect2( 26, 36, 26, 36 )
+region = Rect2( 26, 0, 26, 36 )
 
 [sub_resource type="AtlasTexture" id=12]
 atlas = ExtResource( 4 )
-region = Rect2( 0, 72, 26, 36 )
+region = Rect2( 26, 36, 26, 36 )
 
 [sub_resource type="AtlasTexture" id=13]
 atlas = ExtResource( 4 )
-region = Rect2( 26, 72, 26, 36 )
+region = Rect2( 0, 72, 26, 36 )
 
 [sub_resource type="AtlasTexture" id=14]
 atlas = ExtResource( 4 )
-region = Rect2( 52, 72, 26, 36 )
+region = Rect2( 26, 72, 26, 36 )
 
 [sub_resource type="AtlasTexture" id=15]
 atlas = ExtResource( 4 )
-region = Rect2( 26, 108, 26, 36 )
+region = Rect2( 52, 72, 26, 36 )
 
 [sub_resource type="AtlasTexture" id=16]
 atlas = ExtResource( 4 )
@@ -86,12 +101,12 @@ animations = [ {
 }, {
 "frames": [ SubResource( 6 ) ],
 "loop": true,
-"name": "idle_right",
+"name": "idle_up",
 "speed": 5.0
 }, {
 "frames": [ SubResource( 7 ) ],
 "loop": true,
-"name": "idle_down",
+"name": "idle_right",
 "speed": 5.0
 }, {
 "frames": [ SubResource( 8 ), SubResource( 9 ), SubResource( 10 ), SubResource( 9 ) ],
@@ -101,18 +116,18 @@ animations = [ {
 }, {
 "frames": [ SubResource( 11 ) ],
 "loop": true,
+"name": "idle_down",
+"speed": 5.0
+}, {
+"frames": [ SubResource( 12 ) ],
+"loop": true,
 "name": "idle_left",
 "speed": 5.0
 }, {
-"frames": [ SubResource( 12 ), SubResource( 13 ), SubResource( 14 ), SubResource( 13 ) ],
+"frames": [ SubResource( 13 ), SubResource( 14 ), SubResource( 15 ), SubResource( 14 ) ],
 "loop": true,
 "name": "walk_right",
 "speed": 10.0
-}, {
-"frames": [ SubResource( 15 ) ],
-"loop": true,
-"name": "idle_up",
-"speed": 5.0
 }, {
 "frames": [ SubResource( 16 ), SubResource( 17 ), SubResource( 18 ), SubResource( 17 ) ],
 "loop": true,
@@ -153,23 +168,52 @@ color = Color( 0.992157, 1, 0, 1 )
 polygon = PoolVector2Array( 0.673368, 0.745442, 0.645527, -0.535225, 42.8268, -0.624058, 45.0067, -0.0681534, 42.8268, 0.635862 )
 
 [node name="Attack1Area" type="Area2D" parent="WarriorClass"]
+monitoring = false
+monitorable = false
 collision_layer = 0
 collision_mask = 4
 
-[node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="WarriorClass/Attack1Area"]
-polygon = PoolVector2Array( 18, 40, 50, 0, 18, -40, -8, 0 )
+[node name="CollisionShape2D" type="CollisionShape2D" parent="WarriorClass/Attack1Area"]
+shape = SubResource( 22 )
+disabled = true
 
 [node name="Attack2Area" type="Area2D" parent="WarriorClass"]
+monitoring = false
+monitorable = false
+collision_layer = 0
+collision_mask = 4
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="WarriorClass/Attack2Area"]
 shape = SubResource( 2 )
+disabled = true
+
+[node name="Attack2Particles" type="Particles2D" parent="WarriorClass"]
+emitting = false
+amount = 50
+lifetime = 0.2
+one_shot = true
+explosiveness = 1.0
+local_coords = false
+process_material = SubResource( 23 )
+
+[node name="RushArea" type="Area2D" parent="WarriorClass"]
+monitoring = false
+monitorable = false
+collision_layer = 0
+collision_mask = 4
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="WarriorClass/RushArea"]
+shape = SubResource( 21 )
+disabled = true
 
 [node name="RushArrow" type="Polygon2D" parent="WarriorClass"]
 visible = false
 color = Color( 0.0117647, 0.847059, 0.0627451, 1 )
 polygon = PoolVector2Array( -0.25, -2.875, 46.25, -1.5, 46.1667, -3.51117, 49.8677, -0.125139, 46.4029, 2.86718, 46.3242, 1.21353, -0.125, 2.5 )
 
-[node name="ArcherClass" type="Node" parent="."]
+[node name="UltimateTween" type="Tween" parent="WarriorClass"]
+
+[node name="ArcherClass" type="Node2D" parent="."]
 
 [node name="Visual" type="Node2D" parent="."]
 script = ExtResource( 5 )

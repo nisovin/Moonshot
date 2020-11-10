@@ -23,6 +23,7 @@ config/dev.export=false
 
 [autoload]
 
+N="*res://N.gd"
 Game="*res://main/Game.tscn"
 
 [debug]

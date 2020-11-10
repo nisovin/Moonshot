@@ -18,6 +18,8 @@ var using_controller = false
 var controller_index = 0
 var level
 var lock_player_input = false
+var auth_password = ""
+var player = null
 
 var player_name_regex = RegEx.new()
 var chat_regex = RegEx.new()
@@ -29,6 +31,12 @@ func _ready():
 	centered_message.visible = false
 	player_name_regex.compile("[^A-Za-z0-9_ ]")
 	chat_regex.compile("[^A-Za-z0-9_\\-()!.?@#$%&*+=:;'\" ]")
+	var file = File.new()
+	if file.file_exists("auth_password.txt"):
+		file.open("auth_password.txt", File.READ)
+		auth_password = file.get_as_text().strip_edges()
+		file.close()
+	print("PASS:", auth_password)
 
 func start_server():
 	mp_mode = MPMode.SERVER
@@ -46,6 +54,9 @@ func start_server():
 	get_tree().network_peer = peer
 	
 	level.start_server()
+	
+func is_server():
+	return mp_mode == MPMode.SERVER
 	
 func start_menu():
 	add_child(load("res://main/MainMenu.tscn").instance())
@@ -95,3 +106,17 @@ func get_player_by_id(id):
 
 func get_enemy_by_id(id):
 	return level.get_enemy_by_id(id)
+
+func check_name(player_name: String):
+	var p := player_name.to_lower()
+	for n in RESERVED_NAMES:
+		if p == n:
+			return false
+	p = p.replace(" ", "").replace("_", "")
+	for n in BAD_WORDS:
+		if p.find(n) >= 0:
+			return false
+	return true
+	
+const RESERVED_NAMES = [ "server", "nisovin", "tonyarawaka", "marzhae", "aeldae" ]
+const BAD_WORDS = [ "" ]

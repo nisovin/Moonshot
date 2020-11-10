@@ -31,7 +31,7 @@ func _draw():
 			rel /= SCALE
 			rel.x = floor(rel.x) if rel.x < 0 else ceil(rel.x)
 			rel.y = floor(rel.y) if rel.y < 0 else ceil(rel.y)
-			draw_rect(Rect2(center + rel, Vector2.ONE), Color.blue)
+			draw_rect(Rect2(center + rel, Vector2.ONE), Color.cyan)
 			
 	# draw myself
 	draw_rect(Rect2(center, Vector2.ONE), Color.yellow)

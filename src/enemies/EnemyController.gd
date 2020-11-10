@@ -11,6 +11,7 @@ var health = 10
 var knockback_direction = 0
 var knockback_duration = 0
 var stun_duration = 0
+var stun_can_break = true
 var dead = false
 
 func collide(collision):
@@ -18,6 +19,7 @@ func collide(collision):
 
 func hit(data):
 	if dead: return false
+	var set_stun = false
 	if "knockback" in data:
 		knockback_direction = data.knockback
 		knockback_duration = data.knockback_dur
@@ -25,8 +27,13 @@ func hit(data):
 			stun_duration = knockback_duration
 	if "stun" in data and stun_duration < data.stun:
 		stun_duration = data.stun
+		if "stun_break" in data:
+			stun_can_break = data.stun_break
+		else:
+			stun_can_break = true
+		set_stun = true
 	if knockback_duration > 0:
-		owner.rpc("set_movement", knockback_direction, owner.position)
+		owner.rpc("set_movement", knockback_direction, owner.position, knockback_duration)
 	elif stun_duration > 0:
 		owner.rpc("set_movement", Vector2.ZERO, owner.position)
 	if "damage" in data:
@@ -35,6 +42,8 @@ func hit(data):
 			dead = true
 			owner.rpc("die")
 			return false
+		if stun_duration > 0 and stun_can_break and not set_stun:
+			stun_duration = 0
 	return true
 
 func _physics_process(delta):
@@ -46,7 +55,7 @@ func _physics_process(delta):
 		stun_duration -= delta
 
 func ai_tick():
-	if dead or stun_duration > 0: return
+	if dead or stun_duration > 0 or knockback_duration > 0: return
 	if target != null:
 		var d = target.position.distance_squared_to(owner.position)
 		if d > TARGET_RANGE * TARGET_RANGE or (OS.get_ticks_msec() > target_time + REAQUIRE_TIME and d > REAQUIRE_RANGE * REAQUIRE_RANGE):

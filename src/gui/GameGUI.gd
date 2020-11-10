@@ -40,6 +40,7 @@ func add_chat(player_name, message):
 	entry.parse_bbcode("[color=#66cccc]" + player_name + "[/color] [color=#c0c0c0]>[/color] [color=#f0f0f0]" + message + "[/color]")
 	chat_container.add_child(entry)
 	yield(get_tree(), "idle_frame")
+	yield(get_tree(), "idle_frame")
 	scroll.scroll_vertical = chat_container.rect_size.y + 100
 	if not chatting:
 		chat_tween.interpolate_property(entry, "modulate", Color.white, Color.transparent, 2, Tween.TRANS_CUBIC, Tween.EASE_IN, 6)
@@ -59,3 +60,13 @@ func _on_ChatLine_text_entered(new_text):
 	close_chat()
 	yield(get_tree(), "idle_frame")
 	owner.rpc("send_chat", new_text)
+
+func _process(delta):
+	if Game.player != null:
+		var c = Game.player.player_class
+		$Abilities/Attack2.value = 1 - c.get_attack2_cooldown()
+		$Abilities/Attack2.tint_progress = Color.cyan if $Abilities/Attack2.value == 1 else Color.white
+		$Abilities/Movement.value = 1 - c.get_movement_cooldown()
+		$Abilities/Movement.tint_progress = Color.cyan if $Abilities/Movement.value == 1 else Color.white
+		$Abilities/Ultimate.value = 1 - c.get_ultimate_cooldown()
+		$Abilities/Ultimate.tint_progress = Color.cyan if $Abilities/Ultimate.value == 1 else Color.white

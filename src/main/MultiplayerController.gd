@@ -34,7 +34,8 @@ func _on_server_player_disconnected(id):
 
 remote func player_join(class_id, player_name: String):
 	var id = get_tree().get_rpc_sender_id()
-	if player_name.to_lower() == "nisovin":
+	player_name = Game.player_name_regex.sub(player_name, "")
+	if not Game.check_name(player_name):
 		rpc_id(id, "invalid_name")
 	else:
 		print("Player joined: id=", id, " name=" , player_name, " class=", class_id)
@@ -59,7 +60,7 @@ remote func load_game_state(data):
 	show_join_menu()
 	
 func show_join_menu():
-	var menu = load("res://main/JoinGameMenu.tscn").instance()
+	var menu = load("res://gui/JoinGameMenu.tscn").instance()
 	Game.add_child(menu)
 	menu.connect("option_selected", self, "_on_join_option_selected")
 
