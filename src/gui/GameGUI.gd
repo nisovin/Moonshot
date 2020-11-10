@@ -10,9 +10,10 @@ var chatting = false
 func _ready():
 	scroll.get_v_scrollbar().modulate = Color.transparent
 	chat_line.modulate = Color.transparent
+	Game.connect("entered_level", self, "_on_entered_level")
+	$Abilities.hide()
 
 func open_chat():
-	print("open")
 	Game.lock_player_input = true
 	chatting = true
 	chat_tween.stop_all()
@@ -60,6 +61,16 @@ func _on_ChatLine_text_entered(new_text):
 	close_chat()
 	yield(get_tree(), "idle_frame")
 	owner.rpc("send_chat", new_text)
+
+func _on_entered_level():
+	if Game.player.class_id == Game.PlayerClass.ARCHER:
+		$Abilities/Attack2.texture_under = load("res://gui/archer_attack2.png")
+		$Abilities/Attack2.texture_progress = $Abilities/Attack2.texture_under
+		$Abilities/Movement.texture_under = load("res://gui/archer_movement.png")
+		$Abilities/Movement.texture_progress = $Abilities/Movement.texture_under
+		$Abilities/Ultimate.texture_under = load("res://gui/archer_ultimate.png")
+		$Abilities/Ultimate.texture_progress = $Abilities/Ultimate.texture_under
+	$Abilities.show()
 
 func _process(delta):
 	if Game.player != null:

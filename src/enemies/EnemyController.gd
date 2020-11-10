@@ -7,7 +7,7 @@ const SPEED = 25
 
 var target
 var target_time = 0
-var health = 10
+var health = 70
 var knockback_direction = 0
 var knockback_duration = 0
 var stun_duration = 0

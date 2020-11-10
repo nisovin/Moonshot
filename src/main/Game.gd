@@ -1,6 +1,7 @@
 extends Node
 
 signal input_method_changed
+signal entered_level
 
 const PORT = 20514
 const MAX_PLAYERS = 20
@@ -16,7 +17,7 @@ enum PlayerClass { WARRIOR, ARCHER, MAGE }
 var mp_mode = MPMode.SOLO
 var using_controller = false
 var controller_index = 0
-var level
+var level = null
 var lock_player_input = false
 var auth_password = ""
 var player = null
@@ -90,7 +91,7 @@ func start_solo():
 	get_tree().network_peer = peer
 	get_tree().refuse_new_network_connections = true
 
-	level.add_player_from_data({"class_id": Game.PlayerClass.WARRIOR, "id": get_tree().get_network_unique_id()})
+	level.add_player_from_data({"class_id": Game.PlayerClass.ARCHER, "id": get_tree().get_network_unique_id()})
 
 	level.start_server()
 

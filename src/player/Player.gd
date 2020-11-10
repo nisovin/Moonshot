@@ -34,6 +34,9 @@ func load_data(data):
 	if class_id == Game.PlayerClass.WARRIOR:
 		player_class = $WarriorClass
 		$ArcherClass.queue_free()
+	elif class_id == Game.PlayerClass.ARCHER:
+		player_class = $ArcherClass
+		$WarriorClass.queue_free()
 	player_class.load_data(data.class_data if data.has("class_data") else null)
 		
 	if name == str(get_tree().get_network_unique_id()):
@@ -41,6 +44,7 @@ func load_data(data):
 		nameplate.visible = false
 		add_to_group("myself")
 		Game.player = self
+		Game.emit_signal("entered_level")
 	else:
 		$LocalController.queue_free()
 		$Camera2D.queue_free()
@@ -62,11 +66,10 @@ func _physics_process(delta):
 		var before = position
 		var v = move_and_slide(move_dir * current_speed)
 		visual.move(position - before)
-		if state == PlayerState.NORMAL:
-			if v != Vector2.ZERO:
-				sprite.play("walk_" + facing)
-			else:
-				sprite.play("idle_" + facing)
+		if v != Vector2.ZERO:
+			sprite.play("walk_" + facing)
+		else:
+			sprite.play("idle_" + facing)
 
 func pause_movement():
 	state = PlayerState.ABILITY
@@ -97,6 +100,20 @@ func set_facing(v, set_anim = false):
 	if set_anim:
 		sprite.play("idle_" + facing)
 	
+func get_action_direction(from_node = null):
+	if Game.using_controller:
+		var v = Vector2(Input.get_joy_axis(Game.controller_index, JOY_AXIS_0), Input.get_joy_axis(Game.controller_index, JOY_AXIS_1))
+		if v.length() > 0.5:
+			return v.normalized()
+		elif facing_dir != Vector2.ZERO:
+			return facing_dir
+		else:
+			return Vector2.UP
+	elif from_node != null:
+		return from_node.get_local_mouse_position().normalized()
+	else:
+		return get_local_mouse_position().normalized()
+		
 puppet func update_position(pos):
 	if Game.mp_mode == Game.MPMode.SERVER:
 		position = pos

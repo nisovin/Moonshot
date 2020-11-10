@@ -4,6 +4,7 @@ export(NodePath) var follow_path
 export(float) var smooth_time = 0.1
 
 var enabled = false
+var paused = false
 var follow = null
 var discrep = Vector2.ZERO
 var w = 0
@@ -35,6 +36,7 @@ func teleport():
 		discrep = Vector2.ZERO
 
 func _process(delta):
+	if not enabled or paused: return
 	var target_pos = follow.global_position
 	var new_discrep = target_pos - global_position
 	if new_discrep.is_equal_approx(Vector2.ZERO):

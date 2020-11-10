@@ -1,0 +1,44 @@
+[gd_scene load_steps=7 format=2]
+
+[ext_resource path="res://player/arrow.png" type="Texture" id=1]
+[ext_resource path="res://player/Arrow.gd" type="Script" id=2]
+
+[sub_resource type="CircleShape2D" id=2]
+radius = 6.38704
+
+[sub_resource type="Gradient" id=3]
+colors = PoolColorArray( 1, 1, 1, 1, 1, 1, 1, 0 )
+
+[sub_resource type="GradientTexture" id=4]
+gradient = SubResource( 3 )
+
+[sub_resource type="ParticlesMaterial" id=1]
+flag_disable_z = true
+direction = Vector3( -1, 0, 0 )
+spread = 30.0
+gravity = Vector3( 0, 0, 0 )
+initial_velocity = 2.0
+orbit_velocity = 0.0
+orbit_velocity_random = 0.0
+color_ramp = SubResource( 4 )
+
+[node name="Arrow" type="Area2D"]
+monitorable = false
+collision_layer = 0
+collision_mask = 4
+script = ExtResource( 2 )
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+position = Vector2( -4, 0 )
+shape = SubResource( 2 )
+
+[node name="Sprite" type="Sprite" parent="."]
+texture = ExtResource( 1 )
+offset = Vector2( -4, 0 )
+
+[node name="Particles2D" type="Particles2D" parent="."]
+amount = 20
+lifetime = 0.3
+local_coords = false
+process_material = SubResource( 1 )
+[connection signal="body_entered" from="." to="." method="_on_Arrow_body_entered"]

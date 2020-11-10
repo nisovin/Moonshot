@@ -1,4 +1,4 @@
-[gd_scene load_steps=11 format=2]
+[gd_scene load_steps=12 format=2]
 
 [ext_resource path="res://enemies/Enemy.gd" type="Script" id=1]
 [ext_resource path="res://enemies/enemy.png" type="Texture" id=2]
@@ -10,6 +10,19 @@ radius = 8.26697
 
 [sub_resource type="RectangleShape2D" id=2]
 extents = Vector2( 50, 50 )
+
+[sub_resource type="ParticlesMaterial" id=7]
+emission_shape = 2
+emission_box_extents = Vector3( 5, 5, 1 )
+flag_disable_z = true
+direction = Vector3( 0, -1, 0 )
+spread = 0.0
+gravity = Vector3( 0, 0, 0 )
+initial_velocity = 20.0
+orbit_velocity = 0.0
+orbit_velocity_random = 0.0
+scale = 1.5
+color = Color( 0.752941, 0.152941, 0.152941, 1 )
 
 [sub_resource type="AtlasTexture" id=3]
 atlas = ExtResource( 2 )
@@ -86,6 +99,12 @@ shape = SubResource( 2 )
 [node name="Visual" type="Node2D" parent="."]
 script = ExtResource( 3 )
 smooth_time = 0.25
+
+[node name="StunParticles" type="Particles2D" parent="Visual"]
+position = Vector2( 0.176773, -20.1525 )
+amount = 10
+lifetime = 0.5
+process_material = SubResource( 7 )
 
 [node name="AnimatedSprite" type="AnimatedSprite" parent="Visual"]
 position = Vector2( 0.420448, -14.1901 )

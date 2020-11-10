@@ -11,6 +11,7 @@ var controller
 onready var neighbors = $Neighbors
 onready var visual = $Visual
 onready var visual_anim = $Visual/AnimationPlayer
+onready var stun_particles = $Visual/StunParticles
 
 func load_data(data):
 	for field in SERIALIZE_FIELDS:
@@ -34,6 +35,10 @@ remotesync func set_movement(vel, pos, dur = 0):
 	position = pos
 	velocity = vel
 	move_duration = dur
+	visual.paused = vel == Vector2.ZERO
+	if not dead:
+		stun_particles.emitting = vel == Vector2.ZERO
+		stun_particles.visible = stun_particles.emitting
 
 func hit(data):
 	if controller.hit(data):
@@ -45,13 +50,11 @@ remotesync func show_hit():
 
 func apply_local_knockback(vel, dur):
 	if dead: return
-	velocity = vel
-	move_duration = dur
+	set_movement(vel, position, dur)
 	
 func apply_local_stun(dur):
 	if dead: return
-	velocity = Vector2.ZERO
-	move_duration = dur
+	set_movement(Vector2.ZERO, position, dur)
 	
 func _physics_process(delta):
 	if velocity == Vector2.ZERO: return
@@ -71,6 +74,8 @@ func ai_tick():
 remotesync func die():
 	dead = true
 	$CollisionShape2D.disabled = true
+	stun_particles.emitting = false
+	stun_particles.visible = false
 	visual_anim.play("die")
 	yield(get_tree().create_timer(2.1), "timeout")
 	delete()

@@ -8,14 +8,14 @@ const ATTACK_SWING_TIME = 0.25
 const ATTACK_SWING_ANGLE = PI * 0.8
 const ATTACK_DOT_ARC = cos(ATTACK_SWING_ANGLE / 2)
 const ATTACK_MOVE_SPEED = 25
-const ATTACK_DAMAGE = 2
+const ATTACK_DAMAGE = 10
 const ATTACK_KNOCKBACK_STR = 300
 const ATTACK_KNOCKBACK_DUR = 0.1
 const ATTACK_STUN_DUR = 0.5
-const ATTACK_COOLDOWN = 0.25
+const ATTACK_COOLDOWN = 0.5
 
-const AOE_DAMAGE_CLOSE = 8
-const AOE_DAMAGE_FAR = 3
+const AOE_DAMAGE_CLOSE = 40
+const AOE_DAMAGE_FAR = 15
 const AOE_CLOSE_RADIUS = 40
 const AOE_STUN_DUR = 1.5
 const AOE_COOLDOWN = 10.0
@@ -25,19 +25,20 @@ const RUSH_MAX_DISTANCE = 140
 const RUSH_CHARGE_TIME = 300
 const RUSH_SPEED = 800
 const RUSH_MAX_TIME = 750
-const RUSH_DAMAGE = 1
+const RUSH_DAMAGE = 2
 const RUSH_KNOCKBACK_STR = 300
 const RUSH_KNOCKBACK_DUR = 0.1
 const RUSH_STUN_DUR = 0.3
 const RUSH_COOLDOWN = 5.0
 
-const ULTIMATE_ATTACK_MULT = 2
-const ULTIMATE_DEFENSE_MULT = 0.5
-const ULTIMATE_DURATION = 10
+const ULTIMATE_ATTACK_MULT = 3
+const ULTIMATE_DEFENSE_MULT = 0.2
+const ULTIMATE_DURATION = 15
 const ULTIMATE_COOLDOWN = 90.0
 
 var state = WarriorState.NORMAL
 
+var attack_pressed = false
 var attack_swing_dir = 1
 var attack_move_dir = Vector2.ZERO
 var attack_cd = 0
@@ -91,14 +92,15 @@ func attack1_press():
 	if state != WarriorState.NORMAL: return
 	if attack_cd > 0: return
 	attack_cd = ATTACK_COOLDOWN
-	rpc("attack1", owner.position, get_action_direction())
+	attack_pressed = true
+	rpc("attack1", owner.position, owner.get_action_direction())
 	
 func attack1_release():
-	pass
+	attack_pressed = false
 
 remotesync func attack1(pos, dir):
 	owner.position = pos
-	attack_move_dir = dir.normalized()
+	attack_move_dir = dir
 	owner.set_facing(attack_move_dir)
 	var start_angle = 0
 	var end_angle = 0
@@ -168,28 +170,7 @@ remotesync func attack2(pos):
 		else:
 			enemy.apply_local_stun(AOE_STUN_DUR)
 
-# ULTIMATE
-
-func ultimate_press():
-	if state != WarriorState.NORMAL: return
-	if ultimate_cd > 0: return
-	ultimate_cd = ULTIMATE_COOLDOWN
-	rpc("ultimate")
-	
-func ultimate_release():
-	pass
-	
-remotesync func ultimate():
-	ultimate_duration = ULTIMATE_DURATION
-	ultimate_tween.interpolate_property(owner.visual, "scale", Vector2.ONE, Vector2(1.4, 1.4), 0.5)
-	ultimate_tween.interpolate_property(owner.sprite, "modulate", Color.white, Color(0.6, 0.9, 1), 0.5)
-	ultimate_tween.start()
-
-remotesync func end_ultimate():
-	ultimate_duration = 0
-	ultimate_tween.interpolate_property(owner.visual, "scale", Vector2(1.4, 1.4), Vector2.ONE, 0.5)
-	ultimate_tween.interpolate_property(owner.sprite, "modulate", Color(0.6, 0.9, 1), Color.white, 0.5)
-	ultimate_tween.start()
+# CHARGE
 
 func movement_press():
 	if state != WarriorState.NORMAL: return
@@ -214,7 +195,7 @@ func movement_release():
 
 func update_rush_arrow():
 	rush_arrow.scale.x = get_rush_distance() / RUSH_MIN_DISTANCE
-	var v = get_action_direction()
+	var v = owner.get_action_direction()
 	if v != Vector2.ZERO:
 		rush_arrow.rotation = v.angle()
 		owner.set_facing(v, true)
@@ -256,12 +237,39 @@ remotesync func end_rush(end_pos, collided):
 			enemy.apply_local_knockback(knockback, RUSH_KNOCKBACK_DUR)
 				
 
+# ULTIMATE
+
+func ultimate_press():
+	if state != WarriorState.NORMAL: return
+	if ultimate_cd > 0: return
+	ultimate_cd = ULTIMATE_COOLDOWN
+	rpc("ultimate")
+	
+func ultimate_release():
+	pass
+	
+remotesync func ultimate():
+	ultimate_duration = ULTIMATE_DURATION
+	ultimate_tween.interpolate_property(owner.visual, "scale", Vector2.ONE, Vector2(1.4, 1.4), 0.5)
+	ultimate_tween.interpolate_property(owner.sprite, "modulate", Color.white, Color(0.6, 0.9, 1), 0.5)
+	ultimate_tween.start()
+
+remotesync func end_ultimate():
+	ultimate_duration = 0
+	ultimate_tween.interpolate_property(owner.visual, "scale", Vector2(1.4, 1.4), Vector2.ONE, 0.5)
+	ultimate_tween.interpolate_property(owner.sprite, "modulate", Color(0.6, 0.9, 1), Color.white, 0.5)
+	ultimate_tween.start()
+
+
 func _process(delta):
 	if state == WarriorState.AIMING_RUSH:
 		update_rush_arrow()
 
 func _physics_process(delta):
-	if attack_cd > 0: attack_cd -= delta
+	if attack_cd > 0:
+		attack_cd -= delta
+		if attack_cd <= 0 and attack_pressed and state == WarriorState.NORMAL:
+			attack1_press()
 	if aoe_cd > 0: aoe_cd -= delta
 	if rush_cd > 0: rush_cd -= delta
 	if ultimate_cd > 0: ultimate_cd -= delta
@@ -270,7 +278,6 @@ func _physics_process(delta):
 		if ultimate_duration < 0 and is_network_master():
 			rpc("end_ultimate")
 	if state == WarriorState.RUSHING:
-		print("rushing!")
 		var col = owner.move_and_collide(rush_direction * RUSH_SPEED * delta)
 		if is_network_master():
 			if col or OS.get_ticks_msec() > rush_start_time + RUSH_MAX_TIME or owner.position.distance_squared_to(rush_start_position) > rush_max_distance * rush_max_distance:
@@ -279,21 +286,9 @@ func _physics_process(delta):
 		owner.move_and_collide(attack_move_dir * ATTACK_MOVE_SPEED * delta)
 	else:
 		if owner.is_network_master():
-			var v = get_action_direction()
+			var v = owner.get_action_direction()
 			if v != Vector2.ZERO:
 				attack1area.rotation = v.angle()
-				
-func get_action_direction():
-	if Game.using_controller:
-		var v = Vector2(Input.get_joy_axis(Game.controller_index, JOY_AXIS_0), Input.get_joy_axis(Game.controller_index, JOY_AXIS_1))
-		if v.length() > 0.5:
-			return v
-		elif owner.facing_dir != Vector2.ZERO:
-			return owner.facing_dir
-		else:
-			return Vector2.UP
-	else:
-		return owner.get_local_mouse_position()
 	
 func get_attack1_cooldown():
 	if attack_cd <= 0: return 0

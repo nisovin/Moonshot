@@ -5,6 +5,8 @@ var chat_history = []
 onready var daynight_anim = $DayNightCycle/AnimationPlayer
 onready var players_node = $Walls/Entities/Players
 onready var enemies_node = $Walls/Entities/Enemies
+onready var projectiles_node = $Walls/Entities/Projectiles
+onready var ground_effects_node = $Ground/GroundEffects
 
 func _ready():
 	daynight_anim.play("daynight")

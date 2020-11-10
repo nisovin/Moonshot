@@ -13,7 +13,7 @@ func _draw():
 	var center = rect_size / 2
 	
 	# draw bg
-	draw_rect(Rect2(Vector2.ZERO, rect_size), Color(0, 0, 0, 0.5))
+	draw_rect(Rect2(Vector2.ZERO, rect_size), Color(0, 0, 0, 0.75))
 	
 	# draw enemies
 	for e in get_tree().get_nodes_in_group("enemies"):

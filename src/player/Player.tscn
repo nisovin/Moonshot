@@ -1,4 +1,4 @@
-[gd_scene load_steps=30 format=2]
+[gd_scene load_steps=31 format=2]
 
 [ext_resource path="res://player/LocalController.gd" type="Script" id=1]
 [ext_resource path="res://player/Player.gd" type="Script" id=2]
@@ -6,6 +6,7 @@
 [ext_resource path="res://player/playersheet.png" type="Texture" id=4]
 [ext_resource path="res://MovementSmoother.gd" type="Script" id=5]
 [ext_resource path="res://gui/alphbeta.ttf" type="DynamicFontData" id=6]
+[ext_resource path="res://player/ArcherClass.gd" type="Script" id=7]
 
 [sub_resource type="CircleShape2D" id=1]
 radius = 8.15757
@@ -214,6 +215,10 @@ polygon = PoolVector2Array( -0.25, -2.875, 46.25, -1.5, 46.1667, -3.51117, 49.86
 [node name="UltimateTween" type="Tween" parent="WarriorClass"]
 
 [node name="ArcherClass" type="Node2D" parent="."]
+script = ExtResource( 7 )
+
+[node name="ArrowSpawnPoint" type="Position2D" parent="ArcherClass"]
+position = Vector2( -0.0662155, -10.0649 )
 
 [node name="Visual" type="Node2D" parent="."]
 script = ExtResource( 5 )
