@@ -5,6 +5,7 @@ enum WarriorState { NORMAL, SWINGING_SWORD, AIMING_RUSH, RUSHING }
 const SERIALIZE_FIELDS = [ "state", "ultimate_duration" ]
 
 const ENERGY_REGEN = 10
+const ENERGY_EXHAUSTION_MULT = 0.6
 
 const ATTACK_SWING_TIME = 0.25
 const ATTACK_SWING_ANGLE = PI * 0.8
@@ -14,11 +15,11 @@ const ATTACK_DAMAGE = 10
 const ATTACK_KNOCKBACK_STR = 300
 const ATTACK_KNOCKBACK_DUR = 0.1
 const ATTACK_STUN_DUR = 0.5
-const ATTACK_COST = 8
+const ATTACK_COST = 5
 const ATTACK_COOLDOWN = 0.4
 
 const AOE_DAMAGE_CLOSE = 40
-const AOE_DAMAGE_FAR = 15
+const AOE_DAMAGE_FAR = 25
 const AOE_CLOSE_RADIUS = 40
 const AOE_STUN_DUR = 2.0
 const AOE_COST = 15
@@ -29,12 +30,12 @@ const RUSH_MAX_DISTANCE = 140
 const RUSH_CHARGE_TIME = 300
 const RUSH_SPEED = 800
 const RUSH_MAX_TIME = 750
-const RUSH_DAMAGE = 5
+const RUSH_DAMAGE = 10
 const RUSH_KNOCKBACK_STR = 300
 const RUSH_KNOCKBACK_DUR = 0.1
 const RUSH_STUN_DUR = 0.3
 const RUSH_COST = 40
-const RUSH_COOLDOWN = 3.0
+const RUSH_COOLDOWN = 2.0
 
 const ULTIMATE_ATTACK_MULT = 3
 const ULTIMATE_DEFENSE_MULT = 0.2
@@ -75,8 +76,9 @@ const ABILITIES = [
 ]
 
 var state = WarriorState.NORMAL
+var energy = 100
 
-var attack_pressed = false
+var attack_queued = false
 var attack_swing_dir = 1
 var attack_move_dir = Vector2.ZERO
 var attack_cd = 0
@@ -140,14 +142,18 @@ func got_kill(enemy, killing_blow):
 # ATTACK ONE - SWORD ATTACK
 
 func attack1_press():
+	if attack_cd > 0 and (state == WarriorState.NORMAL or state == WarriorState.SWINGING_SWORD):
+		attack_queued = true
+		return
 	if state != WarriorState.NORMAL: return
-	if attack_cd > 0: return
+	if energy < ATTACK_COST: return
+	attack_queued = false
 	attack_cd = ATTACK_COOLDOWN
-	attack_pressed = true
+	energy -= ATTACK_COST
 	rpc("attack1", owner.position, owner.get_action_direction())
 	
 func attack1_release():
-	attack_pressed = false
+	pass
 
 remotesync func attack1(pos, dir):
 	owner.position = pos
@@ -201,7 +207,9 @@ remotesync func attack1(pos, dir):
 func attack2_press():
 	if state != WarriorState.NORMAL: return
 	if aoe_cd > 0: return
+	if energy < AOE_COST: return
 	aoe_cd = AOE_COOLDOWN
+	energy -= AOE_COST
 	rpc("attack2", owner.position)
 	
 func attack2_release():
@@ -229,6 +237,7 @@ remotesync func attack2(pos):
 func movement_press():
 	if state != WarriorState.NORMAL: return
 	if rush_cd > 0: return
+	if energy < RUSH_COST: return
 	state = WarriorState.AIMING_RUSH
 	rush_start_time = OS.get_ticks_msec()
 	rush_arrow.visible = true
@@ -243,6 +252,7 @@ func movement_press():
 func movement_release():
 	if state != WarriorState.AIMING_RUSH: return
 	if rush_cd > 0: return
+	energy -= RUSH_COST
 	rush_cd = RUSH_COOLDOWN
 	rush_arrow.visible = false
 	rpc("start_rush", owner.position, Vector2.RIGHT.rotated(rush_arrow.rotation), get_rush_distance())
@@ -323,19 +333,24 @@ func _process(delta):
 func _physics_process(delta):
 	if attack_cd > 0:
 		attack_cd -= delta
-		if attack_cd <= 0 and attack_pressed and state == WarriorState.NORMAL:
+		if attack_cd <= 0 and state == WarriorState.NORMAL and (attack_queued or Input.is_action_pressed("attack1")):
 			attack1_press()
+			
+	var regen = ENERGY_REGEN
+	regen *= ((100 - owner.exhaustion * ENERGY_EXHAUSTION_MULT) / 100.0)
 	if ultimate_duration > 0:
 		ultimate_duration -= delta
 		if ultimate_duration < 0 and is_network_master():
 			rpc("end_ultimate")
 		if aoe_cd > 0: aoe_cd -= delta * ULTIMATE_CD_MULT
 		if rush_cd > 0: rush_cd -= delta * ULTIMATE_CD_MULT
+		regen *= ULTIMATE_ENERGY_MULT
 	else:
 		if aoe_cd > 0: aoe_cd -= delta
 		if rush_cd > 0: rush_cd -= delta
 		if ultimate_cd > 0: ultimate_cd -= delta
-		
+	energy = min(energy + regen * delta, 100)
+	
 	if state == WarriorState.RUSHING:
 		var col = owner.move_and_collide(rush_direction * RUSH_SPEED * delta)
 		if is_network_master():

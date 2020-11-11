@@ -8,7 +8,8 @@ const Moonshot = preload("res://player/Moonshot.tscn")
 
 const SERIALIZE_FIELDS = [ "state" ]
 
-const ARCHER_REGEN = 5
+const ENERGY_REGEN = 5
+const ENERGY_EXHAUSTION_MULT = 0.75
 
 const SHOOT_AIM_TIME = 0.4
 const SHOOT_ARROW_COUNT = 5
@@ -25,14 +26,14 @@ const SHOOT_COOLDOWN = 0.5
 const VOLLEY_RADIUS = 64
 const VOLLEY_DAMAGE_DELAY = 0.3
 const VOLLEY_DAMAGE = 25
-const VOLLEY_STUN_DUR = 0.2
+const VOLLEY_STUN_DUR = 0
 const VOLLEY_COST = 15
 const VOLLEY_COOLDOWN = 8.0
 
 const SHADOW_DURATION_MIN = 2
 const SHADOW_SPEED_MULT = 2.5
 const SHADOW_MODULATE = Color(0.36, 0.36, 0.5, 0.6)
-const SHADOW_COST = 20
+const SHADOW_COST = 10
 const SHADOW_COST_PER_SECOND = 10
 const SHADOW_COOLDOWN = 5
 
@@ -67,6 +68,7 @@ const ABILITIES = [
 ]
 
 var state = ArcherState.NORMAL
+var energy = 100
 
 var shoot_aim_time = 0
 var shoot_cd = 0
@@ -126,6 +128,7 @@ func attack1_press():
 		return
 	if state != ArcherState.NORMAL: return
 	if shoot_cd > 0: return
+	if energy < SHOOT_COST: return
 	rpc("shoot_aim", owner.position)
 	
 func attack1_release():
@@ -149,6 +152,7 @@ remotesync func shoot_aim(pos):
 
 remotesync func shoot_fire(pos, dir):
 	owner.position = pos
+	energy -= SHOOT_COST
 	shoot_cd = SHOOT_COOLDOWN
 	var vel = dir * SHOOT_ARROW_SPEED
 	vel = vel.rotated(-SHOOT_ARROW_SPREAD / 2)
@@ -182,6 +186,7 @@ func attack2_press():
 		return
 	if state != ArcherState.NORMAL: return
 	if volley_cd > 0: return
+	if energy < VOLLEY_COST: return
 	if Game.using_controller:
 		state = ArcherState.AIMING_VOLLEY
 		volley_target.position = Vector2.ZERO
@@ -200,6 +205,7 @@ remotesync func start_aim_volley():
 	owner.pause_movement()
 
 remotesync func volley(pos):
+	energy -= VOLLEY_COST
 	volley_cd = VOLLEY_COOLDOWN
 	owner.resume_movement()
 	var volley = Volley.instance()
@@ -216,6 +222,7 @@ remotesync func volley(pos):
 func movement_press():
 	if state != ArcherState.NORMAL: return
 	if shadow_cd > 0 or shadow_lingering: return
+	if energy < SHADOW_COST: return
 	rpc("start_shadow", owner.position)
 	
 func movement_release():
@@ -229,6 +236,7 @@ func movement_release():
 
 remotesync func start_shadow(pos):
 	state = ArcherState.SHADOWED
+	energy -= SHADOW_COST
 	shadow_cd = SHADOW_COOLDOWN
 	shadow_started = OS.get_ticks_msec()
 	owner.position = pos
@@ -321,6 +329,15 @@ func _physics_process(delta):
 	if volley_cd > 0: volley_cd -= delta
 	if shadow_cd > 0 and state != ArcherState.SHADOWED: shadow_cd -= delta
 	if ultimate_cd > 0: ultimate_cd -= delta
+	if state == ArcherState.SHADOWED:
+		energy -= SHADOW_COST_PER_SECOND * delta
+		if energy <= 0:
+			energy = 0
+			rpc("stop_shadow", owner.position)
+	else:
+		var regen = ENERGY_REGEN
+		regen *= (100 - owner.exhaustion * ENERGY_EXHAUSTION_MULT) / 100.0
+		energy = min(energy + regen * delta, 100)
 
 func get_attack1_cooldown():
 	if shoot_cd <= 0: return 0

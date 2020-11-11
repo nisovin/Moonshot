@@ -25,7 +25,7 @@ func hit(data):
 		knockback_duration = data.knockback_dur
 		if stun_duration < knockback_duration:
 			stun_duration = knockback_duration
-	if "stun" in data and stun_duration < data.stun:
+	if "stun" in data and stun_duration < data.stun and data.stun > 0:
 		stun_duration = data.stun
 		if "stun_break" in data:
 			stun_can_break = data.stun_break
@@ -83,10 +83,12 @@ func ai_tick():
 		if neighbors.size() > 1:
 			for enemy in neighbors:
 				if enemy != self:
-					separation_direction += enemy.position.direction_to(owner.position)
+					var dist = enemy.position.distance_squared_to(owner.position)
+					var mult = 1 - (dist / (50 * 50))
+					separation_direction += enemy.position.direction_to(owner.position) * mult
 			separation_direction /= neighbors.size()
 
-		var direction = target_direction + separation_direction * 0.7
+		var direction = target_direction + separation_direction * 1.5
 		var v = direction.normalized() * SPEED
 		if not v.is_equal_approx(owner.velocity):
 			owner.rpc("set_movement", v, owner.position)

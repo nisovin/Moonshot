@@ -19,7 +19,6 @@ var facing_dir := Vector2.ZERO
 var targetable = true
 
 var health = 100
-var energy = 100
 var exhaustion = 0
 var stage_deaths = 0
 var dead = false
@@ -85,6 +84,25 @@ func _physics_process(delta):
 		else:
 			sprite.play("idle_" + facing)
 
+remotesync func set_movement(x, y, pos):
+	move_dir = Vector2(x, y).normalized()
+	if x != 0 or y != 0:
+		set_facing(move_dir)
+	position = pos
+		
+puppet func update_position(pos):
+	if Game.mp_mode == Game.MPMode.SERVER:
+		position = pos
+	else:
+		var d = position.distance_squared_to(pos)
+		if d > 25:
+			position = pos
+		if d > 256:
+			visual.teleport()
+			
+remotesync func update_health(val):
+	health = val
+
 func pause_movement():
 	state = PlayerState.ABILITY
 	sprite.play("idle_" + facing)
@@ -93,12 +111,6 @@ func resume_movement():
 	state = PlayerState.NORMAL
 	sprite.play("idle_" + facing)
 
-remotesync func set_movement(x, y, pos):
-	move_dir = Vector2(x, y).normalized()
-	if x != 0 or y != 0:
-		set_facing(move_dir)
-	position = pos
-		
 func set_facing(v, set_anim = false):
 	facing_dir = v
 	if abs(v.x) >= abs(v.y):
@@ -127,16 +139,6 @@ func get_action_direction(from_node = null):
 		return (get_global_mouse_position() - from_node.global_position).normalized()
 	else:
 		return get_local_mouse_position().normalized()
-		
-puppet func update_position(pos):
-	if Game.mp_mode == Game.MPMode.SERVER:
-		position = pos
-	else:
-		var d = position.distance_squared_to(pos)
-		if d > 25:
-			position = pos
-		if d > 256:
-			visual.teleport()
 
 func untarget():
 	emit_signal("became_untargetable", self)

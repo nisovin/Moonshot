@@ -88,7 +88,7 @@ func start_solo():
 	get_tree().network_peer = peer
 	get_tree().refuse_new_network_connections = true
 
-	level.add_player_from_data({"class_id": Game.PlayerClass.ARCHER, "id": get_tree().get_network_unique_id()})
+	level.add_player_from_data({"class_id": Game.PlayerClass.WARRIOR, "id": get_tree().get_network_unique_id()})
 
 	level.start_server()
 

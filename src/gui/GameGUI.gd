@@ -94,12 +94,16 @@ func _on_entered_level():
 
 func _process(delta):
 	if Game.player != null:
-		check_tooltip()
+		update_ui()
 
-func check_tooltip():
+func update_ui():
+	var c = Game.player.player_class
 	var i = 0
 	
-	var c = Game.player.player_class
+	$PlayerBars/Energy.value = c.energy
+	$PlayerBars/Energy/Label.text = str(floor(c.energy))
+	
+	i = 0
 	for a in $Abilities.get_children():
 		a.value = 1 - c.call("get_" + a.name.to_lower() + "_cooldown")
 		a.tint_progress = Color.cyan if a.value == 1 else Color.white
