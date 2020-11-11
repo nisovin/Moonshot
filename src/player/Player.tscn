@@ -1,4 +1,4 @@
-[gd_scene load_steps=43 format=2]
+[gd_scene load_steps=44 format=2]
 
 [ext_resource path="res://player/LocalController.gd" type="Script" id=1]
 [ext_resource path="res://player/Player.gd" type="Script" id=2]
@@ -11,6 +11,7 @@
 [ext_resource path="res://player/arrow_aim_primary.png" type="Texture" id=9]
 [ext_resource path="res://player/archer_ult_aim.png" type="Texture" id=10]
 [ext_resource path="res://player/moon_particle.png" type="Texture" id=11]
+[ext_resource path="res://main/Circle.gd" type="Script" id=12]
 
 [sub_resource type="CircleShape2D" id=1]
 radius = 8.15757
@@ -296,6 +297,10 @@ texture = ExtResource( 8 )
 offset = Vector2( 32, 0 )
 
 [node name="ShadowTween" type="Tween" parent="ArcherClass"]
+
+[node name="VolleyTarget" type="Node2D" parent="ArcherClass"]
+script = ExtResource( 12 )
+color = Color( 1, 1, 1, 0.415686 )
 
 [node name="UltimateMarker" type="Sprite" parent="ArcherClass"]
 modulate = Color( 0.780392, 1, 0.996078, 1 )

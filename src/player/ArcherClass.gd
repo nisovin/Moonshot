@@ -6,9 +6,9 @@ const CrescentArrow = preload("res://player/Arrow.tscn")
 const Volley = preload("res://player/Volley.tscn")
 const Moonshot = preload("res://player/Moonshot.tscn")
 
-const SERIALIZE_FIELDS = [ "state", "ultimate_duration" ]
+const SERIALIZE_FIELDS = [ "state" ]
 
-const ARCHER_REGEN = 1
+const ARCHER_REGEN = 5
 
 const SHOOT_AIM_TIME = 0.4
 const SHOOT_ARROW_COUNT = 5
@@ -19,15 +19,15 @@ const SHOOT_SIDE_KNOCKBACK_STR = 150
 const SHOOT_KNOCKBACK_DUR = 0.1
 const SHOOT_CENTER_DAMAGE = 40
 const SHOOT_SIDE_DAMAGE = 10
-const SHOOT_COST = 5
+const SHOOT_COST = 7
 const SHOOT_COOLDOWN = 0.5
 
 const VOLLEY_RADIUS = 64
 const VOLLEY_DAMAGE_DELAY = 0.3
 const VOLLEY_DAMAGE = 25
 const VOLLEY_STUN_DUR = 0.2
-const VOLLEY_COST = 5
-const VOLLEY_COOLDOWN = 10
+const VOLLEY_COST = 15
+const VOLLEY_COOLDOWN = 8.0
 
 const SHADOW_DURATION_MIN = 2
 const SHADOW_SPEED_MULT = 2.5
@@ -49,7 +49,7 @@ const ABILITIES = [
 	},
 	{
 		"name": "Falling Stars",
-		"description": "Launch a volley of arrows at a targeted location, dealing " + str(VOLLEY_DAMAGE) + " to enemies in the area.",
+		"description": "Launch a volley of arrows at a targeted location, dealing " + str(VOLLEY_DAMAGE) + " damage to enemies in the area.",
 		"cost": str(VOLLEY_COST) + " energy",
 		"cooldown": str(VOLLEY_COOLDOWN) + " seconds"
 	},
@@ -71,16 +71,17 @@ var state = ArcherState.NORMAL
 var shoot_aim_time = 0
 var shoot_cd = 0
 
-var volley_position = Vector2.ZERO
 var volley_cd = 0
 
 var shadow_started = 0
 var shadow_cd = 0
 var shadow_lingering = false
 
+var ultimate_start_time = 0
 var ultimate_cd = ULTIMATE_COOLDOWN
 
 onready var arrow_spawn = $ArrowSpawnPoint
+onready var volley_target = $VolleyTarget
 onready var shadow_tween = $ShadowTween
 onready var ult_marker = $UltimateMarker
 
@@ -108,27 +109,24 @@ func load_data(data):
 		if i == SHOOT_ARROW_COUNT / 2 - 1:
 			a += SHOOT_ARROW_SPREAD / (SHOOT_ARROW_COUNT - 1)
 	arrow_spawn.visible = false
+	volley_target.visible = false
+	volley_target.radius = VOLLEY_RADIUS
 	ult_marker.visible = false
 		
 func is_moving():
 	return false
 
 func got_kill(enemy, killing_blow):
-	print("KILL", killing_blow)
 	if killing_blow and ultimate_cd > 0:
 		ultimate_cd -= ULTIMATE_CD_REDUCE_KILL_BLOW
-		print(ultimate_cd)
 		
 func attack1_press():
 	if state == ArcherState.AIMING_ULTIMATE:
 		rpc("ultimate_launch", owner.position, owner.get_action_direction())
 		return
 	if state != ArcherState.NORMAL: return
+	if shoot_cd > 0: return
 	rpc("shoot_aim", owner.position)
-	arrow_spawn.visible = true
-	for m in arrow_spawn.get_children():
-		m.modulate = Color.white
-		m.scale = Vector2(0.2, 1)
 	
 func attack1_release():
 	if state != ArcherState.AIMING_ARROW: return
@@ -143,6 +141,11 @@ remotesync func shoot_aim(pos):
 	shoot_aim_time = 0
 	owner.position = pos
 	owner.pause_movement()
+	if is_network_master():
+		arrow_spawn.visible = true
+		for m in arrow_spawn.get_children():
+			m.modulate = Color.white
+			m.scale = Vector2(0.2, 1)
 
 remotesync func shoot_fire(pos, dir):
 	owner.position = pos
@@ -181,15 +184,21 @@ func attack2_press():
 	if volley_cd > 0: return
 	if Game.using_controller:
 		state = ArcherState.AIMING_VOLLEY
-		volley_position = owner.position + owner.get_action_direction() * 70
-		rpc("start_aim", owner.position)
+		volley_target.position = Vector2.ZERO
+		volley_target.visible = true
+		rpc("start_aim_volley")
 	else:
 		rpc("volley", get_global_mouse_position())
 	
 func attack2_release():
 	if state == ArcherState.AIMING_VOLLEY:
-		rpc("volley", volley_position)
-	
+		rpc("volley", volley_target.global_position)
+		state = ArcherState.NORMAL
+		volley_target.visible = false
+
+remotesync func start_aim_volley():
+	owner.pause_movement()
+
 remotesync func volley(pos):
 	volley_cd = VOLLEY_COOLDOWN
 	owner.resume_movement()
@@ -251,16 +260,22 @@ func ultimate_press():
 	if ultimate_cd > 0: return
 	state = ArcherState.AIMING_ULTIMATE
 	ult_marker.visible = true
+	ultimate_start_time = OS.get_ticks_msec()
+	if Game.using_controller:
+		owner.pause_movement()
 	
 func ultimate_release():
-	pass
+	if state == ArcherState.AIMING_ULTIMATE and OS.get_ticks_msec() > ultimate_start_time + 250:
+		rpc("ultimate_launch", owner.position, owner.get_action_direction())
 	
 func ultimate_cancel():
 	state = ArcherState.NORMAL
 	ult_marker.visible = false
+	owner.resume_movement()
 
 remotesync func ultimate_launch(pos, dir):
 	state = ArcherState.NORMAL
+	owner.resume_movement()
 	ultimate_cd = ULTIMATE_COOLDOWN
 	owner.position = pos
 	ult_marker.visible = false
@@ -293,7 +308,16 @@ func _physics_process(delta):
 		var dir = owner.get_action_direction()
 		ult_marker.rotation = dir.angle()
 		owner.set_facing(dir, true)
-	if shoot_cd > 0: shoot_cd -= delta
+	elif state == ArcherState.AIMING_VOLLEY and is_network_master():
+		var v = Vector2(Input.get_joy_axis(Game.controller_index, JOY_AXIS_0), Input.get_joy_axis(Game.controller_index, JOY_AXIS_1))
+		if v.length() > 0.5:
+			volley_target.position += v.normalized() * 400 * delta
+			volley_target.position.x = clamp(volley_target.position.x, -256, 256)
+			volley_target.position.y = clamp(volley_target.position.y, -144, 144)
+	if shoot_cd > 0:
+		shoot_cd -= delta
+		if shoot_cd <= 0 and state == ArcherState.NORMAL and Input.is_action_pressed("attack1"):
+			rpc("shoot_aim", owner.position)
 	if volley_cd > 0: volley_cd -= delta
 	if shadow_cd > 0 and state != ArcherState.SHADOWED: shadow_cd -= delta
 	if ultimate_cd > 0: ultimate_cd -= delta

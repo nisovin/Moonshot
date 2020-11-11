@@ -1,5 +1,7 @@
 extends Node
 
+enum Directive { NONE, FOCUS_PLAYERS, FOCUS_KEEP, SWIFTNESS, ENRAGE }
+
 onready var enemy_spawn_point = owner.get_node("EnemySpawn")
 onready var enemies_node = owner.get_node("Walls/Entities/Enemies")
 

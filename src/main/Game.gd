@@ -31,7 +31,11 @@ func _ready():
 	centered_message.visible = false
 	player_name_regex.compile("[^A-Za-z0-9_ ]")
 	chat_regex.compile("[^A-Za-z0-9_\\-()!.?@#$%&*+=:;'\" ]")
-	
+
+func _unhandled_key_input(event):
+	if event.scancode == KEY_F11 and event.pressed:
+		OS.window_fullscreen = not OS.window_fullscreen
+
 func start_server():
 	mp_mode = MPMode.SERVER
 	Engine.iterations_per_second = 30

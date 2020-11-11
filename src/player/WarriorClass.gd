@@ -4,6 +4,8 @@ enum WarriorState { NORMAL, SWINGING_SWORD, AIMING_RUSH, RUSHING }
 
 const SERIALIZE_FIELDS = [ "state", "ultimate_duration" ]
 
+const ENERGY_REGEN = 10
+
 const ATTACK_SWING_TIME = 0.25
 const ATTACK_SWING_ANGLE = PI * 0.8
 const ATTACK_DOT_ARC = cos(ATTACK_SWING_ANGLE / 2)
@@ -12,14 +14,14 @@ const ATTACK_DAMAGE = 10
 const ATTACK_KNOCKBACK_STR = 300
 const ATTACK_KNOCKBACK_DUR = 0.1
 const ATTACK_STUN_DUR = 0.5
-const ATTACK_COST = 10
-const ATTACK_COOLDOWN = 0.5
+const ATTACK_COST = 8
+const ATTACK_COOLDOWN = 0.4
 
 const AOE_DAMAGE_CLOSE = 40
 const AOE_DAMAGE_FAR = 15
 const AOE_CLOSE_RADIUS = 40
 const AOE_STUN_DUR = 2.0
-const AOE_COST = 20
+const AOE_COST = 15
 const AOE_COOLDOWN = 10.0
 
 const RUSH_MIN_DISTANCE = 50
@@ -27,15 +29,16 @@ const RUSH_MAX_DISTANCE = 140
 const RUSH_CHARGE_TIME = 300
 const RUSH_SPEED = 800
 const RUSH_MAX_TIME = 750
-const RUSH_DAMAGE = 2
+const RUSH_DAMAGE = 5
 const RUSH_KNOCKBACK_STR = 300
 const RUSH_KNOCKBACK_DUR = 0.1
 const RUSH_STUN_DUR = 0.3
-const RUSH_COST = 50
+const RUSH_COST = 40
 const RUSH_COOLDOWN = 3.0
 
 const ULTIMATE_ATTACK_MULT = 3
 const ULTIMATE_DEFENSE_MULT = 0.2
+const ULTIMATE_ENERGY_MULT = 2
 const ULTIMATE_CD_MULT = 2.0
 const ULTIMATE_DURATION = 15
 const ULTIMATE_KILL_EXTEND = 1
@@ -60,7 +63,7 @@ const ABILITIES = [
 	},
 	{
 		"name": "Astral Rush",
-		"description": "Charge forward, dealing " + str(RUSH_DAMAGE) + " damage around you upon impacting with an enemy, and knocking them back.",
+		"description": "Charge forward, dealing " + str(RUSH_DAMAGE) + " damage to enemies around you upon impact, and knocking them back.",
 		"cost": str(RUSH_COST) + " energy",
 		"cooldown": str(RUSH_COOLDOWN) + " seconds"
 	},
@@ -262,7 +265,6 @@ remotesync func init_rush(pos):
 remotesync func start_rush(start_pos, rush_dir, max_dist):
 	owner.position = start_pos
 	owner.set_facing(rush_dir, true)
-	print("start_rush ", rush_dir)
 	rush_start_time = OS.get_ticks_msec()
 	rush_start_position = start_pos
 	rush_direction = rush_dir
@@ -271,7 +273,6 @@ remotesync func start_rush(start_pos, rush_dir, max_dist):
 	state = WarriorState.RUSHING
 
 remotesync func end_rush(end_pos, collided):
-	print("end rush ", end_pos, collided)
 	owner.position = end_pos
 	state = WarriorState.NORMAL
 	owner.resume_movement()

@@ -73,7 +73,6 @@ func ai_tick():
 remotesync func die():
 	dead = true
 	if not Game.is_server():
-		print(last_hit, " ", OS.get_ticks_msec())
 		if Game.player != null and last_hit > OS.get_ticks_msec() - 10000:
 			Game.player.got_kill(self, last_hit > OS.get_ticks_msec() - 250)
 		stun_particles.emitting = false

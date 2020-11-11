@@ -15,7 +15,6 @@ func _unhandled_key_input(event):
 	if event.scancode == KEY_F2 and event.pressed:
 		var path = $Navigation2D.get_simple_path($EnemySpawn.position, $Position2D.position, true)
 		$Line2D.points = path
-		print(path)
 	if event.scancode == KEY_F3 and event.pressed:
 		$Navigation2D/Wall.enabled = !$Navigation2D/Wall.enabled
 		
@@ -42,7 +41,6 @@ func add_player_from_data(data):
 	player.set_network_master(int(data.id))
 
 func add_enemy_from_data(data):
-	print(data)
 	var enemy = Game.Enemy.instance()
 	enemy.name = str(data.id)
 	enemies_node.add_child(enemy)
@@ -66,16 +64,11 @@ func get_game_state():
 	return game_state
 
 func load_game_state(game_state):
-	print(game_state)
-	print(typeof(game_state) == TYPE_DICTIONARY)
 	if "time" in game_state:
-		print("time")
 		daynight_anim.play("daynight")
 		daynight_anim.seek(game_state.time)
 	if game_state.has("players"):
-		print("load players")
 		for p in game_state.players:
-			print(p)
 			add_player_from_data(p)
 	if "enemies" in game_state:
 		for e in game_state.enemies:

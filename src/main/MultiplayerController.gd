@@ -137,11 +137,9 @@ func save_ban_files():
 # CLIENT-SIDE
 
 func _on_connected_to_server():
-	print("CONNECTED")
 	Game.show_centered_message("Waiting for game state...")
 
 remote func load_game_state(data):
-	print("RECEIVED GAME STATE")
 	if data.version != Game.VERSION:
 		Game.show_centered_message("Game version mismatch: client=" + str(Game.VERSION) + "; server=" + str(data.version))
 		get_tree().network_peer = null
@@ -157,7 +155,6 @@ func show_join_menu():
 	menu.connect("option_selected", self, "_on_join_option_selected")
 
 func _on_join_option_selected(option, player_name):
-	print(option)
 	if option == -1:
 		level.queue_free()
 		Game.start_menu()
@@ -168,7 +165,6 @@ remote func disconnect_error(err):
 	dc_error = err
 
 func _on_disconnected_from_server():
-	print("DISCONNECT")
 	level.queue_free()
 	Game.show_centered_message(dc_error if dc_error != null else "Disconnected")
 	dc_error = null
@@ -184,7 +180,6 @@ func _on_failed_to_connect():
 	Game.start_menu()
 
 remote func invalid_name():
-	print("INVALID NAME")
 	Game.show_centered_message("Invalid name or name already in use")
 	yield(get_tree().create_timer(2), "timeout")
 	Game.hide_centered_message()

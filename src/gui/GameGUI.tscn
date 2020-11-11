@@ -1,4 +1,4 @@
-[gd_scene load_steps=14 format=2]
+[gd_scene load_steps=21 format=2]
 
 [ext_resource path="res://main/Minimap.gd" type="Script" id=1]
 [ext_resource path="res://gui/GameGUI.gd" type="Script" id=2]
@@ -8,6 +8,13 @@
 [ext_resource path="res://gui/warrior_ultimate.png" type="Texture" id=6]
 [ext_resource path="res://gui/warrior_attack1.png" type="Texture" id=7]
 [ext_resource path="res://gui/Minimal5x7.ttf" type="DynamicFontData" id=8]
+[ext_resource path="res://gui/icons/status_midnight.png" type="Texture" id=9]
+[ext_resource path="res://gui/icons/status_rage.png" type="Texture" id=10]
+[ext_resource path="res://gui/icons/status_shrinedeath.png" type="Texture" id=11]
+[ext_resource path="res://gui/icons/status_midday.png" type="Texture" id=12]
+[ext_resource path="res://gui/icons/status_swift.png" type="Texture" id=13]
+[ext_resource path="res://gui/icons/status_focus_keep.png" type="Texture" id=14]
+[ext_resource path="res://gui/icons/status_focus_players.png" type="Texture" id=15]
 
 [sub_resource type="StyleBoxFlat" id=1]
 bg_color = Color( 0, 0, 0, 0.670588 )
@@ -21,14 +28,86 @@ expand_margin_bottom = 3.0
 [sub_resource type="DynamicFont" id=3]
 font_data = ExtResource( 3 )
 
-[sub_resource type="DynamicFont" id=5]
+[sub_resource type="DynamicFont" id=4]
 font_data = ExtResource( 3 )
 
-[sub_resource type="DynamicFont" id=4]
+[sub_resource type="DynamicFont" id=5]
 font_data = ExtResource( 8 )
 
 [node name="GUI" type="CanvasLayer"]
 script = ExtResource( 2 )
+
+[node name="Statuses" type="HBoxContainer" parent="."]
+anchor_right = 1.0
+margin_left = 5.0
+margin_top = 5.0
+margin_right = -5.0
+mouse_filter = 2
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Midnight" type="TextureRect" parent="Statuses"]
+visible = false
+modulate = Color( 0, 0.647059, 1, 1 )
+margin_right = 24.0
+margin_bottom = 32.0
+mouse_filter = 2
+texture = ExtResource( 9 )
+
+[node name="ShrineDeath" type="TextureRect" parent="Statuses"]
+visible = false
+modulate = Color( 0, 0.647059, 1, 1 )
+margin_left = 36.0
+margin_right = 68.0
+margin_bottom = 32.0
+mouse_filter = 2
+texture = ExtResource( 11 )
+
+[node name="Midday" type="TextureRect" parent="Statuses"]
+visible = false
+modulate = Color( 1, 0.4, 0, 1 )
+margin_left = 72.0
+margin_right = 104.0
+margin_bottom = 32.0
+mouse_filter = 2
+texture = ExtResource( 12 )
+
+[node name="Rage" type="TextureRect" parent="Statuses"]
+visible = false
+modulate = Color( 1, 0.4, 0, 1 )
+margin_left = 28.0
+margin_right = 52.0
+margin_bottom = 32.0
+mouse_filter = 2
+texture = ExtResource( 10 )
+
+[node name="Swiftness" type="TextureRect" parent="Statuses"]
+visible = false
+modulate = Color( 1, 0.4, 0, 1 )
+margin_left = 108.0
+margin_right = 140.0
+margin_bottom = 32.0
+mouse_filter = 2
+texture = ExtResource( 13 )
+
+[node name="FocusKeep" type="TextureRect" parent="Statuses"]
+visible = false
+modulate = Color( 1, 0.4, 0, 1 )
+margin_left = 108.0
+margin_right = 140.0
+margin_bottom = 32.0
+mouse_filter = 2
+texture = ExtResource( 14 )
+
+[node name="FocusPlayers" type="TextureRect" parent="Statuses"]
+visible = false
+modulate = Color( 1, 0.4, 0, 1 )
+margin_left = 56.0
+margin_right = 80.0
+margin_bottom = 32.0
+mouse_filter = 2
+texture = ExtResource( 15 )
 
 [node name="Chat" type="VBoxContainer" parent="."]
 anchor_top = 1.0
@@ -151,9 +230,11 @@ fill_mode = 3
 tint_under = Color( 1, 1, 1, 0.392157 )
 
 [node name="Tooltip" type="ColorRect" parent="."]
+visible = false
 modulate = Color( 1, 1, 1, 0.866667 )
 margin_right = 250.0
 margin_bottom = 100.0
+mouse_filter = 2
 color = Color( 0.0705882, 0.0980392, 0.156863, 1 )
 __meta__ = {
 "_edit_use_anchors_": false
@@ -166,6 +247,7 @@ margin_left = 5.0
 margin_top = 5.0
 margin_right = -5.0
 margin_bottom = -5.0
+mouse_filter = 2
 __meta__ = {
 "_edit_use_anchors_": false
 }
@@ -173,7 +255,7 @@ __meta__ = {
 [node name="AbilityName" type="Label" parent="Tooltip/VBoxContainer"]
 margin_right = 240.0
 margin_bottom = 15.0
-custom_fonts/font = SubResource( 5 )
+custom_fonts/font = SubResource( 4 )
 custom_colors/font_color = Color( 0, 0.976471, 1, 1 )
 text = "Ability"
 __meta__ = {
@@ -183,8 +265,9 @@ __meta__ = {
 [node name="RichTextLabel" type="RichTextLabel" parent="Tooltip/VBoxContainer"]
 margin_top = 19.0
 margin_right = 240.0
-margin_bottom = 31.0
-custom_fonts/normal_font = SubResource( 4 )
+margin_bottom = 30.0
+mouse_filter = 2
+custom_fonts/normal_font = SubResource( 5 )
 bbcode_text = "This is a tooltip"
 text = "This is a tooltip"
 fit_content_height = true

@@ -17,7 +17,6 @@ func enable_smoothing():
 	if follow == null:
 		follow = get_parent()
 	var sprite_parent = follow.get_node_or_null("../../Smoothed")
-	print(sprite_parent)
 	if sprite_parent != null:
 		get_parent().remove_child(self)
 		sprite_parent.add_child(self)
