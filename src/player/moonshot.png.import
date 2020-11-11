@@ -2,15 +2,15 @@
 
 importer="texture"
 type="StreamTexture"
-path="res://.import/playertemp.png-52843e6b6ddc8dcbf3a21e13370a5da3.stex"
+path="res://.import/moonshot.png-736ecf2d0af413c62ff06611f0afc6c2.stex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://player/playertemp.png"
-dest_files=[ "res://.import/playertemp.png-52843e6b6ddc8dcbf3a21e13370a5da3.stex" ]
+source_file="res://player/moonshot.png"
+dest_files=[ "res://.import/moonshot.png-736ecf2d0af413c62ff06611f0afc6c2.stex" ]
 
 [params]
 

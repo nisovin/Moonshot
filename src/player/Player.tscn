@@ -1,4 +1,4 @@
-[gd_scene load_steps=31 format=2]
+[gd_scene load_steps=43 format=2]
 
 [ext_resource path="res://player/LocalController.gd" type="Script" id=1]
 [ext_resource path="res://player/Player.gd" type="Script" id=2]
@@ -7,136 +7,186 @@
 [ext_resource path="res://MovementSmoother.gd" type="Script" id=5]
 [ext_resource path="res://gui/alphbeta.ttf" type="DynamicFontData" id=6]
 [ext_resource path="res://player/ArcherClass.gd" type="Script" id=7]
+[ext_resource path="res://player/arrow_aim_secondary.png" type="Texture" id=8]
+[ext_resource path="res://player/arrow_aim_primary.png" type="Texture" id=9]
+[ext_resource path="res://player/archer_ult_aim.png" type="Texture" id=10]
+[ext_resource path="res://player/moon_particle.png" type="Texture" id=11]
 
 [sub_resource type="CircleShape2D" id=1]
 radius = 8.15757
 
-[sub_resource type="CircleShape2D" id=22]
-radius = 40.0
+[sub_resource type="Gradient" id=25]
+colors = PoolColorArray( 0.819608, 0.996078, 1, 1, 0.0588235, 0.2, 0.254902, 0 )
+
+[sub_resource type="GradientTexture" id=26]
+gradient = SubResource( 25 )
+
+[sub_resource type="ParticlesMaterial" id=24]
+emission_shape = 2
+emission_box_extents = Vector3( 15, 1, 1 )
+flag_disable_z = true
+direction = Vector3( 0, -1, 0 )
+gravity = Vector3( 0, 0, 0 )
+initial_velocity = 3.0
+orbit_velocity = 0.0
+orbit_velocity_random = 0.0
+color_ramp = SubResource( 26 )
 
 [sub_resource type="CircleShape2D" id=2]
+radius = 40.0
+
+[sub_resource type="CircleShape2D" id=3]
 radius = 56.0
 
-[sub_resource type="ParticlesMaterial" id=23]
+[sub_resource type="Gradient" id=30]
+offsets = PoolRealArray( 0, 0.770335, 1 )
+colors = PoolColorArray( 1, 1, 1, 1, 1, 1, 1, 1, 0.533333, 0.533333, 0.533333, 0 )
+
+[sub_resource type="GradientTexture" id=31]
+gradient = SubResource( 30 )
+
+[sub_resource type="ParticlesMaterial" id=4]
+flag_align_y = true
 flag_disable_z = true
 spread = 180.0
 gravity = Vector3( 0, 0, 0 )
-initial_velocity = 270.0
+initial_velocity = 150.0
 orbit_velocity = 0.0
 orbit_velocity_random = 0.0
+angle = 45.0
 scale = 2.0
+color_ramp = SubResource( 31 )
 
-[sub_resource type="CircleShape2D" id=21]
+[sub_resource type="CircleShape2D" id=5]
 radius = 32.0
 
-[sub_resource type="AtlasTexture" id=3]
-atlas = ExtResource( 4 )
-region = Rect2( 0, 36, 26, 36 )
+[sub_resource type="Gradient" id=27]
+offsets = PoolRealArray( 0, 0.722488, 1 )
+colors = PoolColorArray( 0.627451, 0.372549, 0.839216, 1, 0.34902, 0.356863, 0.737255, 0.729412, 0.619608, 0.913725, 0.886275, 0 )
 
-[sub_resource type="AtlasTexture" id=4]
-atlas = ExtResource( 4 )
-region = Rect2( 26, 36, 26, 36 )
+[sub_resource type="GradientTexture" id=28]
+gradient = SubResource( 27 )
 
-[sub_resource type="AtlasTexture" id=5]
-atlas = ExtResource( 4 )
-region = Rect2( 52, 36, 26, 36 )
+[sub_resource type="ParticlesMaterial" id=29]
+emission_shape = 1
+emission_sphere_radius = 5.0
+flag_disable_z = true
+direction = Vector3( 0, -1, 0 )
+spread = 10.0
+gravity = Vector3( 0, 0, 0 )
+initial_velocity = 15.0
+orbit_velocity = 0.0
+orbit_velocity_random = 0.0
+color_ramp = SubResource( 28 )
 
 [sub_resource type="AtlasTexture" id=6]
 atlas = ExtResource( 4 )
-region = Rect2( 26, 108, 26, 36 )
+region = Rect2( 0, 36, 26, 36 )
 
 [sub_resource type="AtlasTexture" id=7]
 atlas = ExtResource( 4 )
-region = Rect2( 26, 72, 26, 36 )
+region = Rect2( 26, 36, 26, 36 )
 
 [sub_resource type="AtlasTexture" id=8]
 atlas = ExtResource( 4 )
-region = Rect2( 0, 0, 26, 36 )
+region = Rect2( 52, 36, 26, 36 )
 
 [sub_resource type="AtlasTexture" id=9]
 atlas = ExtResource( 4 )
-region = Rect2( 26, 0, 26, 36 )
+region = Rect2( 26, 36, 26, 36 )
 
 [sub_resource type="AtlasTexture" id=10]
 atlas = ExtResource( 4 )
-region = Rect2( 52, 0, 26, 36 )
+region = Rect2( 26, 0, 26, 36 )
 
 [sub_resource type="AtlasTexture" id=11]
 atlas = ExtResource( 4 )
-region = Rect2( 26, 0, 26, 36 )
+region = Rect2( 26, 72, 26, 36 )
 
 [sub_resource type="AtlasTexture" id=12]
 atlas = ExtResource( 4 )
-region = Rect2( 26, 36, 26, 36 )
+region = Rect2( 0, 108, 26, 36 )
 
 [sub_resource type="AtlasTexture" id=13]
 atlas = ExtResource( 4 )
-region = Rect2( 0, 72, 26, 36 )
+region = Rect2( 26, 108, 26, 36 )
 
 [sub_resource type="AtlasTexture" id=14]
 atlas = ExtResource( 4 )
-region = Rect2( 26, 72, 26, 36 )
+region = Rect2( 52, 108, 26, 36 )
 
 [sub_resource type="AtlasTexture" id=15]
 atlas = ExtResource( 4 )
-region = Rect2( 52, 72, 26, 36 )
+region = Rect2( 26, 108, 26, 36 )
 
 [sub_resource type="AtlasTexture" id=16]
 atlas = ExtResource( 4 )
-region = Rect2( 0, 108, 26, 36 )
+region = Rect2( 0, 72, 26, 36 )
 
 [sub_resource type="AtlasTexture" id=17]
 atlas = ExtResource( 4 )
-region = Rect2( 26, 108, 26, 36 )
+region = Rect2( 26, 72, 26, 36 )
 
 [sub_resource type="AtlasTexture" id=18]
 atlas = ExtResource( 4 )
-region = Rect2( 52, 108, 26, 36 )
+region = Rect2( 52, 72, 26, 36 )
 
-[sub_resource type="SpriteFrames" id=19]
+[sub_resource type="AtlasTexture" id=19]
+atlas = ExtResource( 4 )
+region = Rect2( 0, 0, 26, 36 )
+
+[sub_resource type="AtlasTexture" id=20]
+atlas = ExtResource( 4 )
+region = Rect2( 26, 0, 26, 36 )
+
+[sub_resource type="AtlasTexture" id=21]
+atlas = ExtResource( 4 )
+region = Rect2( 52, 0, 26, 36 )
+
+[sub_resource type="SpriteFrames" id=22]
 animations = [ {
-"frames": [ SubResource( 3 ), SubResource( 4 ), SubResource( 5 ), SubResource( 4 ) ],
+"frames": [ SubResource( 6 ), SubResource( 7 ), SubResource( 8 ), SubResource( 7 ) ],
 "loop": true,
 "name": "walk_left",
 "speed": 10.0
 }, {
-"frames": [ SubResource( 6 ) ],
-"loop": true,
-"name": "idle_up",
-"speed": 5.0
-}, {
-"frames": [ SubResource( 7 ) ],
-"loop": true,
-"name": "idle_right",
-"speed": 5.0
-}, {
-"frames": [ SubResource( 8 ), SubResource( 9 ), SubResource( 10 ), SubResource( 9 ) ],
-"loop": true,
-"name": "walk_down",
-"speed": 10.0
-}, {
-"frames": [ SubResource( 11 ) ],
-"loop": true,
-"name": "idle_down",
-"speed": 5.0
-}, {
-"frames": [ SubResource( 12 ) ],
+"frames": [ SubResource( 9 ) ],
 "loop": true,
 "name": "idle_left",
 "speed": 5.0
 }, {
-"frames": [ SubResource( 13 ), SubResource( 14 ), SubResource( 15 ), SubResource( 14 ) ],
+"frames": [ SubResource( 10 ) ],
+"loop": true,
+"name": "idle_down",
+"speed": 5.0
+}, {
+"frames": [ SubResource( 11 ) ],
+"loop": true,
+"name": "idle_right",
+"speed": 5.0
+}, {
+"frames": [ SubResource( 12 ), SubResource( 13 ), SubResource( 14 ), SubResource( 13 ) ],
+"loop": true,
+"name": "walk_up",
+"speed": 10.0
+}, {
+"frames": [ SubResource( 15 ) ],
+"loop": true,
+"name": "idle_up",
+"speed": 5.0
+}, {
+"frames": [ SubResource( 16 ), SubResource( 17 ), SubResource( 18 ), SubResource( 17 ) ],
 "loop": true,
 "name": "walk_right",
 "speed": 10.0
 }, {
-"frames": [ SubResource( 16 ), SubResource( 17 ), SubResource( 18 ), SubResource( 17 ) ],
+"frames": [ SubResource( 19 ), SubResource( 20 ), SubResource( 21 ), SubResource( 20 ) ],
 "loop": true,
-"name": "walk_up",
+"name": "walk_down",
 "speed": 10.0
 } ]
 
-[sub_resource type="DynamicFont" id=20]
+[sub_resource type="DynamicFont" id=23]
 size = 12
 outline_size = 1
 outline_color = Color( 0, 0, 0, 1 )
@@ -165,8 +215,16 @@ script = ExtResource( 3 )
 [node name="Tween" type="Tween" parent="WarriorClass/SwordSwing"]
 
 [node name="Polygon2D" type="Polygon2D" parent="WarriorClass/SwordSwing"]
-color = Color( 0.992157, 1, 0, 1 )
-polygon = PoolVector2Array( 0.673368, 0.745442, 0.645527, -0.535225, 42.8268, -0.624058, 45.0067, -0.0681534, 42.8268, 0.635862 )
+color = Color( 0.305882, 0.894118, 0.882353, 0.643137 )
+polygon = PoolVector2Array( 9.02942, 2.11935, 6.77688, -0.466904, 10.8648, 1.03479, 20.7093, 2.45306, 28.3012, 2.45306, 35.0588, 1.45193, 40.1479, -0.300049, 37.8953, 2.36963, 32.4725, 4.45532, 25.5481, 5.79016, 14.3688, 4.87246 )
+
+[node name="Particles2D" type="Particles2D" parent="WarriorClass/SwordSwing"]
+position = Vector2( 24.1105, 2.91996 )
+emitting = false
+amount = 50
+lifetime = 0.4
+local_coords = false
+process_material = SubResource( 24 )
 
 [node name="Attack1Area" type="Area2D" parent="WarriorClass"]
 monitoring = false
@@ -175,7 +233,7 @@ collision_layer = 0
 collision_mask = 4
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="WarriorClass/Attack1Area"]
-shape = SubResource( 22 )
+shape = SubResource( 2 )
 disabled = true
 
 [node name="Attack2Area" type="Area2D" parent="WarriorClass"]
@@ -185,17 +243,18 @@ collision_layer = 0
 collision_mask = 4
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="WarriorClass/Attack2Area"]
-shape = SubResource( 2 )
+shape = SubResource( 3 )
 disabled = true
 
 [node name="Attack2Particles" type="Particles2D" parent="WarriorClass"]
 emitting = false
-amount = 50
-lifetime = 0.2
+amount = 20
+lifetime = 0.4
 one_shot = true
 explosiveness = 1.0
 local_coords = false
-process_material = SubResource( 23 )
+process_material = SubResource( 4 )
+texture = ExtResource( 11 )
 
 [node name="RushArea" type="Area2D" parent="WarriorClass"]
 monitoring = false
@@ -204,13 +263,21 @@ collision_layer = 0
 collision_mask = 4
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="WarriorClass/RushArea"]
-shape = SubResource( 21 )
+shape = SubResource( 5 )
 disabled = true
 
 [node name="RushArrow" type="Polygon2D" parent="WarriorClass"]
 visible = false
 color = Color( 0.0117647, 0.847059, 0.0627451, 1 )
 polygon = PoolVector2Array( -0.25, -2.875, 46.25, -1.5, 46.1667, -3.51117, 49.8677, -0.125139, 46.4029, 2.86718, 46.3242, 1.21353, -0.125, 2.5 )
+
+[node name="RushParticles" type="Particles2D" parent="WarriorClass"]
+position = Vector2( -0.140305, 0.140305 )
+emitting = false
+amount = 400
+lifetime = 1.5
+local_coords = false
+process_material = SubResource( 29 )
 
 [node name="UltimateTween" type="Tween" parent="WarriorClass"]
 
@@ -220,12 +287,27 @@ script = ExtResource( 7 )
 [node name="ArrowSpawnPoint" type="Position2D" parent="ArcherClass"]
 position = Vector2( -0.0662155, -10.0649 )
 
+[node name="PrimaryArrowMarker" type="Sprite" parent="ArcherClass/ArrowSpawnPoint"]
+texture = ExtResource( 9 )
+offset = Vector2( 32, 0 )
+
+[node name="SideArrowMarker" type="Sprite" parent="ArcherClass/ArrowSpawnPoint"]
+texture = ExtResource( 8 )
+offset = Vector2( 32, 0 )
+
+[node name="ShadowTween" type="Tween" parent="ArcherClass"]
+
+[node name="UltimateMarker" type="Sprite" parent="ArcherClass"]
+modulate = Color( 0.780392, 1, 0.996078, 1 )
+texture = ExtResource( 10 )
+offset = Vector2( 150, 0 )
+
 [node name="Visual" type="Node2D" parent="."]
 script = ExtResource( 5 )
 
 [node name="AnimatedSprite" type="AnimatedSprite" parent="Visual"]
 position = Vector2( 0, -15 )
-frames = SubResource( 19 )
+frames = SubResource( 22 )
 animation = "idle_down"
 
 [node name="Nameplate" type="Label" parent="Visual"]
@@ -233,7 +315,7 @@ margin_left = -42.9908
 margin_top = -44.4624
 margin_right = 43.0092
 margin_bottom = -30.4624
-custom_fonts/font = SubResource( 20 )
+custom_fonts/font = SubResource( 23 )
 text = "Player"
 align = 1
 __meta__ = {

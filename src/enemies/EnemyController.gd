@@ -66,6 +66,7 @@ func ai_tick():
 			var closest_player = null
 			var closest_dist = TARGET_RANGE * TARGET_RANGE
 			for p in players:
+				if not p.targetable: continue
 				var d = p.position.distance_squared_to(owner.position)
 				if d < closest_dist:
 					closest_dist = d

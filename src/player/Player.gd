@@ -4,19 +4,30 @@ signal became_untargetable
 
 enum PlayerState { LOADING, NORMAL, ABILITY, DEAD }
 
-const SERIALIZE_FIELDS = [ "player_name", "state", "move_dir", "current_speed", "facing", "facing_dir", "class_id", "global_position" ]
+const SERIALIZE_FIELDS = [ "player_name", "uuid", "state", "move_dir", "current_speed", "facing", "facing_dir", "class_id", "global_position" ]
+
+const NORMAL_SPEED = 100
 
 var player_name = "Player"
+var uuid = ""
+var authed = false
 var state: int = PlayerState.NORMAL
 var move_dir := Vector2.ZERO
 var current_speed := 100
 var facing := "down"
 var facing_dir := Vector2.ZERO
+var targetable = true
+
+var health = 100
+var energy = 100
+var exhaustion = 0
+var stage_deaths = 0
 var dead = false
 
 var class_id: int = Game.PlayerClass.WARRIOR
 var player_class = null
 
+onready var collision = $CollisionShape2D
 onready var visual = $Visual
 onready var sprite = $Visual/AnimatedSprite
 onready var nameplate = $Visual/Nameplate
@@ -60,6 +71,9 @@ func get_data():
 		data[field] = get(field)
 	data.class_data = player_class.get_data()
 	return data
+
+func got_kill(enemy, killing_blow):
+	player_class.got_kill(enemy, killing_blow)
 
 func _physics_process(delta):
 	if state == PlayerState.NORMAL:
@@ -110,7 +124,7 @@ func get_action_direction(from_node = null):
 		else:
 			return Vector2.UP
 	elif from_node != null:
-		return from_node.get_local_mouse_position().normalized()
+		return (get_global_mouse_position() - from_node.global_position).normalized()
 	else:
 		return get_local_mouse_position().normalized()
 		

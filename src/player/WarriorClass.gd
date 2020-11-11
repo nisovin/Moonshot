@@ -12,12 +12,14 @@ const ATTACK_DAMAGE = 10
 const ATTACK_KNOCKBACK_STR = 300
 const ATTACK_KNOCKBACK_DUR = 0.1
 const ATTACK_STUN_DUR = 0.5
+const ATTACK_COST = 10
 const ATTACK_COOLDOWN = 0.5
 
 const AOE_DAMAGE_CLOSE = 40
 const AOE_DAMAGE_FAR = 15
 const AOE_CLOSE_RADIUS = 40
-const AOE_STUN_DUR = 1.5
+const AOE_STUN_DUR = 2.0
+const AOE_COST = 20
 const AOE_COOLDOWN = 10.0
 
 const RUSH_MIN_DISTANCE = 50
@@ -29,12 +31,45 @@ const RUSH_DAMAGE = 2
 const RUSH_KNOCKBACK_STR = 300
 const RUSH_KNOCKBACK_DUR = 0.1
 const RUSH_STUN_DUR = 0.3
-const RUSH_COOLDOWN = 5.0
+const RUSH_COST = 50
+const RUSH_COOLDOWN = 3.0
 
 const ULTIMATE_ATTACK_MULT = 3
 const ULTIMATE_DEFENSE_MULT = 0.2
+const ULTIMATE_CD_MULT = 2.0
 const ULTIMATE_DURATION = 15
-const ULTIMATE_COOLDOWN = 90.0
+const ULTIMATE_KILL_EXTEND = 1
+const ULTIMATE_MAX_DURATION = 30
+const ULTIMATE_MODULATE = Color(0.6, 0.9, 1)
+const ULTIMATE_SCALE = 1.4
+const ULTIMATE_COOLDOWN = 120.0
+const ULTIMATE_CD_REDUCE_KILL = 0.25
+const ULTIMATE_CD_REDUCE_KILL_BLOW = 1.0
+
+const ABILITIES = [
+	{
+		"name": "Crescent Cleave",
+		"description": "Swing your moonblade, dealing " + str(ATTACK_DAMAGE) + " damage to all enemies in a cone in front of you, knocking them back and briefly stunning them.",
+		"cost": str(ATTACK_COST) + " energy"
+	},
+	{
+		"name": "Umbral Wave",
+		"description": "Thrust your moonblade into the ground, sending a shockwave around you that deals damage and stuns enemies for " + str(AOE_STUN_DUR) + " seconds.",
+		"cost": str(AOE_COST) + " energy",
+		"cooldown": str(AOE_COOLDOWN) + " seconds"
+	},
+	{
+		"name": "Astral Rush",
+		"description": "Charge forward, dealing " + str(RUSH_DAMAGE) + " damage around you upon impacting with an enemy, and knocking them back.",
+		"cost": str(RUSH_COST) + " energy",
+		"cooldown": str(RUSH_COOLDOWN) + " seconds"
+	},
+	{
+		"name": "Avatar of the Moon",
+		"description": "Become an avatar of the Moon for " + str(ULTIMATE_DURATION) + " seconds. While an avatar, you deal double damage, take half damage, and restore cooldowns and energy faster. Duration extended by " + str(ULTIMATE_KILL_EXTEND) + "s for each killing blow, up to a total duration of " + str(ULTIMATE_MAX_DURATION) + " seconds.",
+		"cooldown": str(ULTIMATE_COOLDOWN) + " seconds, reduced by kills"
+	}
+]
 
 var state = WarriorState.NORMAL
 
@@ -52,10 +87,13 @@ var rush_max_distance = 0
 var rush_cd = 0
 
 var ultimate_duration = 0
-var ultimate_cd = 0
+var ultimate_total_duration = 0
+var ultimate_cd = ULTIMATE_COOLDOWN
 
 onready var attack1sword = $SwordSwing
 onready var attack1tween = $SwordSwing/Tween
+onready var attack1visual = $SwordSwing/Polygon2D
+onready var attack1particles = $SwordSwing/Particles2D
 onready var attack1area = $Attack1Area
 
 onready var attack2area = $Attack2Area
@@ -64,9 +102,10 @@ onready var ultimate_tween = $UltimateTween
 
 onready var rush_area = $RushArea
 onready var rush_arrow = $RushArrow
+onready var rush_particles = $RushParticles
 
 func _ready():
-	attack1sword.visible = false
+	attack1visual.visible = false
 	rush_arrow.visible = false
 
 func get_data():
@@ -86,6 +125,15 @@ func load_data(data):
 func is_moving():
 	return state == WarriorState.RUSHING or state == WarriorState.SWINGING_SWORD
 
+func got_kill(enemy, killing_blow):
+	if killing_blow:
+		ultimate_cd -= ULTIMATE_CD_REDUCE_KILL_BLOW
+		if ultimate_duration > 0 and ultimate_total_duration < ULTIMATE_MAX_DURATION:
+			ultimate_duration += ULTIMATE_KILL_EXTEND
+			ultimate_total_duration += ULTIMATE_KILL_EXTEND
+	else:
+		ultimate_cd -= ULTIMATE_CD_REDUCE_KILL
+
 # ATTACK ONE - SWORD ATTACK
 
 func attack1_press():
@@ -102,6 +150,12 @@ remotesync func attack1(pos, dir):
 	owner.position = pos
 	attack_move_dir = dir
 	owner.set_facing(attack_move_dir)
+		
+	# pause
+	owner.pause_movement()
+	state = WarriorState.SWINGING_SWORD
+	
+	# anim
 	var start_angle = 0
 	var end_angle = 0
 	if attack_swing_dir == 1:
@@ -112,16 +166,12 @@ remotesync func attack1(pos, dir):
 		start_angle = dir.angle() + ATTACK_SWING_ANGLE / 2
 		end_angle = start_angle - ATTACK_SWING_ANGLE
 		attack_swing_dir = 1
-		
-	# pause
-	owner.pause_movement()
-	state = WarriorState.SWINGING_SWORD
-	
-	# anim
-	attack1sword.visible = true
+	attack1visual.visible = true
+	attack1sword.scale.y = -attack_swing_dir
 	attack1sword.z_index = 1 if owner.facing == "down" else 0
 	attack1tween.interpolate_property(attack1sword, "rotation", start_angle, end_angle, ATTACK_SWING_TIME)
 	attack1tween.start()
+	attack1particles.emitting = true
 	
 	# hit enemies
 	for enemy in N.get_overlapping_bodies(attack1area, "enemies"):
@@ -132,11 +182,12 @@ remotesync func attack1(pos, dir):
 				if ultimate_duration > 0: dam *= ULTIMATE_ATTACK_MULT
 				enemy.hit({"damage": dam, "knockback": knockback, "knockback_dur": ATTACK_KNOCKBACK_DUR, "stun": ATTACK_STUN_DUR})
 			elif is_network_master():
-				enemy.apply_local_knockback(knockback, ATTACK_KNOCKBACK_DUR)
+				enemy.local_hit(knockback, ATTACK_KNOCKBACK_DUR)
 		
 	# end anim
 	yield(get_tree().create_timer(ATTACK_SWING_TIME), "timeout")
-	attack1sword.visible = false
+	attack1visual.visible = false
+	attack1particles.emitting = false
 	
 	# unpause
 	owner.resume_movement()
@@ -168,7 +219,7 @@ remotesync func attack2(pos):
 				dam *= ULTIMATE_ATTACK_MULT
 			enemy.hit({"damage": dam, "stun": AOE_STUN_DUR, "stun_break": false})
 		else:
-			enemy.apply_local_stun(AOE_STUN_DUR)
+			enemy.local_hit(Vector2.ZERO, AOE_STUN_DUR)
 
 # CHARGE
 
@@ -216,6 +267,7 @@ remotesync func start_rush(start_pos, rush_dir, max_dist):
 	rush_start_position = start_pos
 	rush_direction = rush_dir
 	rush_max_distance = max_dist
+	rush_particles.emitting = true
 	state = WarriorState.RUSHING
 
 remotesync func end_rush(end_pos, collided):
@@ -223,6 +275,7 @@ remotesync func end_rush(end_pos, collided):
 	owner.position = end_pos
 	state = WarriorState.NORMAL
 	owner.resume_movement()
+	rush_particles.emitting = false
 	
 	if not collided: return
 	
@@ -234,7 +287,7 @@ remotesync func end_rush(end_pos, collided):
 				dam *= ULTIMATE_ATTACK_MULT
 			enemy.hit({"damage": dam, "knockback": knockback, "knockback_dur": RUSH_KNOCKBACK_DUR, "stun": RUSH_STUN_DUR})
 		elif is_network_master():
-			enemy.apply_local_knockback(knockback, RUSH_KNOCKBACK_DUR)
+			enemy.local_hit(knockback, RUSH_KNOCKBACK_DUR)
 				
 
 # ULTIMATE
@@ -250,14 +303,15 @@ func ultimate_release():
 	
 remotesync func ultimate():
 	ultimate_duration = ULTIMATE_DURATION
-	ultimate_tween.interpolate_property(owner.visual, "scale", Vector2.ONE, Vector2(1.4, 1.4), 0.5)
-	ultimate_tween.interpolate_property(owner.sprite, "modulate", Color.white, Color(0.6, 0.9, 1), 0.5)
+	ultimate_total_duration = ultimate_duration
+	ultimate_tween.interpolate_property(owner.visual, "scale", Vector2.ONE, Vector2(ULTIMATE_SCALE, ULTIMATE_SCALE), 0.5)
+	ultimate_tween.interpolate_property(owner.sprite, "modulate", Color.white, ULTIMATE_MODULATE, 0.5)
 	ultimate_tween.start()
 
 remotesync func end_ultimate():
 	ultimate_duration = 0
-	ultimate_tween.interpolate_property(owner.visual, "scale", Vector2(1.4, 1.4), Vector2.ONE, 0.5)
-	ultimate_tween.interpolate_property(owner.sprite, "modulate", Color(0.6, 0.9, 1), Color.white, 0.5)
+	ultimate_tween.interpolate_property(owner.visual, "scale", Vector2(ULTIMATE_SCALE, ULTIMATE_SCALE), Vector2.ONE, 0.5)
+	ultimate_tween.interpolate_property(owner.sprite, "modulate", ULTIMATE_MODULATE, Color.white, 0.5)
 	ultimate_tween.start()
 
 
@@ -270,13 +324,17 @@ func _physics_process(delta):
 		attack_cd -= delta
 		if attack_cd <= 0 and attack_pressed and state == WarriorState.NORMAL:
 			attack1_press()
-	if aoe_cd > 0: aoe_cd -= delta
-	if rush_cd > 0: rush_cd -= delta
-	if ultimate_cd > 0: ultimate_cd -= delta
 	if ultimate_duration > 0:
 		ultimate_duration -= delta
 		if ultimate_duration < 0 and is_network_master():
 			rpc("end_ultimate")
+		if aoe_cd > 0: aoe_cd -= delta * ULTIMATE_CD_MULT
+		if rush_cd > 0: rush_cd -= delta * ULTIMATE_CD_MULT
+	else:
+		if aoe_cd > 0: aoe_cd -= delta
+		if rush_cd > 0: rush_cd -= delta
+		if ultimate_cd > 0: ultimate_cd -= delta
+		
 	if state == WarriorState.RUSHING:
 		var col = owner.move_and_collide(rush_direction * RUSH_SPEED * delta)
 		if is_network_master():

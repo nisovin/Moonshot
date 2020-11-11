@@ -92,7 +92,9 @@ master func send_chat(message: String):
 	var p = get_player_by_id(id)
 	if p != null:
 		if message.begins_with("/"):
-			pass
+			var ret = Game.parse_command(p, message)
+			if ret != null and ret != "":
+				rpc_id(id, "add_system_message", ret)
 		else:
 			message = Game.chat_regex.sub(message, "")
 			chat_history.append({"p": p.player_name, "m": message})
@@ -100,4 +102,6 @@ master func send_chat(message: String):
 
 remotesync func add_chat(player_name, message):
 	$GUI.add_chat(player_name, message)
-	
+
+remotesync func add_system_message(message):
+	$GUI.add_system_message(message)

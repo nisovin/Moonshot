@@ -6,6 +6,7 @@ onready var chat_container = $Chat/ScrollContainer/VBoxContainer
 onready var chat_tween = $Chat/Tween
 
 var chatting = false
+var showing_tooltip = -1
 
 func _ready():
 	scroll.get_v_scrollbar().modulate = Color.transparent
@@ -37,8 +38,14 @@ func close_chat():
 	chatting = false
 
 func add_chat(player_name, message):
+	_add_to_chat("[color=#66cccc]" + player_name + "[/color] [color=#c0c0c0]>[/color] [color=#f0f0f0]" + message + "[/color]")
+		
+func add_system_message(message):
+	_add_to_chat("[color=yellow]" + message + "[/color]")
+	
+func _add_to_chat(message):
 	var entry = preload("res://gui/ChatEntry.tscn").instance()
-	entry.parse_bbcode("[color=#66cccc]" + player_name + "[/color] [color=#c0c0c0]>[/color] [color=#f0f0f0]" + message + "[/color]")
+	entry.parse_bbcode(message)
 	chat_container.add_child(entry)
 	yield(get_tree(), "idle_frame")
 	yield(get_tree(), "idle_frame")
@@ -46,6 +53,7 @@ func add_chat(player_name, message):
 	if not chatting:
 		chat_tween.interpolate_property(entry, "modulate", Color.white, Color.transparent, 2, Tween.TRANS_CUBIC, Tween.EASE_IN, 6)
 		chat_tween.start()
+	
 
 func _unhandled_input(event):
 	if event.is_action_pressed("chat") and not chatting:
@@ -64,6 +72,8 @@ func _on_ChatLine_text_entered(new_text):
 
 func _on_entered_level():
 	if Game.player.class_id == Game.PlayerClass.ARCHER:
+		$Abilities/Attack1.texture_under = load("res://gui/archer_attack1.png")
+		$Abilities/Attack1.texture_progress = $Abilities/Attack1.texture_under
 		$Abilities/Attack2.texture_under = load("res://gui/archer_attack2.png")
 		$Abilities/Attack2.texture_progress = $Abilities/Attack2.texture_under
 		$Abilities/Movement.texture_under = load("res://gui/archer_movement.png")
@@ -74,10 +84,38 @@ func _on_entered_level():
 
 func _process(delta):
 	if Game.player != null:
-		var c = Game.player.player_class
-		$Abilities/Attack2.value = 1 - c.get_attack2_cooldown()
-		$Abilities/Attack2.tint_progress = Color.cyan if $Abilities/Attack2.value == 1 else Color.white
-		$Abilities/Movement.value = 1 - c.get_movement_cooldown()
-		$Abilities/Movement.tint_progress = Color.cyan if $Abilities/Movement.value == 1 else Color.white
-		$Abilities/Ultimate.value = 1 - c.get_ultimate_cooldown()
-		$Abilities/Ultimate.tint_progress = Color.cyan if $Abilities/Ultimate.value == 1 else Color.white
+		check_tooltip()
+
+func check_tooltip():
+	var c = Game.player.player_class
+	var i = 0
+	for a in $Abilities.get_children():
+		a.value = 1 - c.call("get_" + a.name.to_lower() + "_cooldown")
+		a.tint_progress = Color.cyan if a.value == 1 else Color.white
+		var p = a.get_local_mouse_position()
+		var s = a.rect_size
+		if p.x > 0 and p.x < s.x and p.y > 0 and p.y < s.y:
+			show_tooltip(i, c.ABILITIES[i])
+			return
+		i += 1
+	hide_tooltip()
+
+func show_tooltip(i, ability):
+	if showing_tooltip != i:
+		showing_tooltip = i
+		$Tooltip.show()
+		$Tooltip/VBoxContainer/AbilityName.text = ability.name
+		var desc = ability.description
+		if ability.has("cost"):
+			desc += "\n[color=yellow]Cost:[/color] " + ability.cost
+		if ability.has("cooldown"):
+			desc += "\n[color=yellow]Cooldown:[/color] " + ability.cooldown
+		$Tooltip/VBoxContainer/RichTextLabel.parse_bbcode(desc)
+		yield(get_tree(), "idle_frame")
+		yield(get_tree(), "idle_frame")
+		$Tooltip.rect_size.y = $Tooltip/VBoxContainer/RichTextLabel.get_content_height() + 30
+	$Tooltip.rect_position = $Tooltip.get_global_mouse_position() - $Tooltip.rect_size
+	
+func hide_tooltip():
+	$Tooltip.hide()
+	showing_tooltip = -1

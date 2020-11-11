@@ -5,6 +5,7 @@ const SERIALIZE_FIELDS = [ "global_position", "velocity" ]
 var velocity = Vector2.ZERO
 var move_duration = 0
 
+var last_hit = 0
 var dead = false
 
 var controller
@@ -48,13 +49,11 @@ remotesync func show_hit():
 	if not visual_anim.is_playing():
 		visual_anim.play("hurt")
 
-func apply_local_knockback(vel, dur):
+func local_hit(vel = null, dur = 0):
 	if dead: return
-	set_movement(vel, position, dur)
-	
-func apply_local_stun(dur):
-	if dead: return
-	set_movement(Vector2.ZERO, position, dur)
+	last_hit = OS.get_ticks_msec()
+	if vel != null:
+		set_movement(vel, position, dur)
 	
 func _physics_process(delta):
 	if velocity == Vector2.ZERO: return
@@ -73,11 +72,15 @@ func ai_tick():
 
 remotesync func die():
 	dead = true
-	$CollisionShape2D.disabled = true
-	stun_particles.emitting = false
-	stun_particles.visible = false
-	visual_anim.play("die")
-	yield(get_tree().create_timer(2.1), "timeout")
+	if not Game.is_server():
+		print(last_hit, " ", OS.get_ticks_msec())
+		if Game.player != null and last_hit > OS.get_ticks_msec() - 10000:
+			Game.player.got_kill(self, last_hit > OS.get_ticks_msec() - 250)
+		stun_particles.emitting = false
+		stun_particles.visible = false
+		visual_anim.play("die")
+		$CollisionShape2D.set_deferred("disabled", true)
+		yield(get_tree().create_timer(2.1), "timeout")
 	delete()
 
 func delete():

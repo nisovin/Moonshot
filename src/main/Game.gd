@@ -4,7 +4,7 @@ signal input_method_changed
 signal entered_level
 
 const PORT = 20514
-const MAX_PLAYERS = 20
+const MAX_PLAYERS = 100
 const VERSION = 1
 
 const Player = preload("res://player/Player.tscn")
@@ -19,7 +19,6 @@ var using_controller = false
 var controller_index = 0
 var level = null
 var lock_player_input = false
-var auth_password = ""
 var player = null
 
 var player_name_regex = RegEx.new()
@@ -32,13 +31,7 @@ func _ready():
 	centered_message.visible = false
 	player_name_regex.compile("[^A-Za-z0-9_ ]")
 	chat_regex.compile("[^A-Za-z0-9_\\-()!.?@#$%&*+=:;'\" ]")
-	var file = File.new()
-	if file.file_exists("auth_password.txt"):
-		file.open("auth_password.txt", File.READ)
-		auth_password = file.get_as_text().strip_edges()
-		file.close()
-	print("PASS:", auth_password)
-
+	
 func start_server():
 	mp_mode = MPMode.SERVER
 	Engine.iterations_per_second = 30
@@ -108,6 +101,33 @@ func get_player_by_id(id):
 func get_enemy_by_id(id):
 	return level.get_enemy_by_id(id)
 
+func parse_command(cmd_player, command: String):
+	if not is_server(): return null
+	var parts = command.substr(1).split(" ", false, 1)
+	var cmd = parts[0].to_lower()
+	var param = "" if parts.size() == 1 else parts[1]
+	if cmd == "auth":
+		if param != "" and param == multiplayer_controller.auth_password:
+			cmd_player.authed = true
+			print("Player authed: " + cmd_player.player_name)
+			return "Authenticated"
+		else:
+			return null
+	if not cmd_player.authed:
+		return null
+	if cmd == "cap":
+		if param.is_valid_integer():
+			var cap = int(param)
+			multiplayer_controller.max_players = cap
+			return "Player cap set to " + str(cap)
+	if cmd == "ban":
+		var banned = multiplayer_controller.ban(param)
+		if banned:
+			return "Banned: name=" + param + ", id=" + str(banned[0]) + ", ip=" + banned[1] + ", uuid=" + banned[2]
+		else:
+			return "Unable to find player: " + param
+	return null
+
 func check_name(player_name: String):
 	var p := player_name.to_lower()
 	for n in RESERVED_NAMES:
@@ -119,5 +139,5 @@ func check_name(player_name: String):
 			return false
 	return true
 	
-const RESERVED_NAMES = [ "server", "nisovin", "tonyarawaka", "marzhae", "aeldae" ]
+const RESERVED_NAMES = [ "server" ]
 const BAD_WORDS = [ "" ]
