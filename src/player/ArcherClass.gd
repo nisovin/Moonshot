@@ -11,9 +11,9 @@ const SERIALIZE_FIELDS = [ "state" ]
 const MAX_HEALTH = 100
 const HEALTH_REGEN = 0.5
 const ENERGY_REGEN = 5
-const ENERGY_EXHAUSTION_MULT = 0.75
+const ENERGY_EXHAUSTION_MULT = 0.6
 
-const SHOOT_AIM_TIME = 0.4
+const SHOOT_AIM_TIME = 0.5
 const SHOOT_ARROW_COUNT = 5
 const SHOOT_ARROW_SPREAD = deg2rad(45)
 const SHOOT_ARROW_SPEED = 200
@@ -22,7 +22,7 @@ const SHOOT_SIDE_KNOCKBACK_STR = 150
 const SHOOT_KNOCKBACK_DUR = 0.1
 const SHOOT_CENTER_DAMAGE = 40
 const SHOOT_SIDE_DAMAGE = 8
-const SHOOT_COST = 7
+const SHOOT_COST = 5
 const SHOOT_COOLDOWN = 0.5
 
 const VOLLEY_RADIUS = 80
@@ -70,7 +70,7 @@ const ABILITIES = [
 ]
 
 var state = ArcherState.NORMAL
-var energy = 50
+var energy = 25
 
 var shoot_aim_time = 0
 var shoot_cd = 0
@@ -123,6 +123,11 @@ func is_moving():
 func get_armor():
 	return 0
 
+func calculate_damage(dam):
+	if Game.level.time_of_day == "midnight":
+		dam *= 2
+	return dam
+	
 func got_kill(enemy, killing_blow):
 	if killing_blow and ultimate_cd > 0:
 		ultimate_cd -= ULTIMATE_CD_REDUCE_KILL_BLOW
@@ -174,7 +179,7 @@ remotesync func shoot_fire(pos, dir):
 func shoot_hit(enemy, vel, mini):
 	var knockback = SHOOT_SIDE_KNOCKBACK_STR if mini else SHOOT_CENTER_KNOCKBACK_STR
 	if enemy.is_network_master():
-		var dam = SHOOT_SIDE_DAMAGE if mini else SHOOT_CENTER_DAMAGE
+		var dam = calculate_damage(SHOOT_SIDE_DAMAGE if mini else SHOOT_CENTER_DAMAGE)
 		owner.last_combat = OS.get_ticks_msec()
 		enemy.hit({"damage": dam, "knockback": vel.normalized() * knockback, "knockback_dur": SHOOT_KNOCKBACK_DUR})
 	else:
@@ -221,11 +226,12 @@ remotesync func volley(pos):
 	volley.init(pos, VOLLEY_RADIUS)
 	Audio.play("archer_attack2")
 	yield(get_tree().create_timer(VOLLEY_DAMAGE_DELAY), "timeout")
+	var dam = calculate_damage(VOLLEY_DAMAGE)
 	for enemy in volley.get_overlapping_bodies():
 		if enemy.is_in_group("enemies"):
 			owner.last_combat = OS.get_ticks_msec()
 			if enemy.is_network_master():
-				enemy.hit({"damage": VOLLEY_DAMAGE, "stun": VOLLEY_STUN_DUR})
+				enemy.hit({"damage": dam, "stun": VOLLEY_STUN_DUR})
 			else:
 				enemy.local_hit()
 	
@@ -311,7 +317,7 @@ remotesync func ultimate_launch(pos, dir):
 func ultimate_hit(enemy, vel):
 	owner.last_combat = OS.get_ticks_msec()
 	if enemy.is_network_master():
-		enemy.hit({"damage": ULTIMATE_DAMAGE})
+		enemy.hit({"damage": calculate_damage(ULTIMATE_DAMAGE)})
 	else:
 		enemy.local_hit(null)
 
@@ -352,6 +358,8 @@ func _physics_process(delta):
 			rpc("stop_shadow", owner.position)
 	else:
 		var regen = ENERGY_REGEN
+		if Game.level.time_of_day == "midnight":
+			regen *= 2
 		regen *= (100 - owner.exhaustion * ENERGY_EXHAUSTION_MULT) / 100.0
 		energy = min(energy + regen * delta, 100)
 

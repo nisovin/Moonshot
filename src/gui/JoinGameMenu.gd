@@ -5,7 +5,9 @@ signal option_selected
 onready var name_field = $CenterContainer/VBoxContainer/NameField
 
 func _ready():
+	name_field.text = Game.saved_player_name
 	name_field.grab_focus()
+	name_field.caret_position = name_field.text.length()
 
 func choose(c):
 	name_field.text = name_field.text.strip_edges()
@@ -15,6 +17,9 @@ func choose(c):
 		yield(get_tree().create_timer(1), "timeout")
 		name_field.modulate = Color.white
 		return
+	if name_field.text != Game.saved_player_name:
+		Game.saved_player_name = name_field.text
+		Game.save_persistent()
 	emit_signal("option_selected", c, name_field.text)
 	queue_free()
 

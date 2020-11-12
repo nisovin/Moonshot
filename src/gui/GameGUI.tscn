@@ -99,6 +99,7 @@ mouse_filter = 2
 texture = ExtResource( 13 )
 
 [node name="FocusKeep" type="TextureRect" parent="Statuses"]
+visible = false
 modulate = Color( 1, 0.4, 0, 1 )
 margin_right = 24.0
 margin_bottom = 24.0
@@ -117,10 +118,10 @@ texture = ExtResource( 15 )
 [node name="Minimap" type="Control" parent="."]
 anchor_left = 1.0
 anchor_right = 1.0
-margin_left = -78.0
+margin_left = -103.0
 margin_top = 3.0
 margin_right = -3.0
-margin_bottom = 78.0
+margin_bottom = 103.0
 rect_clip_content = true
 mouse_filter = 2
 script = ExtResource( 1 )
@@ -259,10 +260,10 @@ __meta__ = {
 [node name="Exhaustion" type="TextureProgress" parent="."]
 anchor_top = 1.0
 anchor_bottom = 1.0
-margin_left = 6.0
-margin_top = -72.0
-margin_right = 36.0
-margin_bottom = -4.0
+margin_left = 3.0
+margin_top = -51.0
+margin_right = 35.0
+margin_bottom = -3.0
 mouse_filter = 2
 texture_under = ExtResource( 16 )
 texture_progress = ExtResource( 16 )

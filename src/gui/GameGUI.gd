@@ -5,7 +5,7 @@ onready var control_tooltips = [
 		"control": $PlayerBars/Health,
 		"corner": "BC",
 		"name": "Health",
-		"description": "If this reaches 0, you die. Regenerates slowly after being out of combat for 10 seconds."
+		"description": "If this reaches 0, you die. Regenerates slowly after being out of combat for 5 seconds."
 	},
 	{
 		"control": $PlayerBars/Energy,
@@ -83,6 +83,8 @@ func _ready():
 	chat_line.modulate = Color.transparent
 	Game.connect("entered_level", self, "_on_entered_level")
 	$Abilities.hide()
+	$PlayerBars.hide()
+	$Exhaustion.hide()
 
 func open_chat():
 	Game.lock_player_input = true
@@ -151,6 +153,7 @@ func _on_entered_level():
 		$Abilities/Ultimate.texture_under = load("res://gui/archer_ultimate.png")
 		$Abilities/Ultimate.texture_progress = $Abilities/Ultimate.texture_under
 	$Abilities.show()
+	$PlayerBars.show()
 
 func _process(delta):
 	if Game.player != null:
@@ -161,12 +164,17 @@ func update_ui():
 	var binding = 1 if Game.using_controller else 0
 	var i = 0
 	
+	$Statuses/Midnight.visible = Game.level.time_of_day == "midnight"
+	$Statuses/Midday.visible = Game.level.time_of_day == "midday"
+	
 	$PlayerBars/Health.value = float(Game.player.health) / cls.MAX_HEALTH * 100
 	$PlayerBars/Health/Label.text = str(ceil(Game.player.health))
 	$PlayerBars/Energy.value = cls.energy
 	$PlayerBars/Energy/Label.text = str(floor(cls.energy))
 	$Exhaustion.value = Game.player.exhaustion
 	$Exhaustion/Label.text = str(ceil(Game.player.exhaustion))
+	if $Exhaustion.value > 0:
+		$Exhaustion.show()
 	
 	i = 0
 	for a in $Abilities.get_children():

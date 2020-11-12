@@ -15,7 +15,18 @@ const SOUNDS = {
 	"archer_attack1_fire": preload("res://sfx/archer_attack1_fire.wav"),
 	"archer_attack2": preload("res://sfx/archer_attack2.wav"),
 	"archer_movement": preload("res://sfx/archer_movement.wav"),
-	"archer_ultimate_loop": preload("res://sfx/archer_ultimate_loop.ogg")
+	"archer_ultimate_loop": preload("res://sfx/archer_ultimate_loop.ogg"),
+	"enemy_hit": [
+		preload("res://sfx/enemy_hit_3.ogg"),
+		preload("res://sfx/enemy_hit_4.ogg")
+	],
+	"hit": [
+		preload("res://sfx/hit1.ogg"),
+		preload("res://sfx/hit2.ogg"),
+		preload("res://sfx/hit3.ogg"),
+		preload("res://sfx/hit4.ogg"),
+		preload("res://sfx/hit5.ogg")
+	]
 }
 
 onready var footsteps_player = $Footsteps

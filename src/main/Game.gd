@@ -20,6 +20,7 @@ var controller_index = 0
 var level = null
 var lock_player_input = false
 var player = null
+var saved_player_name = ""
 
 var player_name_regex = RegEx.new()
 var chat_regex = RegEx.new()
@@ -31,10 +32,29 @@ func _ready():
 	centered_message.visible = false
 	player_name_regex.compile("[^A-Za-z0-9_ ]")
 	chat_regex.compile("[^A-Za-z0-9_\\-()!.?@#$%&*+=:;'\" ]")
+	load_persistent()
 
 func _unhandled_key_input(event):
 	if event.scancode == KEY_F11 and event.pressed:
 		OS.window_fullscreen = not OS.window_fullscreen
+
+func load_persistent():
+	var file = File.new()
+	if file.file_exists("user://moon.sav"):
+		if file.open("user://moon.sav", File.READ) == OK:
+			var data = file.get_var()
+			file.close()
+			if data.has("saved_player_name"):
+				saved_player_name = data.saved_player_name
+				
+func save_persistent():
+	var file = File.new()
+	if file.open("user://moon.sav", File.WRITE) == OK:
+		var data = {
+			"saved_player_name": saved_player_name
+		}
+		file.store_var(data)
+		file.close()
 
 func start_server():
 	mp_mode = MPMode.SERVER

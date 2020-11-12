@@ -7,7 +7,8 @@ const SERIALIZE_FIELDS = [ "state", "ultimate_duration" ]
 const MAX_HEALTH = 150
 const HEALTH_REGEN = 1
 const ENERGY_REGEN = 10
-const ENERGY_EXHAUSTION_MULT = 0.6
+const ENERGY_EXHAUSTION_MULT = 0.5
+const NORMAL_ARMOR = 0.25
 
 const ATTACK_SWING_TIME = 0.25
 const ATTACK_SWING_ANGLE = PI * 0.8
@@ -40,7 +41,7 @@ const RUSH_COST = 40
 const RUSH_COOLDOWN = 2.0
 
 const ULTIMATE_ATTACK_MULT = 3
-const ULTIMATE_DEFENSE_MULT = 0.2
+const ULTIMATE_ARMOR = 0.5
 const ULTIMATE_ENERGY_MULT = 2
 const ULTIMATE_CD_MULT = 2.0
 const ULTIMATE_DURATION = 15
@@ -48,7 +49,7 @@ const ULTIMATE_KILL_EXTEND = 1
 const ULTIMATE_MAX_DURATION = 30
 const ULTIMATE_MODULATE = Color(0.6, 0.9, 1)
 const ULTIMATE_SCALE = 1.4
-const ULTIMATE_COOLDOWN = 12.0
+const ULTIMATE_COOLDOWN = 120.0
 const ULTIMATE_CD_REDUCE_KILL = 0.4
 const ULTIMATE_CD_REDUCE_KILL_BLOW = 1.0
 
@@ -78,7 +79,7 @@ const ABILITIES = [
 ]
 
 var state = WarriorState.NORMAL
-var energy = 50
+var energy = 25
 
 var attack_queued = false
 var attack_swing_dir = 1
@@ -134,9 +135,9 @@ func is_moving():
 
 func get_armor():
 	if ultimate_duration > 0:
-		return 0.5
+		return ULTIMATE_ARMOR
 	else:
-		return 0
+		return NORMAL_ARMOR
 
 func got_kill(enemy, killing_blow):
 	if killing_blow:
@@ -146,6 +147,13 @@ func got_kill(enemy, killing_blow):
 			ultimate_total_duration += ULTIMATE_KILL_EXTEND
 	else:
 		ultimate_cd -= ULTIMATE_CD_REDUCE_KILL
+
+func calculate_damage(dam):
+	if ultimate_duration > 0:
+		dam *= ULTIMATE_ATTACK_MULT
+	if Game.level.time_of_day == "midnight":
+		dam *= 2
+	return dam
 
 # ATTACK ONE - SWORD ATTACK
 
@@ -189,15 +197,14 @@ remotesync func attack1(pos, dir):
 	attack1tween.interpolate_property(attack1sword, "rotation", start_angle, end_angle, ATTACK_SWING_TIME)
 	attack1tween.start()
 	attack1particles.emitting = true
-	Audio.play("warrior_attack1_swing", 1.0 if is_network_master() else 0.25)
+	Audio.play("warrior_attack1_swing", 0.6 if is_network_master() else 0.2)
 	
 	# hit enemies
+	var dam = calculate_damage(ATTACK_DAMAGE)
 	for enemy in N.get_overlapping_hitboxes(attack1area, "enemies"):
 		if owner.position.direction_to(enemy.position).dot(attack_move_dir) > ATTACK_DOT_ARC:
 			var knockback = owner.position.direction_to(enemy.position) * ATTACK_KNOCKBACK_STR
 			if enemy.is_network_master():
-				var dam = ATTACK_DAMAGE
-				if ultimate_duration > 0: dam *= ULTIMATE_ATTACK_MULT
 				owner.last_combat = OS.get_ticks_msec()
 				enemy.hit({"damage": dam, "knockback": knockback, "knockback_dur": ATTACK_KNOCKBACK_DUR, "stun": ATTACK_STUN_DUR})
 			elif is_network_master():
@@ -230,15 +237,13 @@ remotesync func attack2(pos):
 	
 	# anim
 	attack2particles.emitting = true
-	Audio.play("warrior_attack2", 0.75 if is_network_master() else 0.4)
+	Audio.play("warrior_attack2", 0.6 if is_network_master() else 0.3)
 	
 	# hit enemies
 	for enemy in N.get_overlapping_bodies(attack2area, "enemies"):
 		if enemy.is_network_master():
 			var dist = enemy.position.distance_squared_to(owner.position)
-			var dam = AOE_DAMAGE_CLOSE if dist < AOE_CLOSE_RADIUS * AOE_CLOSE_RADIUS else AOE_DAMAGE_FAR
-			if ultimate_duration > 0:
-				dam *= ULTIMATE_ATTACK_MULT
+			var dam = calculate_damage(AOE_DAMAGE_CLOSE if dist < AOE_CLOSE_RADIUS * AOE_CLOSE_RADIUS else AOE_DAMAGE_FAR)
 			owner.last_combat = OS.get_ticks_msec()
 			enemy.hit({"damage": dam, "stun": AOE_STUN_DUR, "stun_break": false})
 		else:
@@ -293,7 +298,7 @@ remotesync func start_rush(start_pos, rush_dir, max_dist):
 	rush_max_distance = max_dist
 	rush_particles.emitting = true
 	state = WarriorState.RUSHING
-	Audio.play("warrior_movement", 0.8 if is_network_master() else 0.5)
+	Audio.play("warrior_movement", 0.7 if is_network_master() else 0.4)
 
 remotesync func end_rush(end_pos, collided):
 	owner.position = end_pos
@@ -303,12 +308,10 @@ remotesync func end_rush(end_pos, collided):
 	
 	if not collided: return
 	
+	var dam = calculate_damage(RUSH_DAMAGE)
 	for enemy in N.get_overlapping_hitboxes(rush_area, "enemies"):
 		var knockback = owner.position.direction_to(enemy.position) * RUSH_KNOCKBACK_STR
 		if enemy.is_network_master():
-			var dam = RUSH_DAMAGE
-			if ultimate_duration > 0:
-				dam *= ULTIMATE_ATTACK_MULT
 			owner.last_combat = OS.get_ticks_msec()
 			enemy.hit({"damage": dam, "knockback": knockback, "knockback_dur": RUSH_KNOCKBACK_DUR, "stun": RUSH_STUN_DUR})
 		elif is_network_master():
@@ -352,6 +355,8 @@ func _physics_process(delta):
 			attack1_press()
 			
 	var regen = ENERGY_REGEN
+	if Game.level.time_of_day == "midnight":
+		regen *= 2
 	regen *= ((100 - owner.exhaustion * ENERGY_EXHAUSTION_MULT) / 100.0)
 	if ultimate_duration > 0:
 		ultimate_duration -= delta

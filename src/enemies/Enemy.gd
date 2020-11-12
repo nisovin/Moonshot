@@ -41,6 +41,12 @@ func get_data():
 		data[field] = get(field)
 	return data
 
+func calculate_damage(dam, target):
+	dam *= 1 - target.get_armor()
+	if Game.level.time_of_day == "midday":
+		dam *= 1.5
+	return dam
+
 remotesync func set_movement(vel, pos, dur = 0):
 	position = pos
 	velocity = vel
@@ -68,6 +74,7 @@ func local_hit(vel = null, dur = 0):
 	last_hit = OS.get_ticks_msec()
 	if vel != null:
 		set_movement(vel, position, dur)
+	Audio.play("enemy_hit", 0.4)
 	
 func _physics_process(delta):
 	if velocity == Vector2.ZERO: return

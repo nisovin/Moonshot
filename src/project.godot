@@ -26,6 +26,7 @@ config/dev.export=false
 N="*res://N.gd"
 Game="*res://main/Game.tscn"
 Audio="*res://main/Audio.tscn"
+Audio.server="*res://main/AudioServer.tscn"
 
 [debug]
 

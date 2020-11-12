@@ -9,6 +9,7 @@ onready var projectiles_node = $Walls/Entities/Projectiles
 onready var ground_effects_node = $Ground/GroundEffects
 
 var base_exhaustion = 0
+var time_of_day = "start"
 
 func _ready():
 	daynight_anim.play("daynight")
@@ -19,15 +20,18 @@ func _unhandled_key_input(event):
 		$Line2D.points = path
 	if event.scancode == KEY_F3 and event.pressed:
 		$Navigation2D/Wall.enabled = !$Navigation2D/Wall.enabled
-		
 
 func start_server():
 	$EnemyManager.start_server()
 
 func time_event(event):
 	print("Time: ", event)
-	if event == "dawn" and $ExhaustionTick.is_stopped():
-		$ExhaustionTick.start()
+	time_of_day = event
+	if is_network_master():
+		if event == "dawn":
+			$ExhaustionTick.start()
+		elif event == "night":
+			$ExhaustionTick.stop()
 
 func add_new_player(data):
 	add_player_from_data(data)
@@ -106,12 +110,16 @@ remotesync func add_system_message(message):
 func _on_HealTick_timeout():
 	if is_network_master():
 		for p in players_node.get_children():
-			if not p.dead and p.health < p.player_class.MAX_HEALTH and p.last_combat < OS.get_ticks_msec() - 10000 and p.last_heal_tick < OS.get_ticks_msec() - 500:
-				p.rpc("heal", min(p.health + p.player_class.HEALTH_REGEN * 0.5, p.player_class.MAX_HEALTH), false)
+			if not p.dead and p.health < p.player_class.MAX_HEALTH and p.last_combat < OS.get_ticks_msec() - 5000 and p.last_heal_tick < OS.get_ticks_msec() - 500:
+				var heal = p.player_class.HEALTH_REGEN * 0.5
+				if p.exhaustion > 50:
+					var e = p.exhaustion - 50
+					heal *= (50 - e * 0.75) / 50.0
+				p.rpc("heal", min(p.health + heal, p.player_class.MAX_HEALTH), false)
 				p.last_heal_tick = OS.get_ticks_msec()
 
 func _on_ExhaustionTick_timeout():
-	if is_network_master():
+	if is_network_master() and players_node.get_child_count() > 0:
 		base_exhaustion = clamp(base_exhaustion + 1, 0, 100)
 		for p in players_node.get_children():
 			if not p.dead:

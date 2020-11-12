@@ -92,8 +92,7 @@ func ai_tick():
 		if not v.is_equal_approx(owner.velocity):
 			owner.rpc("set_movement", v, owner.position)
 		if not target.is_invulnerable() and owner.position.distance_squared_to(target.position) < 20 * 20:
-			var dam = 5
-			dam *= 1 - target.get_armor()
+			var dam = owner.calculate_damage(5, target)
 			target.rpc("damage", target.health - dam)
 	elif owner.velocity != Vector2.ZERO:
 		owner.rpc("set_movement", Vector2.ZERO, owner.position)
