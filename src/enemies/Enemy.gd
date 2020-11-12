@@ -80,9 +80,10 @@ func _physics_process(delta):
 	if velocity == Vector2.ZERO: return
 	var before = position
 	var col = move_and_collide(velocity * delta)
+	#position += velocity * delta
 	visual.move(position - before)
-	if col and is_network_master():
-		controller.collide(col)
+	#if col and is_network_master():
+	#	controller.collide(col)
 	if move_duration > 0:
 		move_duration -= delta
 		if move_duration <= 0:

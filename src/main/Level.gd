@@ -78,8 +78,8 @@ func load_game_state(game_state):
 		for e in game_state.enemies:
 			add_enemy_from_data(e)
 
-func get_nav_path(from, to, get_cost = false):
-	map.get_nav_path(from, to, get_cost)
+func get_nav_path(from, to, smooth = true, get_cost = false):
+	return map.get_nav_path(from, to, smooth, get_cost)
 
 func get_player_by_id(id):
 	return players_node.get_node_or_null(str(id))

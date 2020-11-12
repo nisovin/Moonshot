@@ -10,8 +10,8 @@ func _ready():
 func rand_int(from, to):
 	return rng.randi_range(from, to)
 	
-func rand_float(scale = 1):
-	return rng.randf_range(0, scale)
+func rand_float(from, to):
+	return rng.randf_range(from, to)
 
 func rand_array(array):
 	return array[rng.randi_range(0, array.size() - 1)]
@@ -20,7 +20,7 @@ func rand_weighted(options):
 	var total_weight = 0
 	for option in options:
 		total_weight += options[option]
-	var rand = rand_float(total_weight)
+	var rand = rand_float(0, total_weight)
 	for option in options:
 		rand -= options[option]
 		if rand < 0:

@@ -1,4 +1,4 @@
-[gd_scene load_steps=12 format=2]
+[gd_scene load_steps=13 format=2]
 
 [ext_resource path="res://map/tileset_ground.tres" type="TileSet" id=1]
 [ext_resource path="res://white_square.png" type="Texture" id=2]
@@ -9,6 +9,9 @@
 [ext_resource path="res://main/NavDebug.gd" type="Script" id=7]
 [ext_resource path="res://map/tileset_walls.tres" type="TileSet" id=8]
 [ext_resource path="res://map/Map.gd" type="Script" id=9]
+
+[sub_resource type="RectangleShape2D" id=3]
+extents = Vector2( 8, 42.7256 )
 
 [sub_resource type="Environment" id=1]
 background_mode = 4
@@ -135,12 +138,11 @@ visible = false
 script = ExtResource( 7 )
 
 [node name="Objects" type="TileMap" parent="Map"]
-visible = false
 tile_set = ExtResource( 8 )
 cell_size = Vector2( 16, 16 )
 cell_y_sort = true
 format = 1
-tile_data = PoolIntArray( 720919, 0, 0, 720924, 0, 0, 720929, 0, 0, 786455, 2, 0, 786465, 2, 0, 851971, 0, 0, 851976, 0, 0, 851981, 0, 0, 851986, 0, 0, 851991, 0, 0, 852001, 0, 0, 852006, 0, 0, 917507, 2, 0, 983043, 2, 0, 1048579, 2, 0, 1114115, 2, 0, 1179651, 0, 0 )
+tile_data = PoolIntArray( 720919, 0, 0, 720924, 0, 0, 720929, 0, 0, 786455, 2, 0, 786465, 2, 0, 851971, 0, 0, 851976, 0, 0, 851981, 0, 0, 851986, 0, 0, 851991, 0, 0, 852001, 0, 0, 852006, 0, 0, 852011, 0, 0, 917507, 2, 0, 983043, 2, 0, 1048579, 2, 0, 1114115, 2, 0, 1179651, 0, 0 )
 
 [node name="Entities" type="YSort" parent="Map/Objects"]
 
@@ -181,6 +183,19 @@ position = Vector2( 656, 224 )
 [node name="Roof" type="TileMap" parent="Map"]
 cell_size = Vector2( 16, 16 )
 format = 1
+
+[node name="NavExclusions" type="Node2D" parent="Map"]
+
+[node name="Polygon2D" type="Polygon2D" parent="Map/NavExclusions"]
+polygon = PoolVector2Array( 208, 80, 320, 80, 256, 144, 160, 112 )
+
+[node name="Obstacles" type="Node2D" parent="Map"]
+
+[node name="StaticBody2D" type="StaticBody2D" parent="Map/Obstacles"]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Map/Obstacles/StaticBody2D"]
+position = Vector2( 56, 258.596 )
+shape = SubResource( 3 )
 
 [node name="DayNightCycle" type="Node2D" parent="."]
 

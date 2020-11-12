@@ -6,6 +6,7 @@ signal entered_level
 const PORT = 20514
 const MAX_PLAYERS = 100
 const VERSION = 1
+const TILE_SIZE = 16
 
 const Player = preload("res://player/Player.tscn")
 const Enemy = preload("res://enemies/Enemy.tscn")
@@ -97,6 +98,7 @@ func join_game(clss):
 
 func start_solo():
 	mp_mode = MPMode.SOLO
+	#Engine.iterations_per_second = 30
 	
 	level = preload("res://main/Level.tscn").instance()
 	add_child(level)
@@ -124,6 +126,9 @@ func get_player_by_id(id):
 
 func get_enemy_by_id(id):
 	return level.get_enemy_by_id(id)
+
+func get_tile_pos(v):
+	return Vector2(int(floor(v.x / TILE_SIZE)), int(floor(v.y / TILE_SIZE)))
 
 func parse_command(cmd_player, command: String):
 	if not is_server(): return null

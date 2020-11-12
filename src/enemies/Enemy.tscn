@@ -7,7 +7,7 @@
 [ext_resource path="res://white_pixel.png" type="Texture" id=5]
 
 [sub_resource type="CircleShape2D" id=1]
-radius = 8.26697
+radius = 7.0
 
 [sub_resource type="CircleShape2D" id=2]
 radius = 50.0
@@ -94,11 +94,14 @@ script = ExtResource( 1 )
 shape = SubResource( 1 )
 
 [node name="Neighbors" type="Area2D" parent="."]
+monitoring = false
+monitorable = false
 collision_layer = 0
 collision_mask = 4
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Neighbors"]
 shape = SubResource( 2 )
+disabled = true
 
 [node name="Visual" type="Node2D" parent="."]
 script = ExtResource( 3 )
@@ -150,3 +153,6 @@ collision_mask = 0
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Hitbox"]
 position = Vector2( 0, -8.82941 )
 shape = SubResource( 8 )
+
+[node name="Line2D" type="Line2D" parent="."]
+width = 1.0
