@@ -25,6 +25,7 @@ config/dev.export=false
 
 N="*res://N.gd"
 Game="*res://main/Game.tscn"
+Audio="*res://main/Audio.tscn"
 
 [debug]
 
@@ -131,6 +132,8 @@ chat={
 2d_physics/layer_1="Walls"
 2d_physics/layer_2="Players"
 2d_physics/layer_3="Enemies"
+2d_physics/layer_4="Players Hitbox"
+2d_physics/layer_5="Enemies Hitbox"
 
 [network]
 

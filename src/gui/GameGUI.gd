@@ -1,13 +1,73 @@
 extends CanvasLayer
 
-const STATUS_TOOLTIPS = [
-	{ "name": "Midnight", "description": "It is midnight, when you are most powerful. Your damage and energy regeneration are increased." },
-	{ "name": "Energized", "description": "Just before the moon shrine was corrupted, it released a burst of lunar energy. Your health regen, energy regen, and cooldown recovery are increased." },
-	{ "name": "Zenith", "description": "It is midday, when the enemy is most powerful. Their damage is increased." },
-	{ "name": "AAARRG!", "description": "The enemy is filled with fiery rage. Their damage is greatly increased, but they also take more damage." },
-	{ "name": "Hurry Up!", "description": "The enemy has been energized, greatly increasing their movement speed." },
-	{ "name": "Destroy The Walls!", "description": "The enemy is currently focused on tearing down the walls, and will try to ignore players." },
-	{ "name": "Slay Them!", "description": "The enemy is currently focused on killing players. Their damage is increased." }
+onready var control_tooltips = [
+	{
+		"control": $PlayerBars/Health,
+		"corner": "BC",
+		"name": "Health",
+		"description": "If this reaches 0, you die. Regenerates slowly after being out of combat for 10 seconds."
+	},
+	{
+		"control": $PlayerBars/Energy,
+		"corner": "BC",
+		"name": "Lunar Energy",
+		"description": "Energy powers most of your abilities. Regenerates steadily over time."
+	},
+	{
+		"control": $Exhaustion,
+		"corner": "BL",
+		"name": "Exhaustion",
+		"description": "Exhaustion increases slowly over time, and in response to certain events. Exhaustion slows down your health and energy regeneration."
+	},
+	{
+		"control": $Statuses/Midnight,
+		"corner": "TL",
+		"name": "Midnight",
+		"description": "It is midnight, when you are most powerful. Your damage and energy regeneration are increased."
+	},
+	{
+		"control": $Statuses/ShrineDeath,
+		"corner": "TL",
+		"name": "Energized",
+		"description": "Just before the moon shrine was corrupted, it released a burst of lunar energy. Your health regen, energy regen, and cooldown recovery are increased."
+	},
+	{
+		"control": $Statuses/Midday,
+		"corner": "TL",
+		"name": "Zenith",
+		"description": "It is midday, when the enemy is most powerful. Their damage is increased."
+	},
+	{
+		"control": $Statuses/Rage,
+		"corner": "TL",
+		"name": "AAARRG!",
+		"description": "The enemy is filled with fiery rage. Their damage is greatly increased, but they also take more damage."
+	},
+	{
+		"control": $Statuses/Swiftness,
+		"corner": "TL",
+		"name": "Hurry Up!",
+		"description": "The enemy has been energized, greatly increasing their movement speed."
+	},
+	{
+		"control": $Statuses/FocusKeep,
+		"corner": "TL",
+		"name": "Destroy The Walls!",
+		"description": "The enemy is currently focused on tearing down the walls, and will try to ignore players."
+	},
+	{
+		"control": $Statuses/FocusPlayers,
+		"corner": "TL",
+		"name": "Slay Them!",
+		"description": "The enemy is currently focused on killing players. Their damage is increased."
+	}
+]
+
+var ability_bindings = [
+	["L-Click", "X"],
+	["R-Click", "A"],
+	["Shift", "B"],
+	["R", "Y"]
 ]
 
 onready var chat_line = $Chat/ChatLine
@@ -97,50 +157,62 @@ func _process(delta):
 		update_ui()
 
 func update_ui():
-	var c = Game.player.player_class
+	var cls = Game.player.player_class
+	var binding = 1 if Game.using_controller else 0
 	var i = 0
 	
-	$PlayerBars/Energy.value = c.energy
-	$PlayerBars/Energy/Label.text = str(floor(c.energy))
+	$PlayerBars/Health.value = float(Game.player.health) / cls.MAX_HEALTH * 100
+	$PlayerBars/Health/Label.text = str(ceil(Game.player.health))
+	$PlayerBars/Energy.value = cls.energy
+	$PlayerBars/Energy/Label.text = str(floor(cls.energy))
+	$Exhaustion.value = Game.player.exhaustion
+	$Exhaustion/Label.text = str(ceil(Game.player.exhaustion))
 	
 	i = 0
 	for a in $Abilities.get_children():
-		a.value = 1 - c.call("get_" + a.name.to_lower() + "_cooldown")
+		a.value = 1 - cls.call("get_" + a.name.to_lower() + "_cooldown")
 		a.tint_progress = Color.cyan if a.value == 1 else Color.white
 		var p = a.get_local_mouse_position()
 		var s = a.rect_size
 		if p.x > 0 and p.x < s.x and p.y > 0 and p.y < s.y:
-			show_tooltip("A" + str(i), c.ABILITIES[i])
+			show_tooltip("A" + str(i), cls.ABILITIES[i], " (" + ability_bindings[i][binding] + ")")
 			return
 		i += 1
 		
 	i = 0
-	for a in $Statuses.get_children():
-		var p = a.get_local_mouse_position()
-		var s = a.rect_size
-		if a.visible and p.x > 0 and p.x < s.x and p.y > 0 and p.y < s.y:
-			show_tooltip("S" + str(i), STATUS_TOOLTIPS[i], "TL")
+	for t in control_tooltips:
+		var p = t.control.get_local_mouse_position()
+		var s = t.control.rect_size
+		if t.control.visible and p.x > 0 and p.x < s.x and p.y > 0 and p.y < s.y:
+			show_tooltip("C" + str(i), t)
 			return
 		i += 1
 		
 	hide_tooltip()
 
-func show_tooltip(id, data, corner = "BR"):
+func show_tooltip(id, data, title_suffix = ""):
+	var corner = "BR" if not "corner" in data else data.corner
 	if showing_tooltip != id:
 		showing_tooltip = id
 		$Tooltip.show()
-		$Tooltip/VBoxContainer/AbilityName.text = data.name
+		$Tooltip/VBoxContainer/Title.text = data.name + title_suffix
 		var desc = data.description
 		if data.has("cost"):
 			desc += "\n[color=yellow]Cost:[/color] " + data.cost
 		if data.has("cooldown"):
 			desc += "\n[color=yellow]Cooldown:[/color] " + data.cooldown
-		$Tooltip/VBoxContainer/RichTextLabel.parse_bbcode(desc)
+		$Tooltip/VBoxContainer/Description.parse_bbcode(desc)
 		yield(get_tree(), "idle_frame")
 		yield(get_tree(), "idle_frame")
-		$Tooltip.rect_size.y = $Tooltip/VBoxContainer/RichTextLabel.get_content_height() + 30
+		$Tooltip.rect_size.y = $Tooltip/VBoxContainer/Description.get_content_height() + $Tooltip/VBoxContainer/Title.rect_size.y + 15
 	if corner == "BR":
 		$Tooltip.rect_position = $Tooltip.get_global_mouse_position() - $Tooltip.rect_size
+	elif corner == "BL":
+		$Tooltip.rect_position = $Tooltip.get_global_mouse_position() - Vector2(0, $Tooltip.rect_size.y)
+	elif corner == "BC":
+		$Tooltip.rect_position = $Tooltip.get_global_mouse_position() - Vector2($Tooltip.rect_size.x / 2, $Tooltip.rect_size.y)
+	elif corner == "TR":
+		$Tooltip.rect_position = $Tooltip.get_global_mouse_position() - Vector2($Tooltip.rect_size.x, 0)
 	else:
 		$Tooltip.rect_position = $Tooltip.get_global_mouse_position()
 	

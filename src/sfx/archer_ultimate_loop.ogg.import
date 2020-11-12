@@ -1,0 +1,15 @@
+[remap]
+
+importer="ogg_vorbis"
+type="AudioStreamOGGVorbis"
+path="res://.import/archer_ultimate_loop.ogg-187f7e04675122e8b7acdf7ebb6fa18a.oggstr"
+
+[deps]
+
+source_file="res://sfx/archer_ultimate_loop.ogg"
+dest_files=[ "res://.import/archer_ultimate_loop.ogg-187f7e04675122e8b7acdf7ebb6fa18a.oggstr" ]
+
+[params]
+
+loop=true
+loop_offset=0

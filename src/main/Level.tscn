@@ -174,10 +174,19 @@ position = Vector2( 466.628, 164.147 )
 [node name="Line2D" type="Line2D" parent="."]
 default_color = Color( 1, 0, 0, 1 )
 
+[node name="HealTick" type="Timer" parent="."]
+wait_time = 0.1
+autostart = true
+
+[node name="ExhaustionTick" type="Timer" parent="."]
+wait_time = 5.0
+
 [node name="EnemyManager" type="Node" parent="."]
 script = ExtResource( 5 )
 
 [node name="SpawnTimer" type="Timer" parent="EnemyManager"]
 
 [node name="GUI" parent="." instance=ExtResource( 3 )]
+[connection signal="timeout" from="HealTick" to="." method="_on_HealTick_timeout"]
+[connection signal="timeout" from="ExhaustionTick" to="." method="_on_ExhaustionTick_timeout"]
 [connection signal="timeout" from="EnemyManager/SpawnTimer" to="EnemyManager" method="_on_SpawnTimer_timeout"]

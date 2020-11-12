@@ -3,11 +3,10 @@ extends Node
 const TARGET_RANGE = 50 * 16
 const REAQUIRE_RANGE = 10 * 16
 const REAQUIRE_TIME = 5000 #milliseconds
-const SPEED = 25
+const SPEED = 35
 
 var target
 var target_time = 0
-var health = 70
 var knockback_direction = 0
 var knockback_duration = 0
 var stun_duration = 0
@@ -37,8 +36,8 @@ func hit(data):
 	elif stun_duration > 0:
 		owner.rpc("set_movement", Vector2.ZERO, owner.position)
 	if "damage" in data:
-		health -= data.damage
-		if health <= 0:
+		owner.health -= data.damage
+		if owner.health <= 0:
 			dead = true
 			owner.rpc("die")
 			return false
@@ -88,10 +87,14 @@ func ai_tick():
 					separation_direction += enemy.position.direction_to(owner.position) * mult
 			separation_direction /= neighbors.size()
 
-		var direction = target_direction + separation_direction * 1.5
+		var direction = target_direction + separation_direction * 2
 		var v = direction.normalized() * SPEED
 		if not v.is_equal_approx(owner.velocity):
 			owner.rpc("set_movement", v, owner.position)
+		if not target.is_invulnerable() and owner.position.distance_squared_to(target.position) < 20 * 20:
+			var dam = 5
+			dam *= 1 - target.get_armor()
+			target.rpc("damage", target.health - dam)
 	elif owner.velocity != Vector2.ZERO:
 		owner.rpc("set_movement", Vector2.ZERO, owner.position)
 			

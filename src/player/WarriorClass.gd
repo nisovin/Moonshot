@@ -4,6 +4,8 @@ enum WarriorState { NORMAL, SWINGING_SWORD, AIMING_RUSH, RUSHING }
 
 const SERIALIZE_FIELDS = [ "state", "ultimate_duration" ]
 
+const MAX_HEALTH = 150
+const HEALTH_REGEN = 1
 const ENERGY_REGEN = 10
 const ENERGY_EXHAUSTION_MULT = 0.6
 
@@ -26,7 +28,7 @@ const AOE_COST = 15
 const AOE_COOLDOWN = 10.0
 
 const RUSH_MIN_DISTANCE = 50
-const RUSH_MAX_DISTANCE = 140
+const RUSH_MAX_DISTANCE = 170
 const RUSH_CHARGE_TIME = 300
 const RUSH_SPEED = 800
 const RUSH_MAX_TIME = 750
@@ -46,8 +48,8 @@ const ULTIMATE_KILL_EXTEND = 1
 const ULTIMATE_MAX_DURATION = 30
 const ULTIMATE_MODULATE = Color(0.6, 0.9, 1)
 const ULTIMATE_SCALE = 1.4
-const ULTIMATE_COOLDOWN = 120.0
-const ULTIMATE_CD_REDUCE_KILL = 0.25
+const ULTIMATE_COOLDOWN = 12.0
+const ULTIMATE_CD_REDUCE_KILL = 0.4
 const ULTIMATE_CD_REDUCE_KILL_BLOW = 1.0
 
 const ABILITIES = [
@@ -76,7 +78,7 @@ const ABILITIES = [
 ]
 
 var state = WarriorState.NORMAL
-var energy = 100
+var energy = 50
 
 var attack_queued = false
 var attack_swing_dir = 1
@@ -130,6 +132,12 @@ func load_data(data):
 func is_moving():
 	return state == WarriorState.RUSHING or state == WarriorState.SWINGING_SWORD
 
+func get_armor():
+	if ultimate_duration > 0:
+		return 0.5
+	else:
+		return 0
+
 func got_kill(enemy, killing_blow):
 	if killing_blow:
 		ultimate_cd -= ULTIMATE_CD_REDUCE_KILL_BLOW
@@ -181,14 +189,16 @@ remotesync func attack1(pos, dir):
 	attack1tween.interpolate_property(attack1sword, "rotation", start_angle, end_angle, ATTACK_SWING_TIME)
 	attack1tween.start()
 	attack1particles.emitting = true
+	Audio.play("warrior_attack1_swing", 1.0 if is_network_master() else 0.25)
 	
 	# hit enemies
-	for enemy in N.get_overlapping_bodies(attack1area, "enemies"):
+	for enemy in N.get_overlapping_hitboxes(attack1area, "enemies"):
 		if owner.position.direction_to(enemy.position).dot(attack_move_dir) > ATTACK_DOT_ARC:
 			var knockback = owner.position.direction_to(enemy.position) * ATTACK_KNOCKBACK_STR
 			if enemy.is_network_master():
 				var dam = ATTACK_DAMAGE
 				if ultimate_duration > 0: dam *= ULTIMATE_ATTACK_MULT
+				owner.last_combat = OS.get_ticks_msec()
 				enemy.hit({"damage": dam, "knockback": knockback, "knockback_dur": ATTACK_KNOCKBACK_DUR, "stun": ATTACK_STUN_DUR})
 			elif is_network_master():
 				enemy.local_hit(knockback, ATTACK_KNOCKBACK_DUR)
@@ -220,6 +230,7 @@ remotesync func attack2(pos):
 	
 	# anim
 	attack2particles.emitting = true
+	Audio.play("warrior_attack2", 0.75 if is_network_master() else 0.4)
 	
 	# hit enemies
 	for enemy in N.get_overlapping_bodies(attack2area, "enemies"):
@@ -228,6 +239,7 @@ remotesync func attack2(pos):
 			var dam = AOE_DAMAGE_CLOSE if dist < AOE_CLOSE_RADIUS * AOE_CLOSE_RADIUS else AOE_DAMAGE_FAR
 			if ultimate_duration > 0:
 				dam *= ULTIMATE_ATTACK_MULT
+			owner.last_combat = OS.get_ticks_msec()
 			enemy.hit({"damage": dam, "stun": AOE_STUN_DUR, "stun_break": false})
 		else:
 			enemy.local_hit(Vector2.ZERO, AOE_STUN_DUR)
@@ -281,6 +293,7 @@ remotesync func start_rush(start_pos, rush_dir, max_dist):
 	rush_max_distance = max_dist
 	rush_particles.emitting = true
 	state = WarriorState.RUSHING
+	Audio.play("warrior_movement", 0.8 if is_network_master() else 0.5)
 
 remotesync func end_rush(end_pos, collided):
 	owner.position = end_pos
@@ -290,12 +303,13 @@ remotesync func end_rush(end_pos, collided):
 	
 	if not collided: return
 	
-	for enemy in N.get_overlapping_bodies(rush_area, "enemies"):
+	for enemy in N.get_overlapping_hitboxes(rush_area, "enemies"):
 		var knockback = owner.position.direction_to(enemy.position) * RUSH_KNOCKBACK_STR
 		if enemy.is_network_master():
 			var dam = RUSH_DAMAGE
 			if ultimate_duration > 0:
 				dam *= ULTIMATE_ATTACK_MULT
+			owner.last_combat = OS.get_ticks_msec()
 			enemy.hit({"damage": dam, "knockback": knockback, "knockback_dur": RUSH_KNOCKBACK_DUR, "stun": RUSH_STUN_DUR})
 		elif is_network_master():
 			enemy.local_hit(knockback, RUSH_KNOCKBACK_DUR)
@@ -318,6 +332,7 @@ remotesync func ultimate():
 	ultimate_tween.interpolate_property(owner.visual, "scale", Vector2.ONE, Vector2(ULTIMATE_SCALE, ULTIMATE_SCALE), 0.5)
 	ultimate_tween.interpolate_property(owner.sprite, "modulate", Color.white, ULTIMATE_MODULATE, 0.5)
 	ultimate_tween.start()
+	Audio.play("warrior_ultimate")
 
 remotesync func end_ultimate():
 	ultimate_duration = 0

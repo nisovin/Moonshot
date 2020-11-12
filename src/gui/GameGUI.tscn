@@ -17,6 +17,12 @@
 [ext_resource path="res://gui/icons/status_focus_players.png" type="Texture" id=15]
 [ext_resource path="res://white_pixel.png" type="Texture" id=16]
 
+[sub_resource type="DynamicFont" id=6]
+outline_size = 1
+outline_color = Color( 0, 0, 0, 1 )
+extra_spacing_top = 3
+font_data = ExtResource( 8 )
+
 [sub_resource type="StyleBoxFlat" id=1]
 bg_color = Color( 0, 0, 0, 0.670588 )
 expand_margin_left = 3.0
@@ -33,12 +39,6 @@ font_data = ExtResource( 3 )
 font_data = ExtResource( 3 )
 
 [sub_resource type="DynamicFont" id=5]
-font_data = ExtResource( 8 )
-
-[sub_resource type="DynamicFont" id=6]
-outline_size = 1
-outline_color = Color( 0, 0, 0, 1 )
-extra_spacing_top = 3
 font_data = ExtResource( 8 )
 
 [node name="GUI" type="CanvasLayer"]
@@ -58,7 +58,7 @@ __meta__ = {
 visible = false
 modulate = Color( 0, 0.647059, 1, 1 )
 margin_right = 24.0
-margin_bottom = 32.0
+margin_bottom = 24.0
 mouse_filter = 2
 texture = ExtResource( 9 )
 
@@ -99,11 +99,9 @@ mouse_filter = 2
 texture = ExtResource( 13 )
 
 [node name="FocusKeep" type="TextureRect" parent="Statuses"]
-visible = false
 modulate = Color( 1, 0.4, 0, 1 )
-margin_left = 108.0
-margin_right = 140.0
-margin_bottom = 32.0
+margin_right = 24.0
+margin_bottom = 24.0
 mouse_filter = 2
 texture = ExtResource( 14 )
 
@@ -115,51 +113,6 @@ margin_right = 80.0
 margin_bottom = 32.0
 mouse_filter = 2
 texture = ExtResource( 15 )
-
-[node name="Chat" type="VBoxContainer" parent="."]
-anchor_top = 1.0
-anchor_right = 1.0
-anchor_bottom = 1.0
-margin_left = 10.0
-margin_top = -150.0
-margin_right = -10.0
-margin_bottom = -10.0
-mouse_filter = 2
-alignment = 2
-__meta__ = {
-"_edit_use_anchors_": false
-}
-
-[node name="ScrollContainer" type="ScrollContainer" parent="Chat"]
-margin_right = 620.0
-margin_bottom = 121.0
-mouse_filter = 2
-size_flags_vertical = 11
-scroll_horizontal_enabled = false
-
-[node name="VBoxContainer" type="VBoxContainer" parent="Chat/ScrollContainer"]
-margin_right = 620.0
-margin_bottom = 121.0
-mouse_filter = 2
-size_flags_horizontal = 3
-size_flags_vertical = 3
-alignment = 2
-
-[node name="ChatLine" type="LineEdit" parent="Chat"]
-margin_top = 125.0
-margin_right = 620.0
-margin_bottom = 140.0
-mouse_filter = 2
-custom_styles/focus = SubResource( 1 )
-custom_styles/normal = SubResource( 2 )
-custom_fonts/font = SubResource( 3 )
-max_length = 150
-placeholder_text = "Say something..."
-placeholder_alpha = 0.3
-caret_blink = true
-caret_blink_speed = 0.4
-
-[node name="Tween" type="Tween" parent="Chat"]
 
 [node name="Minimap" type="Control" parent="."]
 anchor_left = 1.0
@@ -236,58 +189,13 @@ texture_progress = ExtResource( 6 )
 fill_mode = 3
 tint_under = Color( 1, 1, 1, 0.392157 )
 
-[node name="Tooltip" type="ColorRect" parent="."]
-visible = false
-modulate = Color( 1, 1, 1, 0.866667 )
-margin_right = 250.0
-margin_bottom = 100.0
-mouse_filter = 2
-color = Color( 0.0705882, 0.0980392, 0.156863, 1 )
-__meta__ = {
-"_edit_use_anchors_": false
-}
-
-[node name="VBoxContainer" type="VBoxContainer" parent="Tooltip"]
-anchor_right = 1.0
-anchor_bottom = 1.0
-margin_left = 5.0
-margin_top = 5.0
-margin_right = -5.0
-margin_bottom = -5.0
-mouse_filter = 2
-__meta__ = {
-"_edit_use_anchors_": false
-}
-
-[node name="AbilityName" type="Label" parent="Tooltip/VBoxContainer"]
-margin_right = 240.0
-margin_bottom = 15.0
-custom_fonts/font = SubResource( 4 )
-custom_colors/font_color = Color( 0, 0.976471, 1, 1 )
-text = "Ability"
-__meta__ = {
-"_edit_use_anchors_": false
-}
-
-[node name="RichTextLabel" type="RichTextLabel" parent="Tooltip/VBoxContainer"]
-margin_top = 19.0
-margin_right = 240.0
-margin_bottom = 30.0
-mouse_filter = 2
-custom_fonts/normal_font = SubResource( 5 )
-bbcode_text = "This is a tooltip"
-text = "This is a tooltip"
-fit_content_height = true
-__meta__ = {
-"_edit_use_anchors_": false
-}
-
 [node name="PlayerBars" type="HBoxContainer" parent="."]
 anchor_top = 1.0
 anchor_right = 1.0
 anchor_bottom = 1.0
 margin_top = -20.0
 margin_bottom = -5.0
+mouse_filter = 2
 alignment = 1
 __meta__ = {
 "_edit_use_anchors_": false
@@ -298,12 +206,25 @@ margin_left = 218.0
 margin_right = 318.0
 margin_bottom = 15.0
 rect_min_size = Vector2( 100, 15 )
+mouse_filter = 2
+step = 0.1
 value = 100.0
 texture_under = ExtResource( 16 )
 texture_progress = ExtResource( 16 )
 tint_under = Color( 0.168627, 0.168627, 0.168627, 1 )
-tint_progress = Color( 0, 0.588235, 0.0352941, 1 )
+tint_progress = Color( 0.588235, 0.12549, 0, 1 )
 nine_patch_stretch = true
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Label" type="Label" parent="PlayerBars/Health"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+custom_fonts/font = SubResource( 6 )
+text = "100"
+align = 1
+valign = 1
 __meta__ = {
 "_edit_use_anchors_": false
 }
@@ -313,6 +234,7 @@ margin_left = 322.0
 margin_right = 422.0
 margin_bottom = 15.0
 rect_min_size = Vector2( 100, 15 )
+mouse_filter = 2
 value = 100.0
 texture_under = ExtResource( 16 )
 texture_progress = ExtResource( 16 )
@@ -341,13 +263,115 @@ margin_left = 6.0
 margin_top = -72.0
 margin_right = 36.0
 margin_bottom = -4.0
-value = 10.0
+mouse_filter = 2
 texture_under = ExtResource( 16 )
 texture_progress = ExtResource( 16 )
 fill_mode = 3
 tint_under = Color( 0.282353, 0.341176, 0.337255, 1 )
-tint_progress = Color( 0.745098, 0.329412, 0.0509804, 1 )
+tint_progress = Color( 0.776471, 0.494118, 0.0980392, 1 )
 nine_patch_stretch = true
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Label" type="Label" parent="Exhaustion"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+custom_fonts/font = SubResource( 6 )
+text = "0"
+align = 1
+valign = 1
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Chat" type="VBoxContainer" parent="."]
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+margin_left = 40.0
+margin_top = -160.0
+margin_right = -40.0
+margin_bottom = -20.0
+mouse_filter = 2
+alignment = 2
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="ScrollContainer" type="ScrollContainer" parent="Chat"]
+margin_right = 560.0
+margin_bottom = 121.0
+mouse_filter = 2
+size_flags_vertical = 11
+scroll_horizontal_enabled = false
+
+[node name="VBoxContainer" type="VBoxContainer" parent="Chat/ScrollContainer"]
+margin_right = 560.0
+margin_bottom = 121.0
+mouse_filter = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+alignment = 2
+
+[node name="ChatLine" type="LineEdit" parent="Chat"]
+margin_top = 125.0
+margin_right = 560.0
+margin_bottom = 140.0
+mouse_filter = 2
+custom_styles/focus = SubResource( 1 )
+custom_styles/normal = SubResource( 2 )
+custom_fonts/font = SubResource( 3 )
+max_length = 150
+placeholder_text = "Say something..."
+placeholder_alpha = 0.3
+caret_blink = true
+caret_blink_speed = 0.4
+
+[node name="Tween" type="Tween" parent="Chat"]
+
+[node name="Tooltip" type="ColorRect" parent="."]
+visible = false
+modulate = Color( 1, 1, 1, 0.866667 )
+margin_right = 250.0
+margin_bottom = 100.0
+mouse_filter = 2
+color = Color( 0.0705882, 0.0980392, 0.156863, 1 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="VBoxContainer" type="VBoxContainer" parent="Tooltip"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+margin_left = 5.0
+margin_top = 5.0
+margin_right = -5.0
+margin_bottom = -5.0
+mouse_filter = 2
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Title" type="Label" parent="Tooltip/VBoxContainer"]
+margin_right = 240.0
+margin_bottom = 15.0
+custom_fonts/font = SubResource( 4 )
+custom_colors/font_color = Color( 0, 0.976471, 1, 1 )
+text = "Ability"
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Description" type="RichTextLabel" parent="Tooltip/VBoxContainer"]
+margin_top = 19.0
+margin_right = 240.0
+margin_bottom = 30.0
+mouse_filter = 2
+custom_fonts/normal_font = SubResource( 5 )
+bbcode_text = "This is a tooltip"
+text = "This is a tooltip"
+fit_content_height = true
 __meta__ = {
 "_edit_use_anchors_": false
 }

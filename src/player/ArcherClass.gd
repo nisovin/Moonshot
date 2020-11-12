@@ -8,22 +8,24 @@ const Moonshot = preload("res://player/Moonshot.tscn")
 
 const SERIALIZE_FIELDS = [ "state" ]
 
+const MAX_HEALTH = 100
+const HEALTH_REGEN = 0.5
 const ENERGY_REGEN = 5
 const ENERGY_EXHAUSTION_MULT = 0.75
 
 const SHOOT_AIM_TIME = 0.4
 const SHOOT_ARROW_COUNT = 5
-const SHOOT_ARROW_SPREAD = deg2rad(35)
+const SHOOT_ARROW_SPREAD = deg2rad(45)
 const SHOOT_ARROW_SPEED = 200
 const SHOOT_CENTER_KNOCKBACK_STR = 300
 const SHOOT_SIDE_KNOCKBACK_STR = 150
 const SHOOT_KNOCKBACK_DUR = 0.1
 const SHOOT_CENTER_DAMAGE = 40
-const SHOOT_SIDE_DAMAGE = 10
+const SHOOT_SIDE_DAMAGE = 8
 const SHOOT_COST = 7
 const SHOOT_COOLDOWN = 0.5
 
-const VOLLEY_RADIUS = 64
+const VOLLEY_RADIUS = 80
 const VOLLEY_DAMAGE_DELAY = 0.3
 const VOLLEY_DAMAGE = 25
 const VOLLEY_STUN_DUR = 0
@@ -68,7 +70,7 @@ const ABILITIES = [
 ]
 
 var state = ArcherState.NORMAL
-var energy = 100
+var energy = 50
 
 var shoot_aim_time = 0
 var shoot_cd = 0
@@ -118,6 +120,9 @@ func load_data(data):
 func is_moving():
 	return false
 
+func get_armor():
+	return 0
+
 func got_kill(enemy, killing_blow):
 	if killing_blow and ultimate_cd > 0:
 		ultimate_cd -= ULTIMATE_CD_REDUCE_KILL_BLOW
@@ -129,6 +134,7 @@ func attack1_press():
 	if state != ArcherState.NORMAL: return
 	if shoot_cd > 0: return
 	if energy < SHOOT_COST: return
+	Audio.play("archer_attack1_draw")
 	rpc("shoot_aim", owner.position)
 	
 func attack1_release():
@@ -163,11 +169,13 @@ remotesync func shoot_fire(pos, dir):
 		vel = vel.rotated(SHOOT_ARROW_SPREAD / (SHOOT_ARROW_COUNT - 1))
 		arrow.connect("hit", self, "shoot_hit")
 		shoot_end()
+	Audio.play("archer_attack1_fire", 1.0 if is_network_master() else 0.25)
 
 func shoot_hit(enemy, vel, mini):
 	var knockback = SHOOT_SIDE_KNOCKBACK_STR if mini else SHOOT_CENTER_KNOCKBACK_STR
 	if enemy.is_network_master():
 		var dam = SHOOT_SIDE_DAMAGE if mini else SHOOT_CENTER_DAMAGE
+		owner.last_combat = OS.get_ticks_msec()
 		enemy.hit({"damage": dam, "knockback": vel.normalized() * knockback, "knockback_dur": SHOOT_KNOCKBACK_DUR})
 	else:
 		enemy.local_hit(vel.normalized() * knockback, SHOOT_KNOCKBACK_DUR)
@@ -211,13 +219,16 @@ remotesync func volley(pos):
 	var volley = Volley.instance()
 	Game.level.ground_effects_node.add_child(volley)
 	volley.init(pos, VOLLEY_RADIUS)
+	Audio.play("archer_attack2")
 	yield(get_tree().create_timer(VOLLEY_DAMAGE_DELAY), "timeout")
 	for enemy in volley.get_overlapping_bodies():
 		if enemy.is_in_group("enemies"):
+			owner.last_combat = OS.get_ticks_msec()
 			if enemy.is_network_master():
 				enemy.hit({"damage": VOLLEY_DAMAGE, "stun": VOLLEY_STUN_DUR})
 			else:
 				enemy.local_hit()
+	
 	
 func movement_press():
 	if state != ArcherState.NORMAL: return
@@ -247,6 +258,8 @@ remotesync func start_shadow(pos):
 	shadow_tween.stop_all()
 	shadow_tween.interpolate_property(owner.sprite, "modulate", Color.white, SHADOW_MODULATE, 0.2)
 	shadow_tween.start()
+	if is_network_master():
+		Audio.loop("archer_movement")
 	
 remotesync func stop_shadow(pos):
 	state = ArcherState.NORMAL
@@ -259,6 +272,8 @@ remotesync func stop_shadow(pos):
 	shadow_tween.stop_all()
 	shadow_tween.interpolate_property(owner.sprite, "modulate", SHADOW_MODULATE, Color.white, 0.2)
 	shadow_tween.start()
+	if is_network_master():
+		Audio.stop_loop("archer_movement")
 
 func ultimate_press():
 	if state == ArcherState.AIMING_ULTIMATE:
@@ -294,6 +309,7 @@ remotesync func ultimate_launch(pos, dir):
 	arrow.connect("hit", self, "ultimate_hit")
 
 func ultimate_hit(enemy, vel):
+	owner.last_combat = OS.get_ticks_msec()
 	if enemy.is_network_master():
 		enemy.hit({"damage": ULTIMATE_DAMAGE})
 	else:

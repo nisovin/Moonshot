@@ -22,7 +22,10 @@ func _physics_process(delta):
 	if duration > 2:
 		queue_free()
 
+func _on_Arrow_area_entered(area):
+	if area.owner.is_in_group("enemies"):
+		emit_signal("hit", area.owner, velocity, mini)
+	queue_free()
+	
 func _on_Arrow_body_entered(body):
-	if body.is_in_group("enemies"):
-		emit_signal("hit", body, velocity, mini)
 	queue_free()

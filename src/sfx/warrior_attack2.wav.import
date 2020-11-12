@@ -1,0 +1,21 @@
+[remap]
+
+importer="wav"
+type="AudioStreamSample"
+path="res://.import/warrior_attack2.wav-b79623329902e8c2ddae1707ca7b45de.sample"
+
+[deps]
+
+source_file="res://sfx/warrior_attack2.wav"
+dest_files=[ "res://.import/warrior_attack2.wav-b79623329902e8c2ddae1707ca7b45de.sample" ]
+
+[params]
+
+force/8_bit=false
+force/mono=false
+force/max_rate=false
+force/max_rate_hz=44100
+edit/trim=false
+edit/normalize=false
+edit/loop=false
+compress/mode=0

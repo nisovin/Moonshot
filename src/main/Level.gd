@@ -8,6 +8,8 @@ onready var enemies_node = $Walls/Entities/Enemies
 onready var projectiles_node = $Walls/Entities/Projectiles
 onready var ground_effects_node = $Ground/GroundEffects
 
+var base_exhaustion = 0
+
 func _ready():
 	daynight_anim.play("daynight")
 
@@ -24,6 +26,8 @@ func start_server():
 
 func time_event(event):
 	print("Time: ", event)
+	if event == "dawn" and $ExhaustionTick.is_stopped():
+		$ExhaustionTick.start()
 
 func add_new_player(data):
 	add_player_from_data(data)
@@ -98,3 +102,17 @@ remotesync func add_chat(player_name, message):
 
 remotesync func add_system_message(message):
 	$GUI.add_system_message(message)
+
+func _on_HealTick_timeout():
+	if is_network_master():
+		for p in players_node.get_children():
+			if not p.dead and p.health < p.player_class.MAX_HEALTH and p.last_combat < OS.get_ticks_msec() - 10000 and p.last_heal_tick < OS.get_ticks_msec() - 500:
+				p.rpc("heal", min(p.health + p.player_class.HEALTH_REGEN * 0.5, p.player_class.MAX_HEALTH), false)
+				p.last_heal_tick = OS.get_ticks_msec()
+
+func _on_ExhaustionTick_timeout():
+	if is_network_master():
+		base_exhaustion = clamp(base_exhaustion + 1, 0, 100)
+		for p in players_node.get_children():
+			if not p.dead:
+				p.increase_exhaustion(1)

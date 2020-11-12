@@ -10,6 +10,7 @@ var banned_uuids = []
 
 var name_to_id = {}
 var id_to_uuid = {}
+var saved_players = {}
 
 var max_players = 20
 var dc_error = null
@@ -70,24 +71,50 @@ func _on_server_player_connected(id):
 	rpc_id(id, "load_game_state", data)
 	
 func _on_server_player_disconnected(id):
-	print("Player disconnected: id=", id)
+	var n = ""
+	var p = level.get_player_by_id(id)
+	if p != null:
+		n = p.player_name
+		saved_players[p.uuid] = p.get_data()
 	level.remove_player(id)
+	print("Player disconnected: id=", id, " name=", n)
 
-remote func player_join(class_id, player_name: String, player_uuid: String):
+remote func player_uuid(uuid: String):
+	var id = get_tree().get_rpc_sender_id()
+	
+	# check ban
+	if uuid in banned_uuids:
+		get_tree().network_peer.disconnect_peer(id, true)
+		print("Banned UUID kicked: " + uuid)
+		return
+		
+	# find existing player
+#	if uuid in saved_players:
+#		var data = saved_players[uuid]
+#		data.id = id
+#		if data.exhaustion < Game.level.base_exhaustion:
+#			data.exhaustion = Game.level.base_exhaustion
+#		rpc_id(id, "restore_player")
+#		level.add_new_player(data)
+#		name_to_id[data.player_name.to_lower()] = id
+#		id_to_uuid[id] = uuid
+#		print("Player rejoined: id=", id, " name=" , data.player_name, " class=", data.class_id, " uuid=", uuid)
+
+remote func player_join(class_id, player_name: String, uuid: String):
 	var id = get_tree().get_rpc_sender_id()
 	player_name = Game.player_name_regex.sub(player_name, "").strip_edges()
 	
 	# check ban
-	if player_uuid in banned_uuids:
+	if uuid in banned_uuids:
 		get_tree().network_peer.disconnect_peer(id, true)
-		print("Banned UUID kicked: " + player_uuid)
+		print("Banned UUID kicked: " + uuid)
 		return
 	
 	# check existing name
 	if player_name.to_lower() in name_to_id:
 		var curr_id = name_to_id[player_name.to_lower()]
-		var uuid = id_to_uuid[curr_id]
-		if uuid != player_uuid or curr_id in get_tree().multiplayer.get_network_connected_peers():
+		var u = id_to_uuid[curr_id]
+		if u != uuid or curr_id in get_tree().multiplayer.get_network_connected_peers():
 			rpc_id(id, "invalid_name")
 			return
 	
@@ -96,10 +123,12 @@ remote func player_join(class_id, player_name: String, player_uuid: String):
 		rpc_id(id, "invalid_name")
 		return
 	
-	print("Player joined: id=", id, " name=" , player_name, " class=", class_id, " uuid=", player_uuid)
-	level.add_new_player({"id": id, "class_id": class_id, "player_name": player_name, "uuid": player_uuid})
+	# get/create player data
+	var data = {"id": id, "class_id": class_id, "player_name": player_name, "uuid": uuid, "exhaustion": Game.level.base_exhaustion}
+	level.add_new_player(data)
 	name_to_id[player_name.to_lower()] = id
-	id_to_uuid[id] = player_uuid
+	id_to_uuid[id] = uuid
+	print("Player joined: id=", id, " name=" , player_name, " class=", class_id, " uuid=", uuid)
 
 func ban(player_name):
 	player_name = player_name.to_lower()
@@ -148,11 +177,17 @@ remote func load_game_state(data):
 	level.load_game_state(data.game_state)
 	level.visible = true
 	show_join_menu()
+	rpc_id(1, "player_uuid", OS.get_unique_id())
 	
 func show_join_menu():
 	var menu = load("res://gui/JoinGameMenu.tscn").instance()
 	Game.add_child(menu)
 	menu.connect("option_selected", self, "_on_join_option_selected")
+
+remote func restore_player():
+	var n = Game.get_node_or_null("JoinGameMenu")
+	if n != null:
+		n.queue_free()
 
 func _on_join_option_selected(option, player_name):
 	if option == -1:

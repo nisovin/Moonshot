@@ -43,3 +43,19 @@ func get_overlapping_bodies(area: Area2D, group = ""):
 			bodies.append(r.collider)
 	return bodies
 	
+
+func get_overlapping_hitboxes(area: Area2D, group = ""):
+	var space = area.get_world_2d().direct_space_state
+	var query = Physics2DShapeQueryParameters.new()
+	query.collide_with_bodies = false
+	query.collide_with_areas = true
+	query.collision_layer = area.collision_mask
+	query.transform = area.global_transform
+	query.set_shape(area.get_child(0).shape)
+	var results = space.intersect_shape(query)
+	var bodies = []
+	for r in results:
+		if group == "" or r.collider.owner.is_in_group(group):
+			bodies.append(r.collider.owner)
+	return bodies
+	

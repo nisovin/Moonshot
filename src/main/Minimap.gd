@@ -35,3 +35,6 @@ func _draw():
 			
 	# draw myself
 	draw_rect(Rect2(center, Vector2.ONE), Color.yellow)
+
+	# draw border
+	draw_rect(Rect2(Vector2.ZERO, rect_size), Color.gray, false, 2)
