@@ -17,9 +17,11 @@ var current_speed := NORMAL_SPEED
 var facing := "down"
 var facing_dir := Vector2.ZERO
 var targetable = true
+var targeted_by_count = 0
 
 var health = 100
 var last_hit = 0
+var last_hit_amount = 0
 var last_combat = 0
 var last_heal_tick = 0
 var exhaustion = 0
@@ -77,12 +79,22 @@ func get_data():
 		data[field] = get(field)
 	data.class_data = player_class.get_data()
 	return data
-
-func is_invulnerable():
-	return last_hit > OS.get_ticks_msec() - 400
-
-func get_armor():
-	return player_class.get_armor()
+	
+func apply_damage(dam):
+	dam *= 1 - player_class.get_armor()
+	if last_hit > OS.get_ticks_msec() - 400:
+		if dam < last_hit_amount:
+			return false
+		else:
+			dam -= last_hit_amount
+	else:
+		last_hit = OS.get_ticks_msec()
+		last_hit_amount = dam
+	if dam <= 0:
+		return false
+	var new_health = health - dam
+	rpc("damage", new_health)
+	return true
 
 func got_kill(enemy, killing_blow):
 	player_class.got_kill(enemy, killing_blow)
@@ -98,10 +110,10 @@ func _physics_process(delta):
 			sprite.play("idle_" + facing)
 
 remotesync func damage(new_health, energy_damage = 0):
-	if is_network_master() and new_health < health:
+	if new_health >= health: return
+	if is_network_master():
 		pass # show FCT
 	health = new_health
-	last_hit = OS.get_ticks_msec()
 	last_combat = last_hit
 	if energy_damage > 0:
 		player_class.energy = max(player_class.energy - energy_damage, 0)

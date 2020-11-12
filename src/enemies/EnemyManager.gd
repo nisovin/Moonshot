@@ -13,7 +13,7 @@ func _ready():
 	set_physics_process(false)
 
 func start_server():
-	$SpawnTimer.wait_time = 0.1
+	$SpawnTimer.wait_time = 1
 	$SpawnTimer.start()
 	set_physics_process(true)
 
@@ -27,6 +27,14 @@ remotesync func spawn_enemy(data):
 func _physics_process(delta):
 	if next_ai == 0:
 		if not check_start_loop(): return
+		# recount player targeted counts
+		for p in owner.players_node.get_children():
+			p.targeted_by_count = 0
+		for w in owner.walls_node.get_children():
+			w.targeted_by_count = 0
+		for e in owner.enemies_node.get_children():
+			if e.controller.target != null && "targeted_by_count" in e.controller.target:
+				e.controller.target.targeted_by_count += 1
 	var c = owner.enemies_node.get_child_count()
 	if c > 0:
 		var start = OS.get_ticks_msec()
@@ -53,7 +61,7 @@ func check_start_loop():
 
 
 func _on_SpawnTimer_timeout():
-	var max_enemies = get_tree().get_nodes_in_group("players").size() * 50
+	var max_enemies = get_tree().get_nodes_in_group("players").size() * 25
 	if owner.enemies_node.get_child_count() < max_enemies:
 		rpc("spawn_enemy", {"id": next_enemy_id, "position": enemy_spawn_point.position + Vector2(N.rand_float(0, 16), N.rand_float(0, 16))})
 		next_enemy_id += 1

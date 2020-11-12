@@ -8,9 +8,20 @@
 
 config_version=4
 
-_global_script_classes=[  ]
+_global_script_classes=[ {
+"base": "EnemyType",
+"class": "EnemySwarmer",
+"language": "GDScript",
+"path": "res://enemies/EnemySwarmer.gd"
+}, {
+"base": "Resource",
+"class": "EnemyType",
+"language": "GDScript",
+"path": "res://enemies/EnemyType.gd"
+} ]
 _global_script_class_icons={
-
+"EnemySwarmer": "",
+"EnemyType": ""
 }
 
 [application]
@@ -33,6 +44,7 @@ Audio.server="*res://main/AudioServer.tscn"
 gdscript/warnings/unused_argument=false
 gdscript/warnings/unused_signal=false
 gdscript/warnings/return_value_discarded=false
+gdscript/warnings/integer_division=false
 
 [display]
 
