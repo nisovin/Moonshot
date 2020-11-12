@@ -3,7 +3,6 @@ extends Node
 enum Directive { NONE, FOCUS_PLAYERS, FOCUS_KEEP, SWIFTNESS, ENRAGE }
 
 onready var enemy_spawn_point = owner.get_node("EnemySpawn")
-onready var enemies_node = owner.get_node("Walls/Entities/Enemies")
 
 var next_enemy_id = 1
 
@@ -21,13 +20,13 @@ remotesync func spawn_enemy(data):
 	var enemy = Game.Enemy.instance()
 	enemy.name = str(data.id)
 	enemy.position = data.position
-	enemies_node.add_child(enemy)
+	owner.enemies_node.add_child(enemy)
 	enemy.load_data(data)
 
 func _physics_process(delta):
 	if next_ai == 0:
 		if not check_start_loop(): return
-	var c = enemies_node.get_child_count()
+	var c = owner.enemies_node.get_child_count()
 	if c > 0:
 		var start = OS.get_ticks_msec()
 		var done = 0
@@ -35,7 +34,7 @@ func _physics_process(delta):
 			if next_ai >= c:
 				next_ai = 0
 				if not check_start_loop(): return
-			enemies_node.get_child(next_ai).ai_tick()
+			owner.enemies_node.get_child(next_ai).ai_tick()
 			next_ai += 1
 			done += 1
 		if OS.get_ticks_msec() > start + 15:
@@ -52,6 +51,6 @@ func check_start_loop():
 func _on_SpawnTimer_timeout():
 	var max_enemies = get_tree().get_nodes_in_group("players").size() * 5
 	#max_enemies = 1
-	if enemies_node.get_child_count() < max_enemies:
+	if owner.enemies_node.get_child_count() < max_enemies:
 		rpc("spawn_enemy", {"id": next_enemy_id, "position": enemy_spawn_point.position})
 		next_enemy_id += 1

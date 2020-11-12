@@ -2,24 +2,20 @@ extends Node2D
 
 var chat_history = []
 
+onready var gui = $GUI
+onready var map = $Map
 onready var daynight_anim = $DayNightCycle/AnimationPlayer
-onready var players_node = $Walls/Entities/Players
-onready var enemies_node = $Walls/Entities/Enemies
-onready var projectiles_node = $Walls/Entities/Projectiles
-onready var ground_effects_node = $Ground/GroundEffects
+onready var players_node = $Map/Objects/Entities/Players
+onready var enemies_node = $Map/Objects/Entities/Enemies
+onready var projectiles_node = $Map/Objects/Entities/Projectiles
+onready var ground_effects_node = $Map/Ground/GroundEffects
+onready var walls_node = $Map/Objects/Walls
 
 var base_exhaustion = 0
 var time_of_day = "start"
 
 func _ready():
 	daynight_anim.play("daynight")
-
-func _unhandled_key_input(event):
-	if event.scancode == KEY_F2 and event.pressed:
-		var path = $Navigation2D.get_simple_path($EnemySpawn.position, $Position2D.position, true)
-		$Line2D.points = path
-	if event.scancode == KEY_F3 and event.pressed:
-		$Navigation2D/Wall.enabled = !$Navigation2D/Wall.enabled
 
 func start_server():
 	$EnemyManager.start_server()
@@ -82,6 +78,9 @@ func load_game_state(game_state):
 		for e in game_state.enemies:
 			add_enemy_from_data(e)
 
+func get_nav_path(from, to, get_cost = false):
+	map.get_nav_path(from, to, get_cost)
+
 func get_player_by_id(id):
 	return players_node.get_node_or_null(str(id))
 
@@ -102,10 +101,10 @@ master func send_chat(message: String):
 			rpc("add_chat", p.player_name, message)
 
 remotesync func add_chat(player_name, message):
-	$GUI.add_chat(player_name, message)
+	gui.add_chat(player_name, message)
 
 remotesync func add_system_message(message):
-	$GUI.add_system_message(message)
+	gui.add_system_message(message)
 
 func _on_HealTick_timeout():
 	if is_network_master():
