@@ -3,7 +3,7 @@ extends Node
 const MAX_ENEMIES_ON_PLAYER = 8
 const MAX_ENEMIES_ON_WALL = 6
 
-var type = EnemySwarmer.new()
+var type
 var target
 var target_position
 var target_direction
@@ -22,11 +22,24 @@ var dead = false
 
 onready var space_state: Physics2DDirectSpaceState = get_parent().get_world_2d().direct_space_state
 
+func init(type_id):
+	match type_id:
+		Game.EnemyClass.SWARMER:
+			type = EnemySwarmer.new()
+		Game.EnemyClass.MAGE:
+			type = EnemyMage.new()
+		_:
+			assert(false)
+			owner.queue_free()
+			return
+	type.name = "EnemyClass"
+	owner.add_child(type)
+	type.init(owner)
+
 func collide(collision):
-	if type.attack_melee > 0 and next_attack < OS.get_ticks_msec() and stun_duration <= 0 and knockback_duration <= 0:
+	if not dead and type.attack_melee > 0 and next_attack < OS.get_ticks_msec() and stun_duration <= 0 and knockback_duration <= 0:
 		var body = collision.collider
 		if body.is_in_group("players") or body.is_in_group("walls"):
-			print("bump attack",target)
 			attack(body, true)
 
 func hit(data):
@@ -88,7 +101,6 @@ func try_to_attack():
 		if "target_position" in target: pos = target.target_position
 		var dist_sq = owner.position.distance_squared_to(pos)
 		if dist_sq > type.attack_range_min * type.attack_range_min and dist_sq < type.attack_range_max * type.attack_range_max:
-			print("normal attack", target)
 			return attack(target, false)
 	return false
 	
@@ -172,30 +184,44 @@ func calculate_path_to_target():
 					next_point = target_position
 				else:
 					next_point = path_to_target[0]
-		owner.get_node("Line2D").points = path_to_target
-		owner.get_node("Line2D").set_as_toplevel(true)
+		#owner.get_node("Line2D").points = path_to_target
+		#owner.get_node("Line2D").set_as_toplevel(true)
 	target_direction = owner.position.direction_to(next_point)
 
 func calculate_desired_velocity():
 	var separation_direction = Vector2.ZERO
-	var neighbors = N.get_overlapping_bodies(owner.neighbors, "enemies")
+	var avoid_direction = Vector2.ZERO
+	var neighbors = N.get_overlapping_bodies(owner.neighbors, "", 6 if type.avoid_players else 4)
 	if neighbors.size() > 1:
-		var enemy
+		var neighbor
+		var dir
+		var e_count = 0
+		var p_count = 0
 		for i in neighbors.size():
 			if i > 15: break
-			enemy = neighbors[i]
-			if enemy != self:
-				var dist = enemy.position.distance_to(owner.position)
+			neighbor = neighbors[i]
+			if neighbor != self:
+				var dist = neighbor.position.distance_to(owner.position)
 				if dist == 0:
-					separation_direction = Vector2.DOWN
+					dir = Vector2.DOWN
 				elif dist < 16:
-					separation_direction += (owner.position - enemy.position) / dist * 5
+					dir = (owner.position - neighbor.position) / dist * 5
 				else:
 					var mult = 1 - (dist / 50)
-					separation_direction += (owner.position - enemy.position) / dist * mult
-		separation_direction /= min(neighbors.size(), 15)
+					dir = (owner.position - neighbor.position) / dist * mult
+				if neighbor.is_in_group("enemies"):
+					separation_direction += dir
+					e_count += 1
+				elif type.avoid_players and neighbor.is_in_group("players"):
+					avoid_direction += dir
+					p_count += 1
+		
+		if e_count > 0:
+			separation_direction /= e_count
+		if p_count > 0:
+			avoid_direction /= p_count
 
-	var direction = target_direction + separation_direction
+	var direction = target_direction + separation_direction + avoid_direction * 2
 	return direction.normalized() * type.movement_speed
 		
 func remove_target(t):

@@ -1,4 +1,4 @@
-[gd_scene load_steps=48 format=2]
+[gd_scene load_steps=49 format=2]
 
 [ext_resource path="res://player/LocalController.gd" type="Script" id=1]
 [ext_resource path="res://player/Player.gd" type="Script" id=2]
@@ -96,55 +96,55 @@ region = Rect2( 52, 36, 26, 36 )
 
 [sub_resource type="AtlasTexture" id=17]
 atlas = ExtResource( 4 )
-region = Rect2( 26, 36, 26, 36 )
+region = Rect2( 0, 108, 26, 36 )
 
 [sub_resource type="AtlasTexture" id=18]
 atlas = ExtResource( 4 )
-region = Rect2( 0, 72, 26, 36 )
+region = Rect2( 26, 108, 26, 36 )
 
 [sub_resource type="AtlasTexture" id=19]
 atlas = ExtResource( 4 )
-region = Rect2( 26, 72, 26, 36 )
+region = Rect2( 52, 108, 26, 36 )
 
 [sub_resource type="AtlasTexture" id=20]
 atlas = ExtResource( 4 )
-region = Rect2( 52, 72, 26, 36 )
+region = Rect2( 26, 36, 26, 36 )
 
 [sub_resource type="AtlasTexture" id=21]
 atlas = ExtResource( 4 )
-region = Rect2( 26, 108, 26, 36 )
+region = Rect2( 26, 0, 26, 36 )
 
 [sub_resource type="AtlasTexture" id=22]
 atlas = ExtResource( 4 )
-region = Rect2( 26, 0, 26, 36 )
+region = Rect2( 26, 108, 26, 36 )
 
 [sub_resource type="AtlasTexture" id=23]
 atlas = ExtResource( 4 )
-region = Rect2( 26, 72, 26, 36 )
+region = Rect2( 0, 72, 26, 36 )
 
 [sub_resource type="AtlasTexture" id=24]
 atlas = ExtResource( 4 )
-region = Rect2( 0, 0, 26, 36 )
+region = Rect2( 26, 72, 26, 36 )
 
 [sub_resource type="AtlasTexture" id=25]
 atlas = ExtResource( 4 )
-region = Rect2( 26, 0, 26, 36 )
+region = Rect2( 52, 72, 26, 36 )
 
 [sub_resource type="AtlasTexture" id=26]
 atlas = ExtResource( 4 )
-region = Rect2( 52, 0, 26, 36 )
+region = Rect2( 26, 72, 26, 36 )
 
 [sub_resource type="AtlasTexture" id=27]
 atlas = ExtResource( 4 )
-region = Rect2( 0, 108, 26, 36 )
+region = Rect2( 0, 0, 26, 36 )
 
 [sub_resource type="AtlasTexture" id=28]
 atlas = ExtResource( 4 )
-region = Rect2( 26, 108, 26, 36 )
+region = Rect2( 26, 0, 26, 36 )
 
 [sub_resource type="AtlasTexture" id=29]
 atlas = ExtResource( 4 )
-region = Rect2( 52, 108, 26, 36 )
+region = Rect2( 52, 0, 26, 36 )
 
 [sub_resource type="SpriteFrames" id=30]
 animations = [ {
@@ -153,39 +153,39 @@ animations = [ {
 "name": "walk_left",
 "speed": 10.0
 }, {
-"frames": [ SubResource( 17 ) ],
+"frames": [ SubResource( 17 ), SubResource( 18 ), SubResource( 19 ), SubResource( 18 ) ],
+"loop": true,
+"name": "walk_up",
+"speed": 10.0
+}, {
+"frames": [ SubResource( 20 ) ],
 "loop": true,
 "name": "idle_left",
 "speed": 5.0
 }, {
-"frames": [ SubResource( 18 ), SubResource( 19 ), SubResource( 20 ), SubResource( 19 ) ],
-"loop": true,
-"name": "walk_right",
-"speed": 10.0
-}, {
 "frames": [ SubResource( 21 ) ],
-"loop": true,
-"name": "idle_up",
-"speed": 5.0
-}, {
-"frames": [ SubResource( 22 ) ],
 "loop": true,
 "name": "idle_down",
 "speed": 5.0
 }, {
-"frames": [ SubResource( 23 ) ],
+"frames": [ SubResource( 22 ) ],
+"loop": true,
+"name": "idle_up",
+"speed": 5.0
+}, {
+"frames": [ SubResource( 23 ), SubResource( 24 ), SubResource( 25 ), SubResource( 24 ) ],
+"loop": true,
+"name": "walk_right",
+"speed": 10.0
+}, {
+"frames": [ SubResource( 26 ) ],
 "loop": true,
 "name": "idle_right",
 "speed": 5.0
 }, {
-"frames": [ SubResource( 24 ), SubResource( 25 ), SubResource( 26 ), SubResource( 25 ) ],
-"loop": true,
-"name": "walk_down",
-"speed": 10.0
-}, {
 "frames": [ SubResource( 27 ), SubResource( 28 ), SubResource( 29 ), SubResource( 28 ) ],
 "loop": true,
-"name": "walk_up",
+"name": "walk_down",
 "speed": 10.0
 } ]
 
@@ -251,6 +251,10 @@ tracks/0/keys = {
 "update": 0,
 "values": [ Color( 1, 1, 1, 1 ), Color( 0.54902, 0, 0, 1 ), Color( 1, 1, 1, 1 ) ]
 }
+
+[sub_resource type="CapsuleShape2D" id=34]
+radius = 8.73781
+height = 17.9792
 
 [node name="Player" type="KinematicBody2D" groups=[
 "players",
@@ -408,3 +412,14 @@ __meta__ = {
 [node name="AnimationPlayer" type="AnimationPlayer" parent="Visual"]
 anims/die = SubResource( 32 )
 anims/hit = SubResource( 33 )
+
+[node name="Hitbox" type="Area2D" parent="."]
+monitoring = false
+collision_layer = 8
+collision_mask = 0
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Hitbox"]
+position = Vector2( 0, -12 )
+shape = SubResource( 34 )
+
+[node name="Tween" type="Tween" parent="."]

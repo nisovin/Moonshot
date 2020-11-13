@@ -1,12 +1,13 @@
 extends KinematicBody2D
 
-const SERIALIZE_FIELDS = [ "global_position", "velocity" ]
+const SERIALIZE_FIELDS = [ "type_id", "global_position", "velocity" ]
 
 var velocity = Vector2.ZERO
 var move_duration = 0
 
-var health = 70.0
-var max_health = 70.0
+var type_id = 0
+var health: float = 50
+var max_health: float = 50
 var last_hit = 0
 var dead = false
 
@@ -21,11 +22,13 @@ func load_data(data):
 	for field in SERIALIZE_FIELDS:
 		if field in data:
 			set(field, data[field])
-	if is_network_master():
-		controller = $EnemyController
-	else:
-		$EnemyController.queue_free()
+	controller = $EnemyController
+	controller.init(type_id)
+	max_health = controller.type.max_health
+	health = max_health
+	print(type_id)
 	if not is_network_master():
+		controller.queue_free()
 		visual.enable_smoothing()
 	if not Game.is_server():
 		healthbar.rect_size.x = min(ceil(health / 5), 32)
@@ -53,9 +56,9 @@ remotesync func set_movement(vel, pos, dur = 0):
 	velocity = vel
 	move_duration = dur
 	visual.paused = vel == Vector2.ZERO
-	if not dead:
-		stun_particles.emitting = vel == Vector2.ZERO
-		stun_particles.visible = stun_particles.emitting
+	#if not dead:
+	#	stun_particles.emitting = vel == Vector2.ZERO
+	#	stun_particles.visible = stun_particles.emitting
 
 func hit(data):
 	if controller.hit(data):
@@ -101,7 +104,9 @@ remotesync func die():
 		stun_particles.emitting = false
 		stun_particles.visible = false
 		visual_anim.play("die")
-		$CollisionShape2D.set_deferred("disabled", true)
+		# disable player collision
+		set_deferred("collision_layer", 0)
+		set_deferred("collision_mask", 1)
 		yield(get_tree().create_timer(2.1), "timeout")
 	delete()
 

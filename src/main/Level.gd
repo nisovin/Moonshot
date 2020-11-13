@@ -4,6 +4,7 @@ var chat_history = []
 
 onready var gui = $GUI
 onready var map = $Map
+onready var player_spawn = $PlayerSpawn
 onready var daynight_anim = $DayNightCycle/AnimationPlayer
 onready var players_node = $Map/Objects/Entities/Players
 onready var enemies_node = $Map/Objects/Entities/Enemies
@@ -11,14 +12,17 @@ onready var projectiles_node = $Map/Objects/Entities/Projectiles
 onready var ground_effects_node = $Map/Ground/GroundEffects
 onready var walls_node = $Map/Objects/Walls
 
+var game_started = false
 var base_exhaustion = 0
 var time_of_day = "start"
 
-func _ready():
-	daynight_anim.play("daynight")
-
 func start_server():
 	$EnemyManager.start_server()
+	rpc("start_game")
+
+remotesync func start_game():
+	game_started = true
+	daynight_anim.play("daynight")
 
 func time_event(event):
 	print("Time: ", event)
@@ -26,10 +30,12 @@ func time_event(event):
 	if is_network_master():
 		if event == "dawn":
 			$ExhaustionTick.start()
+			$EnemyManager.speed_up_spawning()
 		elif event == "night":
 			$ExhaustionTick.stop()
 
 func add_new_player(data):
+	data.global_position = $PlayerSpawn.global_position
 	add_player_from_data(data)
 	rpc("add_new_player_remote", data)
 
@@ -58,7 +64,9 @@ func remove_player(id):
 
 func get_game_state():
 	var game_state = {}
+	game_state.game_started = game_started
 	game_state.time = daynight_anim.current_animation_position
+	game_state.player_spawn = player_spawn.position
 	game_state.players = []
 	game_state.enemies = []
 	for p in players_node.get_children():
@@ -68,15 +76,15 @@ func get_game_state():
 	return game_state
 
 func load_game_state(game_state):
-	if "time" in game_state:
+	daynight_anim.seek(game_state.time)
+	if game_state.game_started:
+		game_started = game_state.game_started
 		daynight_anim.play("daynight")
-		daynight_anim.seek(game_state.time)
-	if game_state.has("players"):
-		for p in game_state.players:
-			add_player_from_data(p)
-	if "enemies" in game_state:
-		for e in game_state.enemies:
-			add_enemy_from_data(e)
+	player_spawn.position = game_state.player_spawn
+	for p in game_state.players:
+		add_player_from_data(p)
+	for e in game_state.enemies:
+		add_enemy_from_data(e)
 
 func get_nav_path(from, to, smooth = true, get_cost = false):
 	return map.get_nav_path(from, to, smooth, get_cost)

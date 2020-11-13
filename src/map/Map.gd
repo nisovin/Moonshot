@@ -49,7 +49,7 @@ func _ready():
 					break
 			if ground_cell >= 0 and wall_cell < 0 and not excluded:
 				var is_wall = id in wall_ids
-				astar.add_point(id, point, WALL_WEIGHT_3 if is_wall else 1.0)
+				astar.add_point(id, point, WALL_WEIGHT_3 if is_wall else 1)
 				list.append(point)
 				
 	for x in map_size.x:

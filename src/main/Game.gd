@@ -13,7 +13,8 @@ const Enemy = preload("res://enemies/Enemy.tscn")
 
 enum MPMode { SOLO, CLIENT, SERVER, HOST, REMOTE }
 
-enum PlayerClass { WARRIOR, ARCHER, MAGE }
+enum PlayerClass { WARRIOR, ARCHER, PRIEST }
+enum EnemyClass { SWARMER, MAGE }
 
 var mp_mode = MPMode.SOLO
 var using_controller = false
@@ -92,7 +93,12 @@ func start_client():
 	var peer = NetworkedMultiplayerENet.new()
 	peer.create_client("minecraft.nisovin.com", PORT)
 	get_tree().network_peer = peer
-	
+
+func leave_game():
+	get_tree().network_peer = null
+	level.queue_free()
+	start_menu()
+
 func join_game(clss):
 	pass
 
@@ -110,7 +116,7 @@ func start_solo():
 	get_tree().network_peer = peer
 	get_tree().refuse_new_network_connections = true
 
-	level.add_player_from_data({"class_id": Game.PlayerClass.WARRIOR, "id": get_tree().get_network_unique_id()})
+	level.add_new_player({"class_id": Game.PlayerClass.WARRIOR, "id": get_tree().get_network_unique_id()})
 
 	level.start_server()
 

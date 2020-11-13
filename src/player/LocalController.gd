@@ -101,6 +101,9 @@ func _unhandled_input(event):
 		
 	# actions
 		
+	elif event.is_action_pressed("interact"):
+		owner.interact()
+		
 	elif event.is_action_pressed("attack1"):
 		owner.player_class.attack1_press()
 	elif event.is_action_released("attack1"):

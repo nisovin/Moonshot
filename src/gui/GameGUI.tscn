@@ -17,28 +17,28 @@
 [ext_resource path="res://gui/icons/status_focus_players.png" type="Texture" id=15]
 [ext_resource path="res://white_pixel.png" type="Texture" id=16]
 
-[sub_resource type="DynamicFont" id=6]
+[sub_resource type="DynamicFont" id=1]
 outline_size = 1
 outline_color = Color( 0, 0, 0, 1 )
 extra_spacing_top = 3
 font_data = ExtResource( 8 )
 
-[sub_resource type="StyleBoxFlat" id=1]
+[sub_resource type="StyleBoxFlat" id=2]
 bg_color = Color( 0, 0, 0, 0.670588 )
 expand_margin_left = 3.0
 expand_margin_right = 3.0
 expand_margin_top = 3.0
 expand_margin_bottom = 3.0
 
-[sub_resource type="StyleBoxEmpty" id=2]
-
-[sub_resource type="DynamicFont" id=3]
-font_data = ExtResource( 3 )
+[sub_resource type="StyleBoxEmpty" id=3]
 
 [sub_resource type="DynamicFont" id=4]
-font_data = ExtResource( 3 )
+font_data = ExtResource( 8 )
 
 [sub_resource type="DynamicFont" id=5]
+font_data = ExtResource( 3 )
+
+[sub_resource type="DynamicFont" id=6]
 font_data = ExtResource( 8 )
 
 [node name="GUI" type="CanvasLayer"]
@@ -222,7 +222,7 @@ __meta__ = {
 [node name="Label" type="Label" parent="PlayerBars/Health"]
 anchor_right = 1.0
 anchor_bottom = 1.0
-custom_fonts/font = SubResource( 6 )
+custom_fonts/font = SubResource( 1 )
 text = "100"
 align = 1
 valign = 1
@@ -249,7 +249,7 @@ __meta__ = {
 [node name="Label" type="Label" parent="PlayerBars/Energy"]
 anchor_right = 1.0
 anchor_bottom = 1.0
-custom_fonts/font = SubResource( 6 )
+custom_fonts/font = SubResource( 1 )
 text = "100"
 align = 1
 valign = 1
@@ -278,7 +278,7 @@ __meta__ = {
 [node name="Label" type="Label" parent="Exhaustion"]
 anchor_right = 1.0
 anchor_bottom = 1.0
-custom_fonts/font = SubResource( 6 )
+custom_fonts/font = SubResource( 1 )
 text = "0"
 align = 1
 valign = 1
@@ -302,27 +302,27 @@ __meta__ = {
 
 [node name="ScrollContainer" type="ScrollContainer" parent="Chat"]
 margin_right = 560.0
-margin_bottom = 121.0
+margin_bottom = 126.0
 mouse_filter = 2
 size_flags_vertical = 11
 scroll_horizontal_enabled = false
 
 [node name="VBoxContainer" type="VBoxContainer" parent="Chat/ScrollContainer"]
 margin_right = 560.0
-margin_bottom = 121.0
+margin_bottom = 126.0
 mouse_filter = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
 alignment = 2
 
 [node name="ChatLine" type="LineEdit" parent="Chat"]
-margin_top = 125.0
+margin_top = 130.0
 margin_right = 560.0
 margin_bottom = 140.0
 mouse_filter = 2
-custom_styles/focus = SubResource( 1 )
-custom_styles/normal = SubResource( 2 )
-custom_fonts/font = SubResource( 3 )
+custom_styles/focus = SubResource( 2 )
+custom_styles/normal = SubResource( 3 )
+custom_fonts/font = SubResource( 4 )
 max_length = 150
 placeholder_text = "Say something..."
 placeholder_alpha = 0.3
@@ -357,7 +357,7 @@ __meta__ = {
 [node name="Title" type="Label" parent="Tooltip/VBoxContainer"]
 margin_right = 240.0
 margin_bottom = 15.0
-custom_fonts/font = SubResource( 4 )
+custom_fonts/font = SubResource( 5 )
 custom_colors/font_color = Color( 0, 0.976471, 1, 1 )
 text = "Ability"
 __meta__ = {
@@ -369,11 +369,53 @@ margin_top = 19.0
 margin_right = 240.0
 margin_bottom = 30.0
 mouse_filter = 2
-custom_fonts/normal_font = SubResource( 5 )
+custom_fonts/normal_font = SubResource( 6 )
 bbcode_text = "This is a tooltip"
 text = "This is a tooltip"
 fit_content_height = true
 __meta__ = {
 "_edit_use_anchors_": false
 }
+
+[node name="Menu" type="ColorRect" parent="."]
+visible = false
+anchor_right = 1.0
+anchor_bottom = 1.0
+color = Color( 0.0588235, 0.0784314, 0.105882, 0.764706 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="CenterContainer" type="CenterContainer" parent="Menu"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="VBoxContainer" type="VBoxContainer" parent="Menu/CenterContainer"]
+margin_left = 278.0
+margin_top = 146.0
+margin_right = 362.0
+margin_bottom = 214.0
+
+[node name="Resume" type="Button" parent="Menu/CenterContainer/VBoxContainer"]
+margin_right = 84.0
+margin_bottom = 20.0
+text = "Resume"
+
+[node name="Disconnect" type="Button" parent="Menu/CenterContainer/VBoxContainer"]
+margin_top = 24.0
+margin_right = 84.0
+margin_bottom = 44.0
+text = "Disconnect"
+
+[node name="Quit" type="Button" parent="Menu/CenterContainer/VBoxContainer"]
+margin_top = 48.0
+margin_right = 84.0
+margin_bottom = 68.0
+text = "Quit"
 [connection signal="text_entered" from="Chat/ChatLine" to="." method="_on_ChatLine_text_entered"]
+[connection signal="pressed" from="Menu/CenterContainer/VBoxContainer/Resume" to="." method="_on_Resume_pressed"]
+[connection signal="pressed" from="Menu/CenterContainer/VBoxContainer/Disconnect" to="." method="_on_Disconnect_pressed"]
+[connection signal="pressed" from="Menu/CenterContainer/VBoxContainer/Quit" to="." method="_on_Quit_pressed"]

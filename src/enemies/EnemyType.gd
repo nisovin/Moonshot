@@ -1,7 +1,10 @@
-extends Resource
+extends Node
 class_name EnemyType
 
+var max_health = 50
 var movement_speed = 30
+var power = 1
+var avoid_players = false
 
 var target_range = 50 * Game.TILE_SIZE
 var target_max_range = 60 * Game.TILE_SIZE
@@ -17,6 +20,9 @@ var attack_range = 8
 var attack_range_min = 0
 var attack_range_max = 0
 var attack_cooldown = 1000
+
+func init(node):
+	pass
 
 func calculate_target_priority(target, distance_sq):
 	if distance_sq > target_range * target_range:

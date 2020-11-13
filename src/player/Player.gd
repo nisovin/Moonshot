@@ -2,7 +2,7 @@ extends KinematicBody2D
 
 signal became_untargetable
 
-enum PlayerState { LOADING, NORMAL, ABILITY, DEAD }
+enum PlayerState { LOADING, NORMAL, TELEPORTING, ABILITY, DEAD }
 
 const SERIALIZE_FIELDS = [ "player_name", "uuid", "state", "health", "last_combat", "exhaustion", "move_dir", "current_speed", "facing", "facing_dir", "class_id", "global_position" ]
 
@@ -18,6 +18,7 @@ var facing := "down"
 var facing_dir := Vector2.ZERO
 var targetable = true
 var targeted_by_count = 0
+var interact_with = null
 
 var health = 100
 var last_hit = 0
@@ -143,9 +144,21 @@ remotesync func set_movement(x, y, pos):
 	if x != 0 or y != 0:
 		set_facing(move_dir)
 	position = pos
-		
-puppet func update_position(pos):
-	if Game.mp_mode == Game.MPMode.SERVER:
+
+func teleport(pos):
+	if state != PlayerState.NORMAL: return
+	Game.lock_player_input = true
+	state = PlayerState.TELEPORTING
+	$Tween.interpolate_property(self, "position", position, pos, 0.1, Tween.TRANS_QUAD, Tween.EASE_IN)
+	$Tween.start()
+	yield(get_tree().create_timer(0.1), "timeout")
+	position = pos
+	state = PlayerState.NORMAL
+	Game.lock_player_input = false
+	rpc("update_position", pos)
+
+puppet func update_position(pos, tp = false):
+	if tp or Game.is_server():
 		position = pos
 	else:
 		var d = position.distance_squared_to(pos)
@@ -156,6 +169,10 @@ puppet func update_position(pos):
 			
 remotesync func update_health(val):
 	health = val
+
+func interact():
+	if interact_with != null:
+		interact_with.interact(self)
 
 func pause_movement():
 	state = PlayerState.ABILITY

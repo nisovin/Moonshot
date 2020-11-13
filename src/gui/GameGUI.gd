@@ -132,6 +132,11 @@ func _unhandled_input(event):
 		open_chat()
 	elif event.is_action_pressed("ui_cancel") and chatting:
 		close_chat()
+	elif event.is_action_pressed("menu") and $Menu.visible:
+		_on_Resume_pressed()
+	elif event.is_action_pressed("menu") and not $Menu.visible:
+		$Menu.show()
+		Game.lock_player_input = true
 
 func _on_ChatLine_text_entered(new_text):
 	if new_text == "":
@@ -227,3 +232,15 @@ func show_tooltip(id, data, title_suffix = ""):
 func hide_tooltip():
 	$Tooltip.hide()
 	showing_tooltip = null
+
+func _on_Resume_pressed():
+	$Menu.hide()
+	Game.lock_player_input = false
+
+func _on_Disconnect_pressed():
+	Game.leave_game()
+
+func _on_Quit_pressed():
+	get_tree().quit()
+
+

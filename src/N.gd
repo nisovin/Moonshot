@@ -30,10 +30,10 @@ func rand_weighted(options):
 
 # *** PHYSICS *** #
 
-func get_overlapping_bodies(area: Area2D, group = ""):
+func get_overlapping_bodies(area: Area2D, group = "", mask = 0):
 	var space = area.get_world_2d().direct_space_state
 	var query = Physics2DShapeQueryParameters.new()
-	query.collision_layer = area.collision_mask
+	query.collision_layer = area.collision_mask if mask == 0 else mask
 	query.transform = area.global_transform
 	query.set_shape(area.get_child(0).shape)
 	var results = space.intersect_shape(query)
