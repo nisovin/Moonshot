@@ -33,18 +33,21 @@ func time_event(event):
 			$EnemyManager.speed_up_spawning()
 		elif event == "night":
 			$ExhaustionTick.stop()
+		elif event == "midnight":
+			$EnemyManager.pause_spawning(20)
 
 func add_new_player(data):
 	data.global_position = $PlayerSpawn.global_position
 	add_player_from_data(data)
 	rpc("add_new_player_remote", data)
+	rpc("add_system_message", data.player_name + " has joined the game")
 
 puppet func add_new_player_remote(data):
 	if players_node.get_node_or_null(str(data.id)) == null:
 		add_player_from_data(data)
 
 func add_player_from_data(data):
-	var player = Game.Player.instance()
+	var player = R.Player.instance()
 	player.name = str(data.id)
 	players_node.add_child(player)
 	player.load_data(data)
@@ -59,6 +62,8 @@ func add_enemy_from_data(data):
 func remove_player(id):
 	var p = players_node.get_node_or_null(str(id))
 	if p != null:
+		if is_network_master():
+			rpc("add_system_message", p.player_name + " has left the game")
 		p.untarget()
 		p.delete()
 
@@ -69,10 +74,13 @@ func get_game_state():
 	game_state.player_spawn = player_spawn.position
 	game_state.players = []
 	game_state.enemies = []
+	game_state.walls = {}
 	for p in players_node.get_children():
 		game_state.players.append(p.get_data())
 	for e in enemies_node.get_children():
 		game_state.enemies.append(e.get_data())
+	for w in walls_node.get_children():
+		game_state.walls[w.name] = w.status
 	return game_state
 
 func load_game_state(game_state):
@@ -85,6 +93,10 @@ func load_game_state(game_state):
 		add_player_from_data(p)
 	for e in game_state.enemies:
 		add_enemy_from_data(e)
+	for w in game_state.walls:
+		var n = walls_node.get_node(w)
+		if n:
+			n.update_status(game_state.walls[w])
 
 func get_nav_path(from, to, smooth = true, get_cost = false):
 	return map.get_nav_path(from, to, smooth, get_cost)
@@ -109,10 +121,12 @@ master func send_chat(message: String):
 			rpc("add_chat", p.player_name, message)
 
 remotesync func add_chat(player_name, message):
-	gui.add_chat(player_name, message)
+	if not Game.is_server():
+		gui.add_chat(player_name, message)
 
 remotesync func add_system_message(message):
-	gui.add_system_message(message)
+	if not Game.is_server():
+		gui.add_system_message(message)
 
 func _on_HealTick_timeout():
 	if is_network_master():

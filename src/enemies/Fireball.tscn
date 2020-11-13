@@ -7,14 +7,14 @@
 [sub_resource type="CircleShape2D" id=1]
 radius = 5.0
 
-[sub_resource type="Gradient" id=4]
+[sub_resource type="Gradient" id=2]
 offsets = PoolRealArray( 0, 0.593301, 1 )
 colors = PoolColorArray( 1, 0.4, 0, 1, 1, 0.4, 0, 1, 1, 0.4, 0, 0 )
 
-[sub_resource type="GradientTexture" id=5]
-gradient = SubResource( 4 )
+[sub_resource type="GradientTexture" id=3]
+gradient = SubResource( 2 )
 
-[sub_resource type="ParticlesMaterial" id=3]
+[sub_resource type="ParticlesMaterial" id=4]
 emission_shape = 1
 emission_sphere_radius = 2.0
 flag_disable_z = true
@@ -24,11 +24,11 @@ gravity = Vector3( 0, 0, 0 )
 initial_velocity = 15.0
 orbit_velocity = 0.0
 orbit_velocity_random = 0.0
-color_ramp = SubResource( 5 )
+color_ramp = SubResource( 3 )
 hue_variation = 0.15
 hue_variation_random = 1.0
 
-[sub_resource type="SpriteFrames" id=2]
+[sub_resource type="SpriteFrames" id=5]
 animations = [ {
 "frames": [ ExtResource( 2 ), ExtResource( 3 ) ],
 "loop": true,
@@ -38,7 +38,7 @@ animations = [ {
 
 [node name="Fireball" type="Area2D"]
 collision_layer = 0
-collision_mask = 11
+collision_mask = 43
 script = ExtResource( 1 )
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
@@ -46,12 +46,11 @@ shape = SubResource( 1 )
 
 [node name="Particles2D" type="Particles2D" parent="."]
 amount = 20
-process_material = SubResource( 3 )
+process_material = SubResource( 4 )
 
 [node name="AnimatedSprite" type="AnimatedSprite" parent="."]
 position = Vector2( -2, 0 )
-frames = SubResource( 2 )
-frame = 1
+frames = SubResource( 5 )
 playing = true
 [connection signal="area_entered" from="." to="." method="_on_Fireball_area_entered"]
 [connection signal="body_entered" from="." to="." method="_on_Fireball_body_entered"]

@@ -180,7 +180,7 @@ remote func load_game_state(data):
 	rpc_id(1, "player_uuid", OS.get_unique_id())
 	
 func show_join_menu():
-	var menu = load("res://gui/JoinGameMenu.tscn").instance()
+	var menu = R.JoinGameMenu.instance()
 	Game.add_child(menu)
 	menu.connect("option_selected", self, "_on_join_option_selected")
 

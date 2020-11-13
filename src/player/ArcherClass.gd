@@ -2,10 +2,6 @@ extends Node2D
 
 enum ArcherState { NORMAL, AIMING_ARROW, RELOADING, AIMING_VOLLEY, AIMING_ULTIMATE, SHADOWED }
 
-const CrescentArrow = preload("res://player/Arrow.tscn")
-const Volley = preload("res://player/Volley.tscn")
-const Moonshot = preload("res://player/Moonshot.tscn")
-
 const SERIALIZE_FIELDS = [ "state" ]
 
 const MAX_HEALTH = 100
@@ -168,7 +164,7 @@ remotesync func shoot_fire(pos, dir):
 	var vel = dir * SHOOT_ARROW_SPEED
 	vel = vel.rotated(-SHOOT_ARROW_SPREAD / 2)
 	for i in SHOOT_ARROW_COUNT:
-		var arrow = CrescentArrow.instance()
+		var arrow = R.CrescentArrow.instance()
 		Game.level.projectiles_node.add_child(arrow)
 		arrow.init(arrow_spawn.global_position, vel, i != SHOOT_ARROW_COUNT / 2)
 		vel = vel.rotated(SHOOT_ARROW_SPREAD / (SHOOT_ARROW_COUNT - 1))
@@ -221,7 +217,7 @@ remotesync func volley(pos):
 	energy -= VOLLEY_COST
 	volley_cd = VOLLEY_COOLDOWN
 	owner.resume_movement()
-	var volley = Volley.instance()
+	var volley = R.Volley.instance()
 	Game.level.ground_effects_node.add_child(volley)
 	volley.init(pos, VOLLEY_RADIUS)
 	Audio.play("archer_attack2")
@@ -309,7 +305,7 @@ remotesync func ultimate_launch(pos, dir):
 	owner.position = pos
 	ult_marker.visible = false
 	var vel = dir * ULTIMATE_ARROW_SPEED
-	var arrow = Moonshot.instance()
+	var arrow = R.Moonshot.instance()
 	Game.level.projectiles_node.add_child(arrow)
 	arrow.init(owner.position, vel)
 	arrow.connect("hit", self, "ultimate_hit")

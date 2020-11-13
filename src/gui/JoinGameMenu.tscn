@@ -2,13 +2,8 @@
 
 [ext_resource path="res://gui/JoinGameMenu.gd" type="Script" id=1]
 
-[node name="JoinGameMenu" type="Control"]
-anchor_right = 1.0
-anchor_bottom = 1.0
+[node name="JoinGameMenu" type="CanvasLayer"]
 script = ExtResource( 1 )
-__meta__ = {
-"_edit_use_anchors_": false
-}
 
 [node name="CenterContainer" type="CenterContainer" parent="."]
 anchor_right = 1.0
@@ -30,6 +25,7 @@ max_length = 12
 placeholder_text = "Name"
 placeholder_alpha = 0.5
 caret_blink = true
+caret_blink_speed = 0.5
 
 [node name="Warrior" type="Button" parent="CenterContainer/VBoxContainer"]
 margin_top = 28.0

@@ -8,9 +8,6 @@ const MAX_PLAYERS = 100
 const VERSION = 1
 const TILE_SIZE = 16
 
-const Player = preload("res://player/Player.tscn")
-const Enemy = preload("res://enemies/Enemy.tscn")
-
 enum MPMode { SOLO, CLIENT, SERVER, HOST, REMOTE }
 
 enum PlayerClass { WARRIOR, ARCHER, PRIEST }
@@ -59,11 +56,12 @@ func save_persistent():
 		file.close()
 
 func start_server():
+	R.load_resources(true)
 	mp_mode = MPMode.SERVER
 	Engine.iterations_per_second = 30
 	Engine.target_fps = 30
 	
-	level = preload("res://main/Level.tscn").instance()
+	level = R.Level.instance()
 	add_child(level)
 	
 	multiplayer_controller.level = level
@@ -79,11 +77,12 @@ func is_server():
 	return mp_mode == MPMode.SERVER
 	
 func start_menu():
-	add_child(load("res://main/MainMenu.tscn").instance())
+	R.load_resources(false)
+	add_child(R.MainMenu.instance())
 	
 func start_client():
 	mp_mode = MPMode.CLIENT
-	level = preload("res://main/Level.tscn").instance()
+	level = R.Level.instance()
 	add_child(level)
 	level.visible = false
 	
@@ -91,7 +90,7 @@ func start_client():
 	multiplayer_controller.init_client()
 	
 	var peer = NetworkedMultiplayerENet.new()
-	peer.create_client("minecraft.nisovin.com", PORT)
+	peer.create_client("127.0.0.1", PORT)
 	get_tree().network_peer = peer
 
 func leave_game():
@@ -106,7 +105,7 @@ func start_solo():
 	mp_mode = MPMode.SOLO
 	#Engine.iterations_per_second = 30
 	
-	level = preload("res://main/Level.tscn").instance()
+	level = R.Level.instance()
 	add_child(level)
 	
 	multiplayer_controller.queue_free()
@@ -116,7 +115,7 @@ func start_solo():
 	get_tree().network_peer = peer
 	get_tree().refuse_new_network_connections = true
 
-	level.add_new_player({"class_id": Game.PlayerClass.WARRIOR, "id": get_tree().get_network_unique_id()})
+	level.add_new_player({"class_id": Game.PlayerClass.WARRIOR, "id": get_tree().get_network_unique_id(), "player_name": "Player"})
 
 	level.start_server()
 

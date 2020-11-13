@@ -1,7 +1,7 @@
 extends EnemyType
 class_name EnemySwarmer
 
-func init(node):
+func init_sub(node):
 	max_health = 70
 	
 	target_players_weight = 75

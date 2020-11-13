@@ -3,6 +3,9 @@ extends Area2D
 
 export (Vector2) var target = Vector2.UP * 64 setget set_target
 
+func _ready():
+	$Label.hide()
+
 func set_target(val):
 	target = val
 	if Engine.editor_hint:

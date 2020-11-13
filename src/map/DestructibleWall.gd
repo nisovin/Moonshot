@@ -3,8 +3,10 @@ extends Node2D
 signal status_changed
 signal became_untargetable
 
-export var max_health = 100
-var health = max_health
+const REPAIR_SPEED = 50
+
+export(int) var max_health = 100
+export(int) var health = 100
 var status = 3
 var points = []
 var ids = []
@@ -12,61 +14,123 @@ var ids = []
 var behind_count = 0
 var targeted_by_count = 0
 var repairing = false
+var repair_amount = 0
 
 onready var target_position = $Target.global_position
 
 func _ready():
-	health = max_health
 	points.append(global_position + Vector2(-24, -8))
 	points.append(global_position + Vector2(-8, -8))
 	points.append(global_position + Vector2(8, -8))
 	points.append(global_position + Vector2(24, -8))
+	$Label.hide()
+	$RepairProgress.hide()
 	if Game.is_server():
 		$BehindDetector.queue_free()
 		$RepairDetector.queue_free()
+		set_physics_process(false)
+		
+func _physics_process(delta):
+	if repairing:
+		repair_amount += REPAIR_SPEED * delta
+		$RepairProgress.value = repair_amount
+		if repair_amount >= 100:
+			finish_repair()
+
+func load_data(data):
+	status = data.status
+	
+func get_data():
+	return {"status": status}
 
 func apply_damage(dam):
+	if health <= 0 and dam > 0: return false
 	health -= dam
-	if health < 100:
-		modulate = Color(1, health / 100.0, health / 100.0)
-	if health <= 0 and status > 0:
-		status = 0
-		rpc("update_status", status)
-		emit_signal("status_changed", ids, status)
+	if health < 0: health = 0
+	elif health > max_health: health = max_health
+	var new_status = status
+	if health <= 0:
+		new_status = 0
+	elif health <= max_health * .25:
+		new_status = 1
+	elif health <= max_health * .50:
+		new_status = 2
+	else:
+		new_status = 3
+	print("wall damage ", dam, " ", health, " ", status, " ", new_status)
+	if status != new_status:
+		rpc("update_status", new_status)
+		emit_signal("status_changed", ids, new_status)
 	return true
-	
+
+master func repair(amount):
+	apply_damage(-amount)
+
 remotesync func update_status(new_status):
-	status = new_status
-	if status == 0:
+	print("update status ", status, " ", new_status)
+	if new_status == 0 and status != 0:
+		print("disable collisions")
 		$CollisionCenter.set_deferred("disabled", true)
 		$CollisionLeft.set_deferred("disabled", false)
 		$CollisionRight.set_deferred("disabled", false)
-		$Sprite.hide()
+	elif new_status > 0 and status == 0:
+		print("enable collisions")
+		$CollisionCenter.set_deferred("disabled", false)
+		$CollisionLeft.set_deferred("disabled", true)
+		$CollisionRight.set_deferred("disabled", true)
+	if new_status < status:
+		stop_repair()
+	status = new_status
+	if status == 3:
+		$Sprite.texture = preload("res://map/wall3.png")
+	elif status == 2:
+		$Sprite.texture = preload("res://map/wall2.png")
+	elif status == 1:
+		$Sprite.texture = preload("res://map/wall1.png")
+	else:
+		$Sprite.texture = preload("res://map/wall0.png")
+	update_modulate()
 
 func interact(body):
-	pass
+	if status < 3:
+		start_repair()
 	
 func start_repair():
-	pass
+	repairing = true
+	repair_amount = 0
+	$RepairProgress.value = 0
+	$RepairProgress.show()
 	
 func stop_repair():
-	pass
+	repairing = false
+	$RepairProgress.hide()
+
+func finish_repair():
+	repairing = false
+	$RepairProgress.hide()
+	rpc("repair", max_health * 0.24)
+
+func update_modulate():
+	if behind_count > 0 and status >= 2:
+		$Sprite.modulate = Color(1, 1, 1, 0.6)
+	else:
+		$Sprite.modulate = Color.white
+		
 
 func _on_BehindDetector_body_entered(body):
 	behind_count += 1
-	$Sprite.modulate = Color(1, 1, 1, 0.6)
+	update_modulate()
 
 func _on_BehindDetector_body_exited(body):
 	behind_count -= 1
-	if behind_count == 0:
-		$Sprite.modulate = Color.white
+	update_modulate()
 
 func _on_RepairDetector_body_entered(body):
 	if status < 3 and body == Game.player:
 		body.interact_with = self
 		$Label.show()
 	elif repairing and body.is_in_group("enemies"):
-		stop_repair()
+		pass #stop_repair()
 
 func _on_RepairDetector_body_exited(body):
 	if body == Game.player:

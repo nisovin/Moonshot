@@ -2,7 +2,8 @@
 
 [ext_resource path="res://player/volley_arrow.png" type="Texture" id=1]
 [ext_resource path="res://player/Volley.gd" type="Script" id=2]
-[ext_resource path="res://main/Circle.gd" type="Script" id=3]
+[ext_resource path="res://misc/Circle.gd" type="Script" id=3]
+
 
 [sub_resource type="Gradient" id=1]
 offsets = PoolRealArray( 0, 0.311005, 1 )

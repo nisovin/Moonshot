@@ -2,15 +2,15 @@
 
 importer="texture"
 type="StreamTexture"
-path="res://.import/archer_ultimate.png-58c5d5892ef520d8913b27118831801b.stex"
+path="res://.import/archer_attack1.png-e0ce3b68cb0f2580636c44f6d32bbcc6.stex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://gui/archer_ultimate.png"
-dest_files=[ "res://.import/archer_ultimate.png-58c5d5892ef520d8913b27118831801b.stex" ]
+source_file="res://gui/icons/archer_attack1.png"
+dest_files=[ "res://.import/archer_attack1.png-e0ce3b68cb0f2580636c44f6d32bbcc6.stex" ]
 
 [params]
 

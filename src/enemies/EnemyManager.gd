@@ -3,11 +3,17 @@ extends Node
 const MAX_ENEMIES = 100
 const MAX_ENEMY_POWER_PER_PLAYER = 15
 
+const ENEMY_POWER = {
+	Game.EnemyClass.SWARMER: 1,
+	Game.EnemyClass.MAGE: 2
+}
+
 enum Directive { NONE, FOCUS_PLAYERS, FOCUS_KEEP, SWIFTNESS, ENRAGE }
 
 onready var enemy_spawn_point = owner.get_node("EnemySpawn")
 
-var wave_size = 3
+var per_player_power_limit = 1
+var per_player_wave_size = 0.5
 var next_enemy_id = 1
 
 var next_ai = 0
@@ -17,13 +23,14 @@ func _ready():
 	set_physics_process(false)
 
 func start_server():
-	$SpawnTimer.wait_time = 10
+	$SpawnTimer.wait_time = 5
 	$SpawnTimer.start()
 	set_physics_process(true)
 
 func speed_up_spawning():
 	var s = max($SpawnTimer.wait_time * 0.75, 1)
-	wave_size += 3
+	per_player_wave_size = clamp(per_player_wave_size + 0.2, 0.5, 2.5)
+	per_player_power_limit = clamp(per_player_power_limit + 1, 1, 6)
 	$SpawnTimer.wait_time = s
 	$SpawnTimer.start(s)
 	
@@ -33,7 +40,7 @@ func pause_spawning(time):
 	$SpawnTimer.paused = false
 
 remotesync func spawn_enemy(data):
-	var enemy = Game.Enemy.instance()
+	var enemy = R.Enemy.instance()
 	enemy.name = str(data.id)
 	enemy.position = data.position
 	owner.enemies_node.add_child(enemy)
@@ -76,14 +83,15 @@ func check_start_loop():
 
 
 func _on_SpawnTimer_timeout():
-	var max_enemy_power = get_tree().get_nodes_in_group("players").size() * MAX_ENEMY_POWER_PER_PLAYER
+	var player_count = get_tree().get_nodes_in_group("players").size()
+	var max_enemy_power = player_count * per_player_power_limit
 	var count = 0
 	var power = 0
 	for e in owner.enemies_node.get_children():
 		if not e.dead:
 			count += 1
-			power += e.controller.type.power
-	for x in wave_size:
+			power += ENEMY_POWER[e.type_id]
+	for x in int(ceil(per_player_wave_size * player_count)):
 		if count < MAX_ENEMIES and power < max_enemy_power:
 			var type_id = Game.EnemyClass.SWARMER
 			var pct = float(count) / MAX_ENEMIES
@@ -93,4 +101,4 @@ func _on_SpawnTimer_timeout():
 			rpc("spawn_enemy", {"id": next_enemy_id, "type_id": type_id, "position": enemy_spawn_point.position + Vector2(N.rand_float(0, 16), N.rand_float(0, 16))})
 			next_enemy_id += 1
 			count += 1
-			power += 1
+			power += ENEMY_POWER[type_id]

@@ -1,17 +1,14 @@
 extends EnemyType
 class_name EnemyMage
 
-const Fireball = preload("res://enemies/Fireball.tscn")
-
 const FIREBALL_SPEED = 150
 
 var enemy_node
 
-func init(node):
+func init_sub(node):
 	enemy_node = node
 	max_health = 40
 	movement_speed = 50
-	power = 2
 	avoid_players = true
 
 	target_players_weight = 100
@@ -32,7 +29,7 @@ func attack(entity, melee):
 	rpc("launch_fireball", enemy_node.position, vel)
 
 remotesync func launch_fireball(pos, vel):
-	var fireball = Fireball.instance()
+	var fireball = R.Fireball.instance()
 	Game.level.projectiles_node.add_child(fireball)
 	fireball.init(pos, vel)
 	if is_network_master():

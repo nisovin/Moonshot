@@ -2,15 +2,15 @@
 
 importer="texture"
 type="StreamTexture"
-path="res://.import/archer_movement.png-8209e7f270d764e06a4bbbbcb86d00f5.stex"
+path="res://.import/wall2.png-05e1cd7fb7ea4f72ec111b6fd21b63ca.stex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://gui/archer_movement.png"
-dest_files=[ "res://.import/archer_movement.png-8209e7f270d764e06a4bbbbcb86d00f5.stex" ]
+source_file="res://map/wall2.png"
+dest_files=[ "res://.import/wall2.png-05e1cd7fb7ea4f72ec111b6fd21b63ca.stex" ]
 
 [params]
 

@@ -1,7 +1,7 @@
 [gd_scene load_steps=15 format=2]
 
 [ext_resource path="res://map/tileset_ground.tres" type="TileSet" id=1]
-[ext_resource path="res://white_square.png" type="Texture" id=2]
+[ext_resource path="res://misc/white_square.png" type="Texture" id=2]
 [ext_resource path="res://gui/GameGUI.tscn" type="PackedScene" id=3]
 [ext_resource path="res://map/DestructibleWall.tscn" type="PackedScene" id=4]
 [ext_resource path="res://enemies/EnemyManager.gd" type="Script" id=5]
@@ -183,6 +183,7 @@ position = Vector2( 336, 224 )
 
 [node name="DestructibleWall5" parent="Map/Objects/Walls" instance=ExtResource( 4 )]
 position = Vector2( 416, 192 )
+health = 50
 
 [node name="DestructibleWall6" parent="Map/Objects/Walls" instance=ExtResource( 4 )]
 position = Vector2( 496, 192 )

@@ -40,10 +40,10 @@ config/dev.export=false
 
 [autoload]
 
-N="*res://N.gd"
+N="*res://main/N.gd"
+R="*res://main/R.gd"
 Game="*res://main/Game.tscn"
 Audio="*res://main/Audio.tscn"
-Audio.server="*res://main/AudioServer.tscn"
 
 [debug]
 
@@ -166,6 +166,13 @@ interact={
 2d_physics/layer_3="Enemies"
 2d_physics/layer_4="Players Hitbox"
 2d_physics/layer_5="Enemies Hitbox"
+2d_physics/layer_6="Temp Walls"
+
+[logging]
+
+file_logging/enable_file_logging.pc=false
+file_logging/log_path="user://logs/moonshot.log"
+file_logging/enable_file_logging.server=true
 
 [network]
 

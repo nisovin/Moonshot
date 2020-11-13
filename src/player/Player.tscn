@@ -4,16 +4,19 @@
 [ext_resource path="res://player/Player.gd" type="Script" id=2]
 [ext_resource path="res://player/WarriorClass.gd" type="Script" id=3]
 [ext_resource path="res://player/playersheet.png" type="Texture" id=4]
-[ext_resource path="res://MovementSmoother.gd" type="Script" id=5]
+[ext_resource path="res://main/MovementSmoother.gd" type="Script" id=5]
 [ext_resource path="res://gui/alphbeta.ttf" type="DynamicFontData" id=6]
 [ext_resource path="res://player/ArcherClass.gd" type="Script" id=7]
 [ext_resource path="res://player/arrow_aim_secondary.png" type="Texture" id=8]
 [ext_resource path="res://player/arrow_aim_primary.png" type="Texture" id=9]
 [ext_resource path="res://player/archer_ult_aim.png" type="Texture" id=10]
 [ext_resource path="res://player/moon_particle.png" type="Texture" id=11]
-[ext_resource path="res://main/Circle.gd" type="Script" id=12]
-[ext_resource path="res://white_square.png" type="Texture" id=13]
-[ext_resource path="res://white_pixel.png" type="Texture" id=14]
+[ext_resource path="res://misc/Circle.gd" type="Script" id=12]
+[ext_resource path="res://misc/white_square.png" type="Texture" id=13]
+[ext_resource path="res://misc/white_pixel.png" type="Texture" id=14]
+
+
+
 
 [sub_resource type="CircleShape2D" id=1]
 radius = 7.0

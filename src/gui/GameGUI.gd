@@ -111,21 +111,20 @@ func close_chat():
 
 func add_chat(player_name, message):
 	_add_to_chat("[color=#66cccc]" + player_name + "[/color] [color=#c0c0c0]>[/color] [color=#f0f0f0]" + message + "[/color]")
-		
+
 func add_system_message(message):
 	_add_to_chat("[color=yellow]" + message + "[/color]")
-	
+
 func _add_to_chat(message):
-	var entry = preload("res://gui/ChatEntry.tscn").instance()
+	var entry = R.ChatEntry.instance()
 	entry.parse_bbcode(message)
 	chat_container.add_child(entry)
 	yield(get_tree(), "idle_frame")
 	yield(get_tree(), "idle_frame")
 	scroll.scroll_vertical = chat_container.rect_size.y + 100
 	if not chatting:
-		chat_tween.interpolate_property(entry, "modulate", Color.white, Color.transparent, 2, Tween.TRANS_CUBIC, Tween.EASE_IN, 6)
+		chat_tween.interpolate_property(entry, "modulate", Color.white, Color.transparent, 2, Tween.TRANS_CUBIC, Tween.EASE_IN, 4)
 		chat_tween.start()
-	
 
 func _unhandled_input(event):
 	if event.is_action_pressed("chat") and not chatting:
@@ -149,13 +148,13 @@ func _on_ChatLine_text_entered(new_text):
 
 func _on_entered_level():
 	if Game.player.class_id == Game.PlayerClass.ARCHER:
-		$Abilities/Attack1.texture_under = load("res://gui/archer_attack1.png")
+		$Abilities/Attack1.texture_under = R.icons.archer_attack1
 		$Abilities/Attack1.texture_progress = $Abilities/Attack1.texture_under
-		$Abilities/Attack2.texture_under = load("res://gui/archer_attack2.png")
+		$Abilities/Attack2.texture_under = R.icons.archer_attack2
 		$Abilities/Attack2.texture_progress = $Abilities/Attack2.texture_under
-		$Abilities/Movement.texture_under = load("res://gui/archer_movement.png")
+		$Abilities/Movement.texture_under = R.icons.archer_movement
 		$Abilities/Movement.texture_progress = $Abilities/Movement.texture_under
-		$Abilities/Ultimate.texture_under = load("res://gui/archer_ultimate.png")
+		$Abilities/Ultimate.texture_under = R.icons.archer_ultimate
 		$Abilities/Ultimate.texture_progress = $Abilities/Ultimate.texture_under
 	$Abilities.show()
 	$PlayerBars.show()
@@ -168,10 +167,10 @@ func update_ui():
 	var cls = Game.player.player_class
 	var binding = 1 if Game.using_controller else 0
 	var i = 0
-	
+
 	$Statuses/Midnight.visible = Game.level.time_of_day == "midnight"
 	$Statuses/Midday.visible = Game.level.time_of_day == "midday"
-	
+
 	$PlayerBars/Health.value = float(Game.player.health) / cls.MAX_HEALTH * 100
 	$PlayerBars/Health/Label.text = str(ceil(Game.player.health))
 	$PlayerBars/Energy.value = cls.energy
@@ -180,7 +179,7 @@ func update_ui():
 	$Exhaustion/Label.text = str(ceil(Game.player.exhaustion))
 	if $Exhaustion.value > 0:
 		$Exhaustion.show()
-	
+
 	i = 0
 	for a in $Abilities.get_children():
 		a.value = 1 - cls.call("get_" + a.name.to_lower() + "_cooldown")
@@ -191,7 +190,7 @@ func update_ui():
 			show_tooltip("A" + str(i), cls.ABILITIES[i], " (" + ability_bindings[i][binding] + ")")
 			return
 		i += 1
-		
+
 	i = 0
 	for t in control_tooltips:
 		var p = t.control.get_local_mouse_position()
@@ -200,7 +199,7 @@ func update_ui():
 			show_tooltip("C" + str(i), t)
 			return
 		i += 1
-		
+
 	hide_tooltip()
 
 func show_tooltip(id, data, title_suffix = ""):
@@ -228,7 +227,7 @@ func show_tooltip(id, data, title_suffix = ""):
 		$Tooltip.rect_position = $Tooltip.get_global_mouse_position() - Vector2($Tooltip.rect_size.x, 0)
 	else:
 		$Tooltip.rect_position = $Tooltip.get_global_mouse_position()
-	
+
 func hide_tooltip():
 	$Tooltip.hide()
 	showing_tooltip = null

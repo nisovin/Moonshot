@@ -3,10 +3,10 @@
 [ext_resource path="res://main/Minimap.gd" type="Script" id=1]
 [ext_resource path="res://gui/GameGUI.gd" type="Script" id=2]
 [ext_resource path="res://gui/alphbeta.ttf" type="DynamicFontData" id=3]
-[ext_resource path="res://gui/warrior_attack2.png" type="Texture" id=4]
-[ext_resource path="res://gui/warrior_movement.png" type="Texture" id=5]
-[ext_resource path="res://gui/warrior_ultimate.png" type="Texture" id=6]
-[ext_resource path="res://gui/warrior_attack1.png" type="Texture" id=7]
+[ext_resource path="res://gui/icons/warrior_attack2.png" type="Texture" id=4]
+[ext_resource path="res://gui/icons/warrior_movement.png" type="Texture" id=5]
+[ext_resource path="res://gui/icons/warrior_ultimate.png" type="Texture" id=6]
+[ext_resource path="res://gui/icons/warrior_attack1.png" type="Texture" id=7]
 [ext_resource path="res://gui/Minimal5x7.ttf" type="DynamicFontData" id=8]
 [ext_resource path="res://gui/icons/status_midnight.png" type="Texture" id=9]
 [ext_resource path="res://gui/icons/status_rage.png" type="Texture" id=10]
@@ -15,7 +15,8 @@
 [ext_resource path="res://gui/icons/status_swift.png" type="Texture" id=13]
 [ext_resource path="res://gui/icons/status_focus_keep.png" type="Texture" id=14]
 [ext_resource path="res://gui/icons/status_focus_players.png" type="Texture" id=15]
-[ext_resource path="res://white_pixel.png" type="Texture" id=16]
+[ext_resource path="res://misc/white_pixel.png" type="Texture" id=16]
+
 
 [sub_resource type="DynamicFont" id=1]
 outline_size = 1

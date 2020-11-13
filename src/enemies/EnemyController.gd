@@ -108,14 +108,13 @@ func attack(entity, melee):
 	next_attack = OS.get_ticks_msec() + type.attack_cooldown
 	return type.attack(entity, melee)
 		
-		
 func find_target():
 	var reconsider = false
 	if target != null:
 		var d = target.position.distance_squared_to(owner.position)
-		if d > type.target_max_range * type.target_max_range:
+		if d > type.target_max_range_sq:
 			remove_target(target)
-		elif OS.get_ticks_msec() > target_time + type.target_reconsider_time and d > type.target_locked_range * type.target_locked_range:
+		elif OS.get_ticks_msec() > target_time + type.target_reconsider_time and d > type.target_locked_range_sq:
 			reconsider = true
 	if target == null or reconsider:
 		var best_target = target
@@ -204,6 +203,8 @@ func calculate_desired_velocity():
 				var dist = neighbor.position.distance_to(owner.position)
 				if dist == 0:
 					dir = Vector2.DOWN
+				elif dist < 8:
+					dir = (owner.position - neighbor.position) / dist * 15
 				elif dist < 16:
 					dir = (owner.position - neighbor.position) / dist * 5
 				else:

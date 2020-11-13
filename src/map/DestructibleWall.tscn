@@ -1,26 +1,28 @@
-[gd_scene load_steps=10 format=2]
+[gd_scene load_steps=11 format=2]
 
-[ext_resource path="res://map/wall1.png" type="Texture" id=1]
+[ext_resource path="res://map/wall3.png" type="Texture" id=1]
 [ext_resource path="res://map/DestructibleWall.gd" type="Script" id=2]
 [ext_resource path="res://gui/alphbeta.ttf" type="DynamicFontData" id=3]
+[ext_resource path="res://misc/white_pixel.png" type="Texture" id=4]
+
 
 [sub_resource type="CapsuleShape2D" id=1]
 radius = 9.0
 height = 78.0
 
-[sub_resource type="CircleShape2D" id=5]
+[sub_resource type="CircleShape2D" id=2]
 radius = 8.0
 
-[sub_resource type="CircleShape2D" id=6]
+[sub_resource type="CircleShape2D" id=3]
 radius = 8.0
 
-[sub_resource type="RectangleShape2D" id=2]
+[sub_resource type="RectangleShape2D" id=4]
 extents = Vector2( 32, 24 )
 
-[sub_resource type="RectangleShape2D" id=3]
+[sub_resource type="RectangleShape2D" id=5]
 extents = Vector2( 32, 16 )
 
-[sub_resource type="DynamicFont" id=4]
+[sub_resource type="DynamicFont" id=6]
 font_data = ExtResource( 3 )
 
 [node name="DestructibleWall" type="StaticBody2D" groups=[
@@ -36,12 +38,12 @@ shape = SubResource( 1 )
 
 [node name="CollisionLeft" type="CollisionShape2D" parent="."]
 position = Vector2( -40, -8 )
-shape = SubResource( 5 )
+shape = SubResource( 2 )
 disabled = true
 
 [node name="CollisionRight" type="CollisionShape2D" parent="."]
 position = Vector2( 40, -8 )
-shape = SubResource( 6 )
+shape = SubResource( 3 )
 disabled = true
 
 [node name="Sprite" type="Sprite" parent="."]
@@ -55,7 +57,7 @@ collision_mask = 6
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="BehindDetector"]
 position = Vector2( 0, -24 )
-shape = SubResource( 2 )
+shape = SubResource( 4 )
 
 [node name="RepairDetector" type="Area2D" parent="."]
 monitorable = false
@@ -64,20 +66,33 @@ collision_mask = 6
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="RepairDetector"]
 position = Vector2( 0, -8 )
-shape = SubResource( 3 )
+shape = SubResource( 5 )
 
 [node name="Target" type="Position2D" parent="."]
 position = Vector2( 0, -12 )
 
 [node name="Label" type="Label" parent="."]
-visible = false
 margin_left = -34.5055
 margin_top = -44.4204
 margin_right = 35.4945
 margin_bottom = -29.4204
-custom_fonts/font = SubResource( 4 )
+custom_fonts/font = SubResource( 6 )
 text = "Repair (E)"
 align = 1
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="RepairProgress" type="TextureProgress" parent="."]
+margin_left = -25.0
+margin_top = -28.0
+margin_right = 25.0
+margin_bottom = -23.0
+texture_under = ExtResource( 4 )
+texture_progress = ExtResource( 4 )
+tint_under = Color( 0.258824, 0.0823529, 0.0431373, 1 )
+tint_progress = Color( 0, 0.478431, 0.819608, 1 )
+nine_patch_stretch = true
 __meta__ = {
 "_edit_use_anchors_": false
 }

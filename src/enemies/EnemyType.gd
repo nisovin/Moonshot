@@ -3,12 +3,14 @@ class_name EnemyType
 
 var max_health = 50
 var movement_speed = 30
-var power = 1
 var avoid_players = false
 
 var target_range = 50 * Game.TILE_SIZE
+var target_range_sq
 var target_max_range = 60 * Game.TILE_SIZE
+var target_max_range_sq
 var target_locked_range = 0 * Game.TILE_SIZE
+var target_locked_range_sq
 var target_reconsider_time = 5000 # ms
 var target_players_weight = 100
 var target_keep_weight = 10
@@ -22,12 +24,18 @@ var attack_range_max = 0
 var attack_cooldown = 1000
 
 func init(node):
+	init_sub(node)
+	target_range_sq = target_range * target_range
+	target_max_range_sq = target_max_range * target_max_range
+	target_locked_range_sq = target_locked_range * target_locked_range
+	
+func init_sub(node):
 	pass
 
 func calculate_target_priority(target, distance_sq):
-	if distance_sq > target_range * target_range:
+	if distance_sq > target_range_sq:
 		return 0
-	var pct_dist = 1 - (distance_sq / float(target_range * target_range))
+	var pct_dist = 1 - (distance_sq / float(target_range_sq))
 	if target.is_in_group("players"):
 		return pct_dist * target_players_weight
 	elif target.is_in_group("walls"):
