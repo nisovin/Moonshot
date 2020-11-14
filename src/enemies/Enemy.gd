@@ -4,6 +4,7 @@ const SERIALIZE_FIELDS = [ "type_id", "global_position", "velocity" ]
 
 var velocity = Vector2.ZERO
 var move_duration = 0
+var last_physics_tick = 0
 
 var type_id = 0
 var health: float = 50
@@ -26,7 +27,6 @@ func load_data(data):
 	controller.init(type_id)
 	max_health = controller.type.max_health
 	health = max_health
-	print(type_id)
 	if not is_network_master():
 		controller.queue_free()
 		visual.enable_smoothing()
@@ -36,6 +36,8 @@ func load_data(data):
 			healthbar.rect_size.y = 6
 		healthbar.rect_position.x = -healthbar.rect_size.x / 2
 		healthbar.visible = false
+	#if Game.is_server():
+	#	set_physics_process(false)
 
 func get_data():
 	var data = {}
@@ -80,7 +82,8 @@ func local_hit(vel = null, dur = 0):
 		set_movement(vel, position, dur)
 	Audio.play("enemy_hit", 0.4)
 	
-func _physics_process(delta):
+func physics_tick(delta):
+	last_physics_tick = Engine.get_physics_frames()
 	if velocity == Vector2.ZERO: return
 	var before = position
 	var col = move_and_collide(velocity * delta)
@@ -92,9 +95,9 @@ func _physics_process(delta):
 		if move_duration <= 0:
 			velocity = Vector2.ZERO
 	
-func ai_tick():
-	controller.ai_tick()
-
+func _physics_process(delta):
+	physics_tick(delta)
+	
 remotesync func die():
 	dead = true
 	if not Game.is_server():

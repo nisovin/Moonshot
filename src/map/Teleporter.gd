@@ -5,6 +5,9 @@ export (Vector2) var target = Vector2.UP * 64 setget set_target
 
 func _ready():
 	$Label.hide()
+	if Game.is_server():
+		$CollisionShape2D.disabled = true
+		monitoring = false
 
 func set_target(val):
 	target = val

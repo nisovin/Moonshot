@@ -3,17 +3,18 @@ extends Node
 signal input_method_changed
 signal entered_level
 
+const LOCAL = false
 const PORT = 20514
 const MAX_PLAYERS = 100
 const VERSION = 1
 const TILE_SIZE = 16
 
-enum MPMode { SOLO, CLIENT, SERVER, HOST, REMOTE }
+enum MPMode { NONE, SOLO, CLIENT, SERVER, HOST, REMOTE }
 
 enum PlayerClass { WARRIOR, ARCHER, PRIEST }
-enum EnemyClass { SWARMER, MAGE }
+enum EnemyClass { GRUNT, MAGE }
 
-var mp_mode = MPMode.SOLO
+var mp_mode = MPMode.NONE
 var using_controller = false
 var controller_index = 0
 var level = null
@@ -56,8 +57,8 @@ func save_persistent():
 		file.close()
 
 func start_server():
-	R.load_resources(true)
 	mp_mode = MPMode.SERVER
+	R.load_resources(true)
 	Engine.iterations_per_second = 30
 	Engine.target_fps = 30
 	
@@ -75,7 +76,13 @@ func start_server():
 	
 func is_server():
 	return mp_mode == MPMode.SERVER
-	
+
+func is_host():
+	return mp_mode == MPMode.SERVER or mp_mode == MPMode.HOST or mp_mode == MPMode.SOLO
+
+func is_player():
+	return mp_mode == MPMode.CLIENT or mp_mode == MPMode.HOST or mp_mode == MPMode.SOLO
+
 func start_menu():
 	R.load_resources(false)
 	add_child(R.MainMenu.instance())
@@ -90,8 +97,10 @@ func start_client():
 	multiplayer_controller.init_client()
 	
 	var peer = NetworkedMultiplayerENet.new()
-	peer.create_client("127.0.0.1", PORT)
+	peer.create_client("127.0.0.1" if LOCAL else "minecraft.nisovin.com", PORT)
 	get_tree().network_peer = peer
+
+	Audio.start_music()
 
 func leave_game():
 	get_tree().network_peer = null
@@ -105,19 +114,20 @@ func start_solo():
 	mp_mode = MPMode.SOLO
 	#Engine.iterations_per_second = 30
 	
-	level = R.Level.instance()
-	add_child(level)
-	
-	multiplayer_controller.queue_free()
-	
 	var peer = NetworkedMultiplayerENet.new()
 	peer.create_server(PORT, 1)
 	get_tree().network_peer = peer
 	get_tree().refuse_new_network_connections = true
+	
+	level = R.Level.instance()
+	add_child(level)
+	
+	multiplayer_controller.queue_free()
 
 	level.add_new_player({"class_id": Game.PlayerClass.WARRIOR, "id": get_tree().get_network_unique_id(), "player_name": "Player"})
 
 	level.start_server()
+	Audio.start_music()
 
 func show_centered_message(text):
 	centered_message.text = text

@@ -57,7 +57,6 @@ func apply_damage(dam):
 		new_status = 2
 	else:
 		new_status = 3
-	print("wall damage ", dam, " ", health, " ", status, " ", new_status)
 	if status != new_status:
 		rpc("update_status", new_status)
 		emit_signal("status_changed", ids, new_status)
@@ -67,14 +66,11 @@ master func repair(amount):
 	apply_damage(-amount)
 
 remotesync func update_status(new_status):
-	print("update status ", status, " ", new_status)
 	if new_status == 0 and status != 0:
-		print("disable collisions")
 		$CollisionCenter.set_deferred("disabled", true)
 		$CollisionLeft.set_deferred("disabled", false)
 		$CollisionRight.set_deferred("disabled", false)
 	elif new_status > 0 and status == 0:
-		print("enable collisions")
 		$CollisionCenter.set_deferred("disabled", false)
 		$CollisionLeft.set_deferred("disabled", true)
 		$CollisionRight.set_deferred("disabled", true)

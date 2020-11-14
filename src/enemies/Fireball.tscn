@@ -51,6 +51,7 @@ process_material = SubResource( 4 )
 [node name="AnimatedSprite" type="AnimatedSprite" parent="."]
 position = Vector2( -2, 0 )
 frames = SubResource( 5 )
+frame = 1
 playing = true
 [connection signal="area_entered" from="." to="." method="_on_Fireball_area_entered"]
 [connection signal="body_entered" from="." to="." method="_on_Fireball_body_entered"]

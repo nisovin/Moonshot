@@ -81,16 +81,17 @@ func get_data():
 	data.class_data = player_class.get_data()
 	return data
 	
-func apply_damage(dam):
-	dam *= 1 - player_class.get_armor()
-	if last_hit > OS.get_ticks_msec() - 400:
-		if dam < last_hit_amount:
-			return false
+func apply_damage(dam, direct = false):
+	if not direct:
+		dam *= 1 - player_class.get_armor()
+		if last_hit > OS.get_ticks_msec() - 400:
+			if dam < last_hit_amount:
+				return false
+			else:
+				dam -= last_hit_amount
 		else:
-			dam -= last_hit_amount
-	else:
-		last_hit = OS.get_ticks_msec()
-		last_hit_amount = dam
+			last_hit = OS.get_ticks_msec()
+			last_hit_amount = dam
 	if dam <= 0:
 		return false
 	var new_health = health - dam
@@ -184,7 +185,7 @@ func resume_movement():
 
 func set_facing(v, set_anim = false):
 	facing_dir = v
-	if abs(v.x) >= abs(v.y):
+	if abs(v.x) > abs(v.y):
 		if v.x > 0:
 			facing = "right"
 		else:

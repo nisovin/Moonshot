@@ -14,6 +14,7 @@ var Fireball
 var MainMenu
 var JoinGameMenu
 var ChatEntry
+var PlayerListEntry
 var Sounds
 var Icons
 
@@ -33,8 +34,12 @@ func load_resources(is_server):
 		MainMenu = load("res://main/MainMenu.tscn")
 		JoinGameMenu = load("res://gui/JoinGameMenu.tscn")
 		ChatEntry = load("res://gui/ChatEntry.tscn")
+		PlayerListEntry = load("res://gui/PlayerListEntry.tscn")
 		
 		Sounds = {
+			"music_main": load("res://music/track_main.ogg"),
+			"music_day": load("res://music/track_choir.ogg"),
+			"music_night": load("res://music/track_strings.ogg"),
 			"warrior_attack1_swing": [
 				load("res://sfx/warrior_attack1_1.wav"),
 				load("res://sfx/warrior_attack1_2.wav"),
@@ -63,11 +68,11 @@ func load_resources(is_server):
 		
 		Icons = {
 			"warrior_attack1": load("res://gui/icons/warrior_attack1.png"),
-			"warrior_attack2": load("res://gui/icons/warrior_attack1.png"),
+			"warrior_attack2": load("res://gui/icons/warrior_attack2.png"),
 			"warrior_movement": load("res://gui/icons/warrior_movement.png"),
 			"warrior_ultimate": load("res://gui/icons/warrior_ultimate.png"),
 			"archer_attack1": load("res://gui/icons/archer_attack1.png"),
-			"archer_attack2": load("res://gui/icons/archer_attack1.png"),
+			"archer_attack2": load("res://gui/icons/archer_attack2.png"),
 			"archer_movement": load("res://gui/icons/archer_movement.png"),
 			"archer_ultimate": load("res://gui/icons/archer_ultimate.png")
 		}

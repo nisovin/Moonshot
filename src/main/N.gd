@@ -35,6 +35,7 @@ func get_overlapping_bodies(area: Area2D, group = "", mask = 0):
 	var query = Physics2DShapeQueryParameters.new()
 	query.collision_layer = area.collision_mask if mask == 0 else mask
 	query.transform = area.global_transform
+	query.transform.origin += area.get_child(0).position
 	query.set_shape(area.get_child(0).shape)
 	var results = space.intersect_shape(query)
 	var bodies = []

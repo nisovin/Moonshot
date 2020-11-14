@@ -4,7 +4,6 @@
 [ext_resource path="res://map/Teleporter.gd" type="Script" id=2]
 [ext_resource path="res://gui/alphbeta.ttf" type="DynamicFontData" id=3]
 
-
 [sub_resource type="CircleShape2D" id=1]
 
 [sub_resource type="DynamicFont" id=2]
@@ -25,6 +24,7 @@ color = Color( 0.690196, 0.992157, 1, 1 )
 radius = 16.0
 
 [node name="Label" type="Label" parent="."]
+visible = false
 margin_left = -100.0
 margin_top = 17.0
 margin_right = 100.0

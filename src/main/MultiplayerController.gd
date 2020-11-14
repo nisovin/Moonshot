@@ -191,6 +191,7 @@ remote func restore_player():
 
 func _on_join_option_selected(option, player_name):
 	if option == -1:
+		get_tree().network_peer = null
 		level.queue_free()
 		Game.start_menu()
 	else:

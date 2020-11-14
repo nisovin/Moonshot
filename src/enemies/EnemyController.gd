@@ -1,6 +1,6 @@
 extends Node
 
-const MAX_ENEMIES_ON_PLAYER = 8
+const MAX_ENEMIES_ON_PLAYER = 300
 const MAX_ENEMIES_ON_WALL = 6
 
 var type
@@ -24,8 +24,8 @@ onready var space_state: Physics2DDirectSpaceState = get_parent().get_world_2d()
 
 func init(type_id):
 	match type_id:
-		Game.EnemyClass.SWARMER:
-			type = EnemySwarmer.new()
+		Game.EnemyClass.GRUNT:
+			type = EnemyGrunt.new()
 		Game.EnemyClass.MAGE:
 			type = EnemyMage.new()
 		_:
@@ -79,17 +79,24 @@ func _physics_process(delta):
 	if stun_duration > 0:
 		stun_duration -= delta
 
-func ai_tick():
+func ai_tick(players, walls):
 	if dead or stun_duration > 0 or knockback_duration > 0: return
 	
 	var attacked = try_to_attack()
 	if attacked: return
 	
-	find_target()
+	if type.custom_targeting:
+		type.find_target(players, walls)
+	else:
+		find_target(players, walls)
 	
 	if target != null:
-		calculate_path_to_target()
-		var v = calculate_desired_velocity()
+		var v = Vector2.ZERO
+		if type.custom_pathing:
+			v = type.get_velocity()
+		else:
+			calculate_path_to_target()
+			v = calculate_desired_velocity()
 		if not v.is_equal_approx(owner.velocity):
 			owner.rpc("set_movement", v, owner.position)
 	elif owner.velocity != Vector2.ZERO:
@@ -108,25 +115,31 @@ func attack(entity, melee):
 	next_attack = OS.get_ticks_msec() + type.attack_cooldown
 	return type.attack(entity, melee)
 		
-func find_target():
+func find_target(players, walls):
 	var reconsider = false
 	if target != null:
-		var d = target.position.distance_squared_to(owner.position)
-		if d > type.target_max_range_sq:
-			remove_target(target)
-		elif OS.get_ticks_msec() > target_time + type.target_reconsider_time and d > type.target_locked_range_sq:
-			reconsider = true
+		if target.is_in_group("walls"):
+			if target.status == 0:
+				remove_target(target)
+			elif OS.get_ticks_msec() > target_time + type.target_reconsider_time:
+				reconsider = true
+		else:
+			var d = target.position.distance_squared_to(owner.position)
+			if d > type.target_max_range_sq:
+				remove_target(target)
+			elif OS.get_ticks_msec() > target_time + type.target_reconsider_time and d > type.target_locked_range_sq:
+				reconsider = true
 	if target == null or reconsider:
 		var best_target = target
 		var best_priority = 0 if target == null else type.calculate_target_priority(target, target.position.distance_squared_to(owner.position)) * 1.5
-		for p in get_tree().get_nodes_in_group("players"):
+		for p in players:
 			if not p.targetable or p == target or p.targeted_by_count >= MAX_ENEMIES_ON_PLAYER: continue
 			var d = p.position.distance_squared_to(owner.position)
 			var prio = type.calculate_target_priority(p, d)
 			if prio > best_priority:
 				best_priority = prio
 				best_target = p
-		for w in get_tree().get_nodes_in_group("walls"):
+		for w in walls:
 			if w.status == 0 or w == target or w.targeted_by_count >= MAX_ENEMIES_ON_WALL: continue
 			var d = w.target_position.distance_squared_to(owner.position)
 			var prio = type.calculate_target_priority(w, d)
@@ -138,6 +151,7 @@ func find_target():
 			if target != best_target:
 				target = best_target
 				target.connect("became_untargetable", self, "remove_target")
+				target.targeted_by_count += 1
 
 func calculate_path_to_target():
 	# get target and distance

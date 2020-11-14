@@ -1,6 +1,6 @@
 extends Control
 
-const SCALE = 32
+const SCALE = 16
 
 func _physics_process(delta):
 	update()

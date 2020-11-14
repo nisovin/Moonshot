@@ -12,6 +12,7 @@ func init(pos, vel):
 	if not Game.is_server():
 		$Tween.interpolate_property($Sprite, "scale", Vector2(0.5, 0.5), Vector2.ONE, 0.5)
 		$Tween.start()
+		$AudioStreamPlayer.stream = R.Sounds.archer_ultimate_loop
 		$AudioStreamPlayer.volume_db = linear2db(0)
 		$AudioStreamPlayer.play()
 

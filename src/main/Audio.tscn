@@ -8,3 +8,14 @@ script = ExtResource( 1 )
 [node name="SFX" type="Node" parent="."]
 
 [node name="Footsteps" type="AudioStreamPlayer" parent="."]
+
+[node name="MusicMain" type="AudioStreamPlayer" parent="."]
+bus = "Music"
+
+[node name="MusicDay" type="AudioStreamPlayer" parent="."]
+bus = "Music"
+
+[node name="MusicNight" type="AudioStreamPlayer" parent="."]
+bus = "Music"
+
+[node name="Tween" type="Tween" parent="."]

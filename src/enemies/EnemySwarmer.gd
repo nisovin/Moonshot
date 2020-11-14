@@ -1,12 +1,13 @@
 extends EnemyType
 class_name EnemySwarmer
 
+var enemy
+
 func init_sub(node):
-	max_health = 70
+	enemy = node
+
+func find_target(players, walls):
+	pass
 	
-	target_players_weight = 75
-	target_keep_weight = 25
-	
-	attack_range = 10
-	attack_range_min = 0
-	attack_range_max = 14
+func get_velocity():
+	pass

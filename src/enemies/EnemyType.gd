@@ -4,6 +4,8 @@ class_name EnemyType
 var max_health = 50
 var movement_speed = 30
 var avoid_players = false
+var custom_targeting = false
+var custom_pathing = false
 
 var target_range = 50 * Game.TILE_SIZE
 var target_range_sq
@@ -30,6 +32,12 @@ func init(node):
 	target_locked_range_sq = target_locked_range * target_locked_range
 	
 func init_sub(node):
+	pass
+
+func find_target(players, walls):
+	pass
+	
+func get_velocity():
 	pass
 
 func calculate_target_priority(target, distance_sq):

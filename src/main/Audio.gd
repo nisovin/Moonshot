@@ -14,7 +14,33 @@ func _ready():
 		$SFX.add_child(a)
 		channels_avail.append(a)
 		a.connect("finished", self, "_on_sound_finished", [a])
-		
+
+func start_music():
+	$MusicMain.stream = R.Sounds.music_main
+	$MusicDay.stream = R.Sounds.music_day
+	$MusicNight.stream = R.Sounds.music_night
+	$MusicMain.volume_db = linear2db(0.1)
+	$MusicDay.volume_db = linear2db(0)
+	$MusicNight.volume_db = linear2db(0)
+	$MusicMain.play(0)
+	$MusicDay.play(0)
+	$MusicNight.play(0)
+	
+func music_time_update(time):
+	if time == "dawn":
+		$Tween.interpolate_method(self, "_day_volume", 0, 0.2, 20, Tween.TRANS_LINEAR)
+		$Tween.interpolate_method(self, "_night_volume", db2linear($MusicNight.volume_db), 0, 20, Tween.TRANS_LINEAR)
+		$Tween.start()
+	elif time == "dusk":
+		$Tween.interpolate_method(self, "_night_volume", 0, 0.2, 20, Tween.TRANS_LINEAR)
+		$Tween.interpolate_method(self, "_day_volume", db2linear($MusicDay.volume_db), 0, 20, Tween.TRANS_LINEAR)
+		$Tween.start()
+
+func _day_volume(vol):
+	$MusicDay.volume_db = linear2db(vol)
+func _night_volume(vol):
+	$MusicNight.volume_db = linear2db(vol)
+
 func play(sound_name, volume = 1.0):
 	if Game.is_server(): return null
 	assert(sound_name in R.Sounds)

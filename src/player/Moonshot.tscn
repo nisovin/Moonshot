@@ -1,8 +1,7 @@
-[gd_scene load_steps=8 format=2]
+[gd_scene load_steps=7 format=2]
 
 [ext_resource path="res://player/Moonshot.gd" type="Script" id=1]
 [ext_resource path="res://player/moonshot.png" type="Texture" id=2]
-[ext_resource path="res://sfx/archer_ultimate_loop.ogg" type="AudioStream" id=3]
 
 [sub_resource type="RectangleShape2D" id=1]
 extents = Vector2( 10, 36 )
@@ -58,5 +57,4 @@ process_material = SubResource( 4 )
 [node name="Tween" type="Tween" parent="."]
 
 [node name="AudioStreamPlayer" type="AudioStreamPlayer" parent="."]
-stream = ExtResource( 3 )
 [connection signal="area_entered" from="." to="." method="_on_Moonshot_area_entered"]

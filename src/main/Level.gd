@@ -23,11 +23,12 @@ func start_server():
 remotesync func start_game():
 	game_started = true
 	daynight_anim.play("daynight")
+	daynight_anim.playback_speed = 2.0
 
 func time_event(event):
 	print("Time: ", event)
 	time_of_day = event
-	if is_network_master():
+	if Game.is_host():
 		if event == "dawn":
 			$ExhaustionTick.start()
 			$EnemyManager.speed_up_spawning()
@@ -35,6 +36,8 @@ func time_event(event):
 			$ExhaustionTick.stop()
 		elif event == "midnight":
 			$EnemyManager.pause_spawning(20)
+	if Game.is_player():
+		Audio.music_time_update(event)
 
 func add_new_player(data):
 	data.global_position = $PlayerSpawn.global_position
@@ -54,7 +57,7 @@ func add_player_from_data(data):
 	player.set_network_master(int(data.id))
 
 func add_enemy_from_data(data):
-	var enemy = Game.Enemy.instance()
+	var enemy = R.Enemy.instance()
 	enemy.name = str(data.id)
 	enemies_node.add_child(enemy)
 	enemy.load_data(data)
@@ -84,10 +87,10 @@ func get_game_state():
 	return game_state
 
 func load_game_state(game_state):
-	daynight_anim.seek(game_state.time)
 	if game_state.game_started:
 		game_started = game_state.game_started
 		daynight_anim.play("daynight")
+		daynight_anim.seek(game_state.time)
 	player_spawn.position = game_state.player_spawn
 	for p in game_state.players:
 		add_player_from_data(p)
@@ -129,7 +132,7 @@ remotesync func add_system_message(message):
 		gui.add_system_message(message)
 
 func _on_HealTick_timeout():
-	if is_network_master():
+	if Game.is_host():
 		for p in players_node.get_children():
 			if not p.dead and p.health < p.player_class.MAX_HEALTH and p.last_combat < OS.get_ticks_msec() - 5000 and p.last_heal_tick < OS.get_ticks_msec() - 500:
 				var heal = p.player_class.HEALTH_REGEN * 0.5
@@ -140,7 +143,7 @@ func _on_HealTick_timeout():
 				p.last_heal_tick = OS.get_ticks_msec()
 
 func _on_ExhaustionTick_timeout():
-	if is_network_master() and players_node.get_child_count() > 0:
+	if Game.is_host() and players_node.get_child_count() > 0:
 		base_exhaustion = clamp(base_exhaustion + 1, 0, 100)
 		for p in players_node.get_children():
 			if not p.dead:

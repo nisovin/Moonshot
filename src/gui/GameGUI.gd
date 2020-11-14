@@ -74,6 +74,10 @@ onready var chat_line = $Chat/ChatLine
 onready var scroll = $Chat/ScrollContainer
 onready var chat_container = $Chat/ScrollContainer/VBoxContainer
 onready var chat_tween = $Chat/Tween
+onready var overlay = $Overlay
+onready var player_list = $Overlay/Container/PlayerListContainer/PlayerList
+onready var map_container = $Overlay/Container/MapContainer
+onready var map = $Overlay/Container/MapContainer/Map
 
 var chatting = false
 var showing_tooltip = null
@@ -85,6 +89,21 @@ func _ready():
 	$Abilities.hide()
 	$PlayerBars.hide()
 	$Exhaustion.hide()
+	yield(get_tree(), "idle_frame")
+	map.texture = owner.map.map_texture
+
+func open_overlay():
+	overlay.show()
+	map.update()
+	for c in player_list.get_children():
+		c.queue_free()
+	for p in owner.players_node.get_children():
+		var e = R.PlayerListEntry.instance()
+		e.get_node("Label").text = p.player_name
+		player_list.add_child(e)
+	
+func close_overlay():
+	overlay.hide()
 
 func open_chat():
 	Game.lock_player_input = true
@@ -129,13 +148,21 @@ func _add_to_chat(message):
 func _unhandled_input(event):
 	if event.is_action_pressed("chat") and not chatting:
 		open_chat()
-	elif event.is_action_pressed("ui_cancel") and chatting:
-		close_chat()
-	elif event.is_action_pressed("menu") and $Menu.visible:
-		_on_Resume_pressed()
-	elif event.is_action_pressed("menu") and not $Menu.visible:
-		$Menu.show()
-		Game.lock_player_input = true
+	elif event.is_action_pressed("ui_cancel"):
+		if $Menu.visible:
+			_on_Resume_pressed()
+		elif chatting:
+			close_chat()
+		elif overlay.visible:
+			close_overlay()
+		else:
+			$Menu.show()
+			Game.lock_player_input = true
+	elif event.is_action_pressed("overlay"):
+		if overlay.visible:
+			close_overlay()
+		else:
+			open_overlay()
 
 func _on_ChatLine_text_entered(new_text):
 	if new_text == "":
@@ -148,13 +175,13 @@ func _on_ChatLine_text_entered(new_text):
 
 func _on_entered_level():
 	if Game.player.class_id == Game.PlayerClass.ARCHER:
-		$Abilities/Attack1.texture_under = R.icons.archer_attack1
+		$Abilities/Attack1.texture_under = R.Icons.archer_attack1
 		$Abilities/Attack1.texture_progress = $Abilities/Attack1.texture_under
-		$Abilities/Attack2.texture_under = R.icons.archer_attack2
+		$Abilities/Attack2.texture_under = R.Icons.archer_attack2
 		$Abilities/Attack2.texture_progress = $Abilities/Attack2.texture_under
-		$Abilities/Movement.texture_under = R.icons.archer_movement
+		$Abilities/Movement.texture_under = R.Icons.archer_movement
 		$Abilities/Movement.texture_progress = $Abilities/Movement.texture_under
-		$Abilities/Ultimate.texture_under = R.icons.archer_ultimate
+		$Abilities/Ultimate.texture_under = R.Icons.archer_ultimate
 		$Abilities/Ultimate.texture_progress = $Abilities/Ultimate.texture_under
 	$Abilities.show()
 	$PlayerBars.show()
@@ -162,6 +189,8 @@ func _on_entered_level():
 func _process(delta):
 	if Game.player != null:
 		update_ui()
+		if overlay.visible:
+			update_map()
 
 func update_ui():
 	var cls = Game.player.player_class
@@ -201,6 +230,12 @@ func update_ui():
 		i += 1
 
 	hide_tooltip()
+
+func update_map():
+	map.update()
+	var center = map_container.rect_size / 2
+	var player_pos = map.player_pixel * 3 + Vector2.ONE
+	map.rect_position = center - player_pos
 
 func show_tooltip(id, data, title_suffix = ""):
 	var corner = "BR" if not "corner" in data else data.corner
