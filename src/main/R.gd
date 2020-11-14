@@ -4,6 +4,8 @@ var Level
 
 var Player
 var Enemy
+var EnemyGrunt
+var EnemyMage
 
 var CrescentArrow
 var Volley
@@ -22,6 +24,8 @@ func load_resources(is_server):
 	Level = load("res://main/Level.tscn")
 	Player = load("res://player/Player.tscn")
 	Enemy = load("res://enemies/Enemy.tscn")
+	EnemyGrunt = load("res://enemies/EnemyGrunt.tscn")
+	EnemyMage = load("res://enemies/EnemyMage.tscn")
 	
 	CrescentArrow = load("res://player/Arrow.tscn")
 	Volley = load("res://player/Volley.tscn")

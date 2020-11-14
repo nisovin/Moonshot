@@ -1,7 +1,6 @@
-[gd_scene load_steps=14 format=2]
+[gd_scene load_steps=11 format=2]
 
 [ext_resource path="res://enemies/Enemy.gd" type="Script" id=1]
-[ext_resource path="res://enemies/enemy.png" type="Texture" id=2]
 [ext_resource path="res://main/MovementSmoother.gd" type="Script" id=3]
 [ext_resource path="res://enemies/EnemyController.gd" type="Script" id=4]
 [ext_resource path="res://misc/white_pixel.png" type="Texture" id=5]
@@ -24,18 +23,6 @@ orbit_velocity = 0.0
 orbit_velocity_random = 0.0
 scale = 1.5
 color = Color( 0.752941, 0.152941, 0.152941, 1 )
-
-[sub_resource type="AtlasTexture" id=4]
-atlas = ExtResource( 2 )
-region = Rect2( 26, 0, 26, 36 )
-
-[sub_resource type="SpriteFrames" id=5]
-animations = [ {
-"frames": [ SubResource( 4 ) ],
-"loop": true,
-"name": "default",
-"speed": 5.0
-} ]
 
 [sub_resource type="Animation" id=6]
 length = 2.0
@@ -116,7 +103,6 @@ process_material = SubResource( 3 )
 
 [node name="AnimatedSprite" type="AnimatedSprite" parent="Visual"]
 position = Vector2( 0.420448, -14.1901 )
-frames = SubResource( 5 )
 
 [node name="AnimationPlayer" type="AnimationPlayer" parent="Visual"]
 anims/die = SubResource( 6 )

@@ -16,6 +16,11 @@ script = ExtResource( 1 )
 [node name="MultiplayerController" type="Node" parent="."]
 script = ExtResource( 2 )
 
+[node name="NotifyTimer" type="Timer" parent="MultiplayerController"]
+wait_time = 10.0
+
+[node name="HTTPRequest" type="HTTPRequest" parent="MultiplayerController"]
+
 [node name="CanvasLayer" type="CanvasLayer" parent="."]
 
 [node name="CenteredMessage" type="Control" parent="CanvasLayer"]
@@ -38,3 +43,5 @@ align = 1
 __meta__ = {
 "_edit_use_anchors_": false
 }
+[connection signal="timeout" from="MultiplayerController/NotifyTimer" to="MultiplayerController" method="_on_NotifyTimer_timeout"]
+[connection signal="request_completed" from="MultiplayerController/HTTPRequest" to="MultiplayerController" method="_on_HTTPRequest_request_completed"]

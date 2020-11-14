@@ -1,5 +1,4 @@
 extends EnemyType
-class_name EnemyMage
 
 const FIREBALL_SPEED = 150
 

@@ -3,6 +3,7 @@ extends KinematicBody2D
 const SERIALIZE_FIELDS = [ "type_id", "global_position", "velocity" ]
 
 var velocity = Vector2.ZERO
+var dir = "down"
 var move_duration = 0
 var last_physics_tick = 0
 
@@ -16,8 +17,11 @@ var controller
 onready var neighbors = $Neighbors
 onready var visual = $Visual
 onready var visual_anim = $Visual/AnimationPlayer
+onready var sprite = $Visual/AnimatedSprite
 onready var stun_particles = $Visual/StunParticles
 onready var healthbar = $Visual/Node2D/TextureProgress
+onready var collision = $CollisionShape2D
+onready var hitbox_collision = $Hitbox/CollisionShape2D
 
 func load_data(data):
 	for field in SERIALIZE_FIELDS:
@@ -86,10 +90,13 @@ func physics_tick(delta):
 	last_physics_tick = Engine.get_physics_frames()
 	if velocity == Vector2.ZERO: return
 	var before = position
-	var col = move_and_collide(velocity * delta)
+	if collision.disabled:
+		position += velocity * delta
+	else:
+		var col = move_and_collide(velocity * delta)
+		if col and is_network_master():
+			controller.collide(col)
 	visual.move(position - before)
-	if col and is_network_master():
-		controller.collide(col)
 	if move_duration > 0:
 		move_duration -= delta
 		if move_duration <= 0:
@@ -97,6 +104,20 @@ func physics_tick(delta):
 	
 func _physics_process(delta):
 	physics_tick(delta)
+	if velocity != Vector2.ZERO:
+		if abs(velocity.x) >= abs(velocity.y):
+			if velocity.x > 0:
+				dir = "right"
+			else:
+				dir = "left"
+		else:
+			if velocity.y > 0:
+				dir = "down"
+			else:
+				dir = "up"
+		sprite.play("walk_" + dir)
+	else:
+		sprite.play("idle_" + dir)
 	
 remotesync func die():
 	dead = true
@@ -104,7 +125,6 @@ remotesync func die():
 		if Game.player != null and last_hit > OS.get_ticks_msec() - 10000:
 			Game.player.got_kill(self, last_hit > OS.get_ticks_msec() - 250)
 		healthbar.visible = false
-		stun_particles.emitting = false
 		stun_particles.visible = false
 		visual_anim.play("die")
 		# disable player collision

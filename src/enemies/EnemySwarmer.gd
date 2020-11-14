@@ -1,5 +1,4 @@
 extends EnemyType
-class_name EnemySwarmer
 
 var enemy
 

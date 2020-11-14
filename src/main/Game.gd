@@ -3,8 +3,6 @@ extends Node
 signal input_method_changed
 signal entered_level
 
-const LOCAL = false
-const PORT = 20514
 const MAX_PLAYERS = 100
 const VERSION = 1
 const TILE_SIZE = 16
@@ -68,9 +66,6 @@ func start_server():
 	multiplayer_controller.level = level
 	multiplayer_controller.init_server()
 	
-	var peer = NetworkedMultiplayerENet.new()
-	peer.create_server(PORT, MAX_PLAYERS)
-	get_tree().network_peer = peer
 	
 	level.start_server()
 	
@@ -87,18 +82,14 @@ func start_menu():
 	R.load_resources(false)
 	add_child(R.MainMenu.instance())
 	
-func start_client():
+func start_client(ip, port):
 	mp_mode = MPMode.CLIENT
 	level = R.Level.instance()
 	add_child(level)
 	level.visible = false
 	
 	multiplayer_controller.level = level
-	multiplayer_controller.init_client()
-	
-	var peer = NetworkedMultiplayerENet.new()
-	peer.create_client("127.0.0.1" if LOCAL else "minecraft.nisovin.com", PORT)
-	get_tree().network_peer = peer
+	multiplayer_controller.init_client(ip, port)
 
 	Audio.start_music()
 
@@ -115,7 +106,7 @@ func start_solo():
 	#Engine.iterations_per_second = 30
 	
 	var peer = NetworkedMultiplayerENet.new()
-	peer.create_server(PORT, 1)
+	peer.create_server(20514, 1)
 	get_tree().network_peer = peer
 	get_tree().refuse_new_network_connections = true
 	
@@ -146,7 +137,7 @@ func get_tile_pos(v):
 	return Vector2(int(floor(v.x / TILE_SIZE)), int(floor(v.y / TILE_SIZE)))
 
 func parse_command(cmd_player, command: String):
-	if not is_server(): return null
+	if not is_host(): return null
 	var parts = command.substr(1).split(" ", false, 1)
 	var cmd = parts[0].to_lower()
 	var param = "" if parts.size() == 1 else parts[1]
@@ -157,14 +148,19 @@ func parse_command(cmd_player, command: String):
 			return "Authenticated"
 		else:
 			return null
-	if not cmd_player.authed:
+	if not cmd_player.authed and is_server():
 		return null
 	if cmd == "cap":
 		if param.is_valid_integer():
 			var cap = int(param)
 			multiplayer_controller.max_players = cap
 			return "Player cap set to " + str(cap)
-	if cmd == "ban":
+	elif cmd == "maxenemies":
+		if param.is_valid_integer():
+			var cap = int(param)
+			level.enemy_manager.max_enemies = cap
+			return "Max enemies set to " + str(cap)
+	elif cmd == "ban":
 		var banned = multiplayer_controller.ban(param)
 		if banned:
 			return "Banned: name=" + param + ", id=" + str(banned[0]) + ", ip=" + banned[1] + ", uuid=" + banned[2]
@@ -185,3 +181,5 @@ func check_name(player_name: String):
 	
 const RESERVED_NAMES = [ "server" ]
 const BAD_WORDS = [ "" ]
+
+

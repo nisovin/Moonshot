@@ -30,9 +30,27 @@ func init(node):
 	target_range_sq = target_range * target_range
 	target_max_range_sq = target_max_range * target_max_range
 	target_locked_range_sq = target_locked_range * target_locked_range
+	copy_up(node)
 	
 func init_sub(node):
 	pass
+	
+func copy_up(node):
+	node.sprite.frames = $AnimatedSprite.frames
+	node.sprite.position = $AnimatedSprite.position
+	node.sprite.scale = $AnimatedSprite.scale
+	node.sprite.play("idle_down")
+	node.hitbox_collision.shape = $Hitbox.shape
+	node.hitbox_collision.position = $Hitbox.position
+	var col = $Collision
+	if col:
+		node.collision.shape = $Collision.shape
+		node.collision.position = $Collision.position
+	else:
+		node.collision.disabled = true
+	$AnimatedSprite.queue_free()
+	$Collision.queue_free()
+	$Hitbox.queue_free()
 
 func find_target(players, walls):
 	pass

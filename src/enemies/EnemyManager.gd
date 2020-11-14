@@ -1,6 +1,5 @@
 extends Node
 
-const MAX_ENEMIES = 150
 const MAX_ENEMY_POWER_PER_PLAYER = 15
 
 const ENEMY_POWER = {
@@ -12,6 +11,7 @@ enum Directive { NONE, FOCUS_PLAYERS, FOCUS_KEEP, SWIFTNESS, ENRAGE }
 
 onready var enemy_spawn_point = owner.get_node("EnemySpawn")
 
+var max_enemies = 90
 var per_player_power_limit = 1
 var per_player_wave_size = 0.5
 var next_enemy_id = 1
@@ -28,7 +28,7 @@ func _ready():
 	set_physics_process(false)
 
 func start_server():
-	$SpawnTimer.wait_time = 2
+	$SpawnTimer.wait_time = 10
 	$SpawnTimer.start()
 	set_physics_process(true)
 	wall_list = owner.walls_node.get_children()
@@ -55,7 +55,7 @@ remotesync func spawn_enemy(data):
 #func _process(delta):
 #	frames_since_physics += 1
 
-func _process(delta):
+func _process(delta): # TEST ME
 #	if frames_since_physics == 0:
 #		print("WARNING: no process frames since last physics!")
 #		return
@@ -133,8 +133,8 @@ func check_start_loop():
 func _on_SpawnTimer_timeout():
 	var player_count = get_tree().get_nodes_in_group("players").size()
 	if player_count == 0: return
-	var max_enemy_power = 500 #clamp(player_count * per_player_power_limit, 5, 200)
-	var wave_size = 8 #clamp(int(ceil(per_player_wave_size * player_count)), 3, 20)
+	var max_enemy_power = clamp(player_count * per_player_power_limit, 5, 200)
+	var wave_size = clamp(int(ceil(per_player_wave_size * player_count)), 3, 20)
 	var count = 0
 	var power = 0
 	for e in owner.enemies_node.get_children():
@@ -142,7 +142,7 @@ func _on_SpawnTimer_timeout():
 			count += 1
 			power += ENEMY_POWER[e.type_id]
 	for x in wave_size:
-		if count < MAX_ENEMIES and power < max_enemy_power:
+		if count < max_enemies and power < max_enemy_power:
 			var type_id = Game.EnemyClass.GRUNT
 			var pct = float(count) / MAX_ENEMIES
 			if pct > 0.9 and power < max_enemy_power - 10:

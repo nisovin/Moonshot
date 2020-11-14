@@ -1,5 +1,4 @@
 extends EnemyType
-class_name EnemyGrunt
 
 func init_sub(node):
 	max_health = 70
@@ -10,3 +9,4 @@ func init_sub(node):
 	attack_range = 10
 	attack_range_min = 0
 	attack_range_max = 14
+

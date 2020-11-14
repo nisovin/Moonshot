@@ -9,30 +9,12 @@
 config_version=4
 
 _global_script_classes=[ {
-"base": "EnemyType",
-"class": "EnemyGrunt",
-"language": "GDScript",
-"path": "res://enemies/EnemyGrunt.gd"
-}, {
-"base": "EnemyType",
-"class": "EnemyMage",
-"language": "GDScript",
-"path": "res://enemies/EnemyMage.gd"
-}, {
-"base": "EnemyType",
-"class": "EnemySwarmer",
-"language": "GDScript",
-"path": "res://enemies/EnemySwarmer.gd"
-}, {
 "base": "Node",
 "class": "EnemyType",
 "language": "GDScript",
 "path": "res://enemies/EnemyType.gd"
 } ]
 _global_script_class_icons={
-"EnemyGrunt": "",
-"EnemyMage": "",
-"EnemySwarmer": "",
 "EnemyType": ""
 }
 

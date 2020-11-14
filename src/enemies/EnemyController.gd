@@ -1,6 +1,6 @@
 extends Node
 
-const MAX_ENEMIES_ON_PLAYER = 300
+const MAX_ENEMIES_ON_PLAYER = 6
 const MAX_ENEMIES_ON_WALL = 6
 
 var type
@@ -25,9 +25,9 @@ onready var space_state: Physics2DDirectSpaceState = get_parent().get_world_2d()
 func init(type_id):
 	match type_id:
 		Game.EnemyClass.GRUNT:
-			type = EnemyGrunt.new()
+			type = R.EnemyGrunt.instance()
 		Game.EnemyClass.MAGE:
-			type = EnemyMage.new()
+			type = R.EnemyMage.instance()
 		_:
 			assert(false)
 			owner.queue_free()

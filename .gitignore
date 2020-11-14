@@ -1,5 +1,6 @@
 export/
 src/music/
+src/paid/
 
 # Godot-specific ignores
 .import/
@@ -10,3 +11,4 @@ export_presets.cfg
 .mono/
 data_*/
 src/godot.exe
+src/server.txt

@@ -1,29 +1,39 @@
 extends Node2D
 
+enum GameState { PREGAME, STAGE1, STAGE2, GAMEOVER }
+
 var chat_history = []
 
 onready var gui = $GUI
 onready var map = $Map
 onready var player_spawn = $PlayerSpawn
+onready var firewall = $Map/Ground/Firewall
 onready var daynight_anim = $DayNightCycle/AnimationPlayer
 onready var players_node = $Map/Objects/Entities/Players
 onready var enemies_node = $Map/Objects/Entities/Enemies
 onready var projectiles_node = $Map/Objects/Entities/Projectiles
 onready var ground_effects_node = $Map/Ground/GroundEffects
 onready var walls_node = $Map/Objects/Walls
+onready var enemy_manager = $EnemyManager
 
-var game_started = false
+var state = GameState.PREGAME
+var countdown = 0
+var time_started = 0
 var base_exhaustion = 0
 var time_of_day = "start"
 
 func start_server():
-	$EnemyManager.start_server()
-	rpc("start_game")
+	$GameTick.start()
+	player_spawn.position = $Map/PlayerSpawns/Pregame.position
 
 remotesync func start_game():
-	game_started = true
+	print("Game started")
+	state = GameState.STAGE1
+	time_started = OS.get_ticks_msec()
 	daynight_anim.play("daynight")
-	daynight_anim.playback_speed = 2.0
+	player_spawn.position = $Map/PlayerSpawns/Stage1.position
+	enemy_manager.start_server()
+	add_system_message("The enemy forces have arrived!")
 
 func time_event(event):
 	print("Time: ", event)
@@ -31,14 +41,35 @@ func time_event(event):
 	if Game.is_host():
 		if event == "dawn":
 			$ExhaustionTick.start()
-			$EnemyManager.speed_up_spawning()
+			$FirewallTick.start()
+			enemy_manager.speed_up_spawning()
 		elif event == "night":
 			$ExhaustionTick.stop()
 		elif event == "midnight":
-			$EnemyManager.pause_spawning(20)
+			enemy_manager.pause_spawning(20)
 	if Game.is_player():
 		Audio.music_time_update(event)
 
+func game_tick():
+	if state == GameState.PREGAME:
+		if countdown > 0:
+			countdown -= 1
+			if countdown <= 0:
+				rpc("start_game")
+				countdown = 0
+		else:
+			var players = players_node.get_child_count()
+			if players >= 1:
+				countdown = 2
+				rpc("add_system_message", "The enemy forces will arrive in 15 seconds!")
+
+remotesync func move_firewall(y):
+	if Game.is_server() or abs(firewall.position.y - y) > 64:
+		firewall.position.y = y
+	else:
+		$Tween.interpolate_property(firewall, "position:y", firewall.position.y, y, $FirewallTick.wait_time / 2)
+		$Tween.start()
+	
 func add_new_player(data):
 	data.global_position = $PlayerSpawn.global_position
 	add_player_from_data(data)
@@ -72,9 +103,10 @@ func remove_player(id):
 
 func get_game_state():
 	var game_state = {}
-	game_state.game_started = game_started
+	game_state.state = state
 	game_state.time = daynight_anim.current_animation_position
 	game_state.player_spawn = player_spawn.position
+	game_state.firewall = firewall.position.y
 	game_state.players = []
 	game_state.enemies = []
 	game_state.walls = {}
@@ -87,11 +119,12 @@ func get_game_state():
 	return game_state
 
 func load_game_state(game_state):
-	if game_state.game_started:
-		game_started = game_state.game_started
+	state = game_state.state
+	if state == GameState.STAGE1 or state == GameState.STAGE2:
 		daynight_anim.play("daynight")
 		daynight_anim.seek(game_state.time)
 	player_spawn.position = game_state.player_spawn
+	firewall.position.y = game_state.firewall
 	for p in game_state.players:
 		add_player_from_data(p)
 	for e in game_state.enemies:
@@ -148,3 +181,6 @@ func _on_ExhaustionTick_timeout():
 		for p in players_node.get_children():
 			if not p.dead:
 				p.increase_exhaustion(1)
+
+func _on_FirewallTick_timeout():
+	rpc("move_firewall", firewall.position.y + 16)

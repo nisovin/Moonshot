@@ -2,8 +2,9 @@ extends Node
 
 var level
 
-var players_by_id = {}
-
+var server_id = 1
+var server_port = 20514
+var api_key = ""
 var auth_password = ""
 var banned_ips = []
 var banned_uuids = []
@@ -20,10 +21,18 @@ func init_server():
 	get_tree().connect("network_peer_disconnected", self, "_on_server_player_disconnected")
 	
 	var file = File.new()
-	if file.file_exists("auth_password.txt"):
-		file.open("auth_password.txt", File.READ)
-		auth_password = file.get_as_text().strip_edges()
+	if file.file_exists("server.txt"):
+		file.open("server.txt", File.READ)
+		var text = file.get_as_text()
 		file.close()
+		var json_result = JSON.parse(text)
+		if json_result.error == OK:
+			var data = json_result.result
+			server_id = int(data.id)
+			server_port = int(data.port)
+			api_key = data.key
+			auth_password = data.auth
+			if data.has("cap"): max_players = int(data.cap)
 	if file.file_exists("banned_ips.txt"):
 		file.open("banned_ips.txt", File.READ)
 		while not file.eof_reached():
@@ -38,16 +47,38 @@ func init_server():
 			if l != "":
 				banned_uuids.append(l)
 		file.close()
+		
+	var peer = NetworkedMultiplayerENet.new()
+	peer.create_server(server_port, Game.MAX_PLAYERS)
+	get_tree().network_peer = peer
+	print("Server id ", server_id, " started on port ", server_port)
+	
+	$NotifyTimer.start()
+	_on_NotifyTimer_timeout()
 
-func init_client():
+func init_client(ip, port):
 	get_tree().connect("connected_to_server", self, "_on_connected_to_server")
 	get_tree().connect("server_disconnected", self, "_on_disconnected_from_server")
 	get_tree().connect("connection_failed", self, "_on_failed_to_connect")
 	get_tree().connect("network_peer_disconnected", self, "_on_client_player_disconnected")
 	
 	Game.show_centered_message("Connecting to server...")
+	
+	var peer = NetworkedMultiplayerENet.new()
+	peer.create_client(ip, port)
+	get_tree().network_peer = peer
 
 # SERVER-SIDE
+
+func _on_NotifyTimer_timeout():
+	var status = "Unknown"
+	var players = get_tree().multiplayer.get_network_connected_peers().size()
+	var url = "https://nisovin.com/gamejams/update_server.php?key=" + api_key + "&id=" + str(server_id) + "&players=" + str(players) + "&status=" + status
+	$HTTPRequest.request(url)
+	
+func _on_HTTPRequest_request_completed(result, response_code, headers, body: PoolByteArray):
+	pass
+	#print(result, " ", response_code, " ", body.get_string_from_utf8())
 
 func _on_server_player_connected(id):
 	print("Player connected: id=", id)

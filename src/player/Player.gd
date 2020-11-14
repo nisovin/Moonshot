@@ -81,7 +81,7 @@ func get_data():
 	data.class_data = player_class.get_data()
 	return data
 	
-func apply_damage(dam, direct = false):
+func apply_damage(dam, direct = false, energy_damage = 0):
 	if not direct:
 		dam *= 1 - player_class.get_armor()
 		if last_hit > OS.get_ticks_msec() - 400:
@@ -95,7 +95,10 @@ func apply_damage(dam, direct = false):
 	if dam <= 0:
 		return false
 	var new_health = health - dam
-	rpc("damage", new_health)
+	if energy_damage > 0:
+		rpc("damage", new_health, energy_damage)
+	else:
+		rpc("damage", new_health)
 	return true
 
 func got_kill(enemy, killing_blow):
@@ -114,6 +117,8 @@ func _physics_process(delta):
 remotesync func damage(new_health, energy_damage = 0):
 	if new_health >= health: return
 	if is_network_master():
+		if energy_damage > 0:
+			player_class.energy = clamp(player_class.energy - energy_damage, 0, 100)
 		pass # show FCT
 	health = new_health
 	last_combat = last_hit

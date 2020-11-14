@@ -212,7 +212,13 @@ target = Vector2( 0, 100 )
 cell_size = Vector2( 16, 16 )
 format = 1
 
-[node name="Shrines" type="Node2D" parent="Map"]
+[node name="PlayerSpawns" type="Node2D" parent="Map"]
+
+[node name="Pregame" type="Position2D" parent="Map/PlayerSpawns"]
+
+[node name="Stage1" type="Position2D" parent="Map/PlayerSpawns"]
+
+[node name="Stage2" type="Position2D" parent="Map/PlayerSpawns"]
 
 [node name="EnemySpawns" type="Node2D" parent="Map"]
 
@@ -263,6 +269,8 @@ position = Vector2( 466.628, 164.147 )
 [node name="Line2D" type="Line2D" parent="."]
 default_color = Color( 1, 0, 0, 1 )
 
+[node name="GameTick" type="Timer" parent="."]
+
 [node name="HealTick" type="Timer" parent="."]
 wait_time = 0.1
 autostart = true
@@ -270,12 +278,19 @@ autostart = true
 [node name="ExhaustionTick" type="Timer" parent="."]
 wait_time = 5.0
 
+[node name="FirewallTick" type="Timer" parent="."]
+wait_time = 15.0
+
 [node name="EnemyManager" type="Node" parent="."]
 script = ExtResource( 5 )
 
 [node name="SpawnTimer" type="Timer" parent="EnemyManager"]
 
 [node name="GUI" parent="." instance=ExtResource( 3 )]
+
+[node name="Tween" type="Tween" parent="."]
+[connection signal="timeout" from="GameTick" to="." method="game_tick"]
 [connection signal="timeout" from="HealTick" to="." method="_on_HealTick_timeout"]
 [connection signal="timeout" from="ExhaustionTick" to="." method="_on_ExhaustionTick_timeout"]
+[connection signal="timeout" from="FirewallTick" to="." method="_on_FirewallTick_timeout"]
 [connection signal="timeout" from="EnemyManager/SpawnTimer" to="EnemyManager" method="_on_SpawnTimer_timeout"]
