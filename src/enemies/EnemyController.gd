@@ -146,6 +146,15 @@ func find_target(players, walls):
 			if prio > best_priority:
 				best_priority = prio
 				best_target = w
+		var s = Game.level.current_shrine
+		if s != null:
+			var d = s.position.distance_squared_to(owner.position)
+			var prio = type.calculate_target_priority(s, d)
+			if prio > best_priority:
+				best_priority = prio
+				best_target = s
+		if target == null and best_target == null and s != null:
+			best_target = s
 		if best_target != null:
 			target_time = OS.get_ticks_msec()
 			if target != best_target:

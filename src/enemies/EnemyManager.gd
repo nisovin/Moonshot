@@ -12,7 +12,7 @@ enum Directive { NONE, FOCUS_PLAYERS, FOCUS_KEEP, SWIFTNESS, ENRAGE }
 onready var enemy_spawn_point = owner.get_node("EnemySpawn")
 
 var max_enemies = 90
-var per_player_power_limit = 1
+var per_player_power_limit = 2
 var per_player_wave_size = 0.5
 var next_enemy_id = 1
 
@@ -22,21 +22,28 @@ var ai_tick_count = 0
 var next_physics = 0
 var physics_tick_count = 0
 var last_loop_time = 0
-var wall_list
+var wall_list = []
+var wall_down_percents = {}
 
 func _ready():
+	set_process(false)
 	set_physics_process(false)
 
 func start_server():
-	$SpawnTimer.wait_time = 10
+	$SpawnTimer.wait_time = 5
 	$SpawnTimer.start()
+	set_process(true)
 	set_physics_process(true)
 	wall_list = owner.walls_node.get_children()
+	for w in wall_list:
+		if not w.section in wall_down_percents:
+			wall_down_percents[w.section] = [0,0]
+		wall_down_percents[w.section][1] += 1
 
 func speed_up_spawning():
 	var s = max($SpawnTimer.wait_time * 0.75, 1)
 	per_player_wave_size = clamp(per_player_wave_size + 0.2, 0.5, 2.5)
-	per_player_power_limit = clamp(per_player_power_limit + 1, 1, 6)
+	per_player_power_limit = clamp(per_player_power_limit + 1, 1, 8)
 	$SpawnTimer.wait_time = s
 	$SpawnTimer.start(s)
 	
@@ -56,6 +63,7 @@ remotesync func spawn_enemy(data):
 #	frames_since_physics += 1
 
 func _process(delta): # TEST ME
+	
 #	if frames_since_physics == 0:
 #		print("WARNING: no process frames since last physics!")
 #		return
@@ -90,17 +98,26 @@ func _process(delta): # TEST ME
 		for e in owner.enemies_node.get_children():
 			e.set_movement(Vector2.ZERO, e.position)
 		
-	# targeted by recounts
+	# recounts
 	if next_ai == 0:
 		if not check_start_loop(): return
-		for p in owner.players_node.get_children():
+		for p in player_list:
 			p.targeted_by_count = 0
-		for w in owner.walls_node.get_children():
+		for w in wall_down_percents:
+			wall_down_percents[w][0] = 0
+		for w in wall_list:
 			w.targeted_by_count = 0
+			if w.status == 0:
+				wall_down_percents[w.section][0] += 1
 		for e in owner.enemies_node.get_children():
 			if e.controller.target != null && "targeted_by_count" in e.controller.target:
 				e.controller.target.targeted_by_count += 1
-				
+	
+	# check cost to shrine
+	#var path_to_shrine = owner.get_nav_path(owner.firewall.position, owner.current_shrine.position, false, true)
+	#print(path_to_shrine[1])
+	#print(wall_down_percents)
+	
 	# do ai ticks
 	if enemy_count > 0:
 		ai_tick_count += 1
@@ -133,7 +150,7 @@ func check_start_loop():
 func _on_SpawnTimer_timeout():
 	var player_count = get_tree().get_nodes_in_group("players").size()
 	if player_count == 0: return
-	var max_enemy_power = clamp(player_count * per_player_power_limit, 5, 200)
+	var max_enemy_power = clamp(player_count * per_player_power_limit, 6, 200)
 	var wave_size = clamp(int(ceil(per_player_wave_size * player_count)), 3, 20)
 	var count = 0
 	var power = 0
@@ -144,7 +161,7 @@ func _on_SpawnTimer_timeout():
 	for x in wave_size:
 		if count < max_enemies and power < max_enemy_power:
 			var type_id = Game.EnemyClass.GRUNT
-			var pct = float(count) / MAX_ENEMIES
+			var pct = float(count) / max_enemies
 			if pct > 0.9 and power < max_enemy_power - 10:
 				pass # high enemy count, make bigger enemies more likely
 			type_id = Game.EnemyClass.MAGE if N.rng.randf() < 0.1 else Game.EnemyClass.GRUNT

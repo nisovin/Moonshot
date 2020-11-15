@@ -12,7 +12,7 @@ func init_sub(node):
 
 	target_players_weight = 100
 	target_keep_weight = 1
-	target_shrine_weight = 1
+	target_shrine_weight = 5
 
 	attack_melee = 0
 	attack_damage = 12

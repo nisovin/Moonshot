@@ -7,13 +7,14 @@ var chat_history = []
 onready var gui = $GUI
 onready var map = $Map
 onready var player_spawn = $PlayerSpawn
-onready var firewall = $Map/Ground/Firewall
+onready var firewall = $Map/Firewall
 onready var daynight_anim = $DayNightCycle/AnimationPlayer
 onready var players_node = $Map/Objects/Entities/Players
 onready var enemies_node = $Map/Objects/Entities/Enemies
 onready var projectiles_node = $Map/Objects/Entities/Projectiles
 onready var ground_effects_node = $Map/Ground/GroundEffects
 onready var walls_node = $Map/Objects/Walls
+onready var shrines_node = $Map/Ground/Shrines
 onready var enemy_manager = $EnemyManager
 
 var state = GameState.PREGAME
@@ -21,6 +22,7 @@ var countdown = 0
 var time_started = 0
 var base_exhaustion = 0
 var time_of_day = "start"
+var current_shrine = null
 
 func start_server():
 	$GameTick.start()
@@ -31,8 +33,11 @@ remotesync func start_game():
 	state = GameState.STAGE1
 	time_started = OS.get_ticks_msec()
 	daynight_anim.play("daynight")
+	#daynight_anim.playback_speed = 2.0
 	player_spawn.position = $Map/PlayerSpawns/Stage1.position
-	enemy_manager.start_server()
+	current_shrine = shrines_node.get_child(0)
+	if Game.is_host():
+		enemy_manager.start_server()
 	add_system_message("The enemy forces have arrived!")
 
 func time_event(event):
@@ -45,10 +50,13 @@ func time_event(event):
 			enemy_manager.speed_up_spawning()
 		elif event == "night":
 			$ExhaustionTick.stop()
+			enemy_manager.speed_up_spawning()
 		elif event == "midnight":
 			enemy_manager.pause_spawning(20)
 	if Game.is_player():
 		Audio.music_time_update(event)
+		for shrine in shrines_node.get_children():
+			shrine.set_time(event)
 
 func game_tick():
 	if state == GameState.PREGAME:
@@ -60,15 +68,16 @@ func game_tick():
 		else:
 			var players = players_node.get_child_count()
 			if players >= 1:
-				countdown = 2
+				countdown = 15
 				rpc("add_system_message", "The enemy forces will arrive in 15 seconds!")
+	if state == GameState.STAGE1 and current_shrine.health <= 0:
+		rpc("add_system_message", "The moonshrine has fallen!")
+		state = GameState.STAGE2
+		# current_shrine = shrines_node.get_child(1)
 
 remotesync func move_firewall(y):
-	if Game.is_server() or abs(firewall.position.y - y) > 64:
-		firewall.position.y = y
-	else:
-		$Tween.interpolate_property(firewall, "position:y", firewall.position.y, y, $FirewallTick.wait_time / 2)
-		$Tween.start()
+	$Tween.interpolate_property(firewall, "position:y", firewall.position.y, y, $FirewallTick.wait_time * .9)
+	$Tween.start()
 	
 func add_new_player(data):
 	data.global_position = $PlayerSpawn.global_position
@@ -104,7 +113,7 @@ func remove_player(id):
 func get_game_state():
 	var game_state = {}
 	game_state.state = state
-	game_state.time = daynight_anim.current_animation_position
+	game_state.time = 0 if state == GameState.PREGAME else daynight_anim.current_animation_position
 	game_state.player_spawn = player_spawn.position
 	game_state.firewall = firewall.position.y
 	game_state.players = []
@@ -183,4 +192,11 @@ func _on_ExhaustionTick_timeout():
 				p.increase_exhaustion(1)
 
 func _on_FirewallTick_timeout():
-	rpc("move_firewall", firewall.position.y + 16)
+	if Game.is_host() and players_node.get_child_count() > 0 and (time_of_day == "dawn" or time_of_day == "day" or time_of_day == "midday" or time_of_day == "afternoon"):
+		var amt = 16
+		if state == GameState.STAGE1 and firewall.position.y > shrines_node.get_child(0).position.y - 128:
+			amt = 0
+		elif state == GameState.STAGE2 and firewall.position.y < shrines_node.get_child(0).position.y:
+			amt *= 4
+		if amt > 0:
+			rpc("move_firewall", firewall.position.y + amt)

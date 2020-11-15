@@ -36,7 +36,10 @@ func _ready():
 				
 		var exclude_polys = []
 		for p in exclusions.get_children():
-			exclude_polys.append(p.polygon)
+			var poly = PoolVector2Array()
+			for point in p.polygon:
+				poly.append(point + p.position)
+			exclude_polys.append(poly)
 		
 		for x in map_size.x:
 			for y in map_size.y:

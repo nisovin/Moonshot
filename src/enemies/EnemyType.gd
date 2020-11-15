@@ -65,7 +65,7 @@ func calculate_target_priority(target, distance_sq):
 	if target.is_in_group("players"):
 		return pct_dist * target_players_weight
 	elif target.is_in_group("walls"):
-		return pct_dist * target_keep_weight
+		return pct_dist * target_keep_weight * (1.5 if target.status == 1 else 1.0)
 	elif target.is_in_group("shrines"):
 		return pct_dist * target_shrine_weight
 	else:

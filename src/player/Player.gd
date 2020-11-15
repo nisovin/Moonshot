@@ -34,7 +34,7 @@ var player_class = null
 
 onready var collision = $CollisionShape2D
 onready var visual = $Visual
-onready var sprite = $Visual/Sprite/AnimatedSprite
+onready var sprite = $Visual/Sprite/Warrior
 onready var visual_anim = $Visual/AnimationPlayer
 onready var nameplate = $Visual/Nameplate
 onready var healthbar = $Visual/Healthbar
@@ -51,10 +51,14 @@ func load_data(data):
 			
 	if class_id == Game.PlayerClass.WARRIOR:
 		player_class = $WarriorClass
+		sprite = $Visual/Sprite/Warrior
 		$ArcherClass.queue_free()
+		$Visual/Sprite/Archer.queue_free()
 	elif class_id == Game.PlayerClass.ARCHER:
 		player_class = $ArcherClass
+		sprite = $Visual/Sprite/Archer
 		$WarriorClass.queue_free()
+		$Visual/Sprite/Warrior.queue_free()
 	player_class.load_data(data.class_data if data.has("class_data") else null)
 	health = player_class.MAX_HEALTH
 		

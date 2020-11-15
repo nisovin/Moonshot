@@ -7,6 +7,7 @@ const REPAIR_SPEED = 50
 
 export(int) var max_health = 100
 export(int) var health = 100
+export(String) var section = "forward"
 var status = 3
 var points = []
 var ids = []

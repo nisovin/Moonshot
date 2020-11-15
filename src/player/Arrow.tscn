@@ -23,7 +23,6 @@ orbit_velocity_random = 0.0
 color_ramp = SubResource( 3 )
 
 [node name="Arrow" type="Area2D"]
-monitorable = false
 collision_layer = 0
 collision_mask = 17
 script = ExtResource( 2 )

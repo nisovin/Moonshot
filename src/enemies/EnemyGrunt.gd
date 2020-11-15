@@ -5,6 +5,7 @@ func init_sub(node):
 	
 	target_players_weight = 75
 	target_keep_weight = 25
+	target_shrine_weight = 50
 	
 	attack_range = 10
 	attack_range_min = 0
