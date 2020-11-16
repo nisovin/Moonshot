@@ -9,8 +9,6 @@ const ENEMY_POWER = {
 
 enum Directive { NONE, FOCUS_PLAYERS, FOCUS_KEEP, SWIFTNESS, ENRAGE }
 
-onready var enemy_spawn_point = owner.get_node("EnemySpawn")
-
 var max_enemies = 90
 var per_player_power_limit = 2
 var per_player_wave_size = 0.5
@@ -47,10 +45,12 @@ func speed_up_spawning():
 	$SpawnTimer.wait_time = s
 	$SpawnTimer.start(s)
 	
-func pause_spawning(time):
-	$SpawnTimer.paused = true
-	yield(get_tree().create_timer(time), "timeout")
-	$SpawnTimer.paused = false
+func pause_spawning():
+	$SpawnTimer.stop()
+
+func unpause_spawning():
+	_on_SpawnTimer_timeout()
+	$SpawnTimer.start()
 
 remotesync func spawn_enemy(data):
 	var enemy = R.Enemy.instance()
@@ -150,22 +150,31 @@ func check_start_loop():
 func _on_SpawnTimer_timeout():
 	var player_count = get_tree().get_nodes_in_group("players").size()
 	if player_count == 0: return
+	
+	var spawn_points = owner.get_enemy_spawn_points()
+	if spawn_points == null or spawn_points.size() == 0: return
+	
 	var max_enemy_power = clamp(player_count * per_player_power_limit, 6, 200)
 	var wave_size = clamp(int(ceil(per_player_wave_size * player_count)), 3, 20)
 	var count = 0
 	var power = 0
+	
+	
+	var spawn_point = null
 	for e in owner.enemies_node.get_children():
 		if not e.dead:
 			count += 1
 			power += ENEMY_POWER[e.type_id]
 	for x in wave_size:
 		if count < max_enemies and power < max_enemy_power:
+			if spawn_point == null or x % 4 == 0:
+				spawn_point = N.rand_array(spawn_points)
 			var type_id = Game.EnemyClass.GRUNT
 			var pct = float(count) / max_enemies
 			if pct > 0.9 and power < max_enemy_power - 10:
 				pass # high enemy count, make bigger enemies more likely
 			type_id = Game.EnemyClass.MAGE if N.rng.randf() < 0.1 else Game.EnemyClass.GRUNT
-			rpc("spawn_enemy", {"id": next_enemy_id, "type_id": type_id, "position": enemy_spawn_point.position + Vector2(N.rand_float(0, 16), N.rand_float(0, 16))})
+			rpc("spawn_enemy", {"id": next_enemy_id, "type_id": type_id, "position": spawn_point.position + Vector2(N.rand_float(0, 16), N.rand_float(0, 16))})
 			next_enemy_id += 1
 			count += 1
 			power += ENEMY_POWER[type_id]

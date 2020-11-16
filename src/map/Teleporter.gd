@@ -3,8 +3,10 @@ extends Area2D
 
 export (Vector2) var target = Vector2.UP * 64 setget set_target
 
+onready var label = $Z/Label
+
 func _ready():
-	$Label.hide()
+	label.hide()
 	if Game.is_server():
 		$CollisionShape2D.disabled = true
 		monitoring = false
@@ -21,11 +23,11 @@ func interact(body):
 func _on_Teleporter_body_entered(body):
 	if body.is_network_master():
 		body.interact_with = self
-		$Label.show()
+		label.show()
 
 func _on_Teleporter_body_exited(body):
 	if body.is_network_master():
-		$Label.hide()
+		label.hide()
 		if body.interact_with == self:
 			body.interact_with = null
 		

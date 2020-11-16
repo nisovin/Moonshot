@@ -22,6 +22,14 @@ onready var stun_particles = $Visual/StunParticles
 onready var healthbar = $Visual/Node2D/TextureProgress
 onready var collision = $CollisionShape2D
 onready var hitbox_collision = $Hitbox/CollisionShape2D
+#
+#func _process(delta):
+#	update()
+#
+#func _draw():
+#	draw_line(Vector2.ZERO, controller.target_direction * 32, Color.red, 2)
+#	draw_circle(controller.target_position - position, 10, Color.yellow)
+#	draw_line(Vector2.ZERO, velocity, Color.blue, 2)
 
 func load_data(data):
 	for field in SERIALIZE_FIELDS:
@@ -29,6 +37,7 @@ func load_data(data):
 			set(field, data[field])
 	controller = $EnemyController
 	controller.init(type_id)
+	$Visual/Node2D.position.y = -controller.type.height - 5
 	max_health = controller.type.max_health
 	health = max_health
 	if not is_network_master():
@@ -130,6 +139,7 @@ remotesync func die():
 		# disable player collision
 		set_deferred("collision_layer", 0)
 		set_deferred("collision_mask", 1)
+		$Hitbox.queue_free()
 		yield(get_tree().create_timer(2.1), "timeout")
 	delete()
 

@@ -1,8 +1,22 @@
 extends Node2D
 
+const WALL_WEIGHT_4 = 150
 const WALL_WEIGHT_3 = 100
 const WALL_WEIGHT_2 = 50
 const WALL_WEIGHT_1 = 25
+
+export(NodePath) var ground_path
+export(NodePath) var ground_effects_path
+export(NodePath) var players_path
+export(NodePath) var enemies_path
+export(NodePath) var projectiles_path
+export(NodePath) var smoothed_path
+export(NodePath) var walls_path
+export(NodePath) var shrine1_path
+export(NodePath) var shrine2_path
+export(NodePath) var player_spawns_path
+export(NodePath) var enemy_spawns_path
+export(NodePath) var firewall_path
 
 onready var ground = $Ground
 onready var objects = $Objects
@@ -146,7 +160,9 @@ func get_nav_path(from, to, smooth = true, get_cost = false):
 
 func _on_wall_status_changed(ids, status):
 	var weight = 1.0
-	if status == 3:
+	if status == 4:
+		weight = WALL_WEIGHT_4
+	elif status == 3:
 		weight = WALL_WEIGHT_3
 	elif status == 2:
 		weight = WALL_WEIGHT_2

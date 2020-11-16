@@ -25,7 +25,7 @@ hue_variation = 0.1
 hue_variation_random = 1.0
 
 [sub_resource type="RectangleShape2D" id=4]
-extents = Vector2( 3000, 1000 )
+extents = Vector2( 2000, 1000 )
 
 [node name="Firewall" type="Node2D"]
 script = ExtResource( 1 )

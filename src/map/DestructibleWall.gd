@@ -4,11 +4,12 @@ signal status_changed
 signal became_untargetable
 
 const REPAIR_SPEED = 50
+const FULL_STATUS = 4
 
 export(int) var max_health = 100
 export(int) var health = 100
 export(String) var section = "forward"
-var status = 3
+var status = FULL_STATUS
 var points = []
 var ids = []
 
@@ -18,14 +19,16 @@ var repairing = false
 var repair_amount = 0
 
 onready var target_position = $Target.global_position
+onready var label = $Z/Label
+onready var progress = $Z/RepairProgress
 
 func _ready():
 	points.append(global_position + Vector2(-24, -8))
 	points.append(global_position + Vector2(-8, -8))
 	points.append(global_position + Vector2(8, -8))
 	points.append(global_position + Vector2(24, -8))
-	$Label.hide()
-	$RepairProgress.hide()
+	label.hide()
+	progress.hide()
 	if Game.is_server():
 		$BehindDetector.queue_free()
 		$RepairDetector.queue_free()
@@ -34,7 +37,7 @@ func _ready():
 func _physics_process(delta):
 	if repairing:
 		repair_amount += REPAIR_SPEED * delta
-		$RepairProgress.value = repair_amount
+		progress.value = repair_amount
 		if repair_amount >= 100:
 			finish_repair()
 
@@ -56,8 +59,10 @@ func apply_damage(dam):
 		new_status = 1
 	elif health <= max_health * .50:
 		new_status = 2
-	else:
+	elif health <= max_health * .75:
 		new_status = 3
+	else:
+		new_status = 4
 	if status != new_status:
 		rpc("update_status", new_status)
 		emit_signal("status_changed", ids, new_status)
@@ -78,7 +83,9 @@ remotesync func update_status(new_status):
 	if new_status < status:
 		stop_repair()
 	status = new_status
-	if status == 3:
+	if status == 4:
+		$Sprite.texture = preload("res://map/wall3.png")
+	elif status == 3:
 		$Sprite.texture = preload("res://map/wall3.png")
 	elif status == 2:
 		$Sprite.texture = preload("res://map/wall2.png")
@@ -95,16 +102,16 @@ func interact(body):
 func start_repair():
 	repairing = true
 	repair_amount = 0
-	$RepairProgress.value = 0
-	$RepairProgress.show()
+	progress.value = 0
+	progress.show()
 	
 func stop_repair():
 	repairing = false
-	$RepairProgress.hide()
+	progress.hide()
 
 func finish_repair():
 	repairing = false
-	$RepairProgress.hide()
+	progress.hide()
 	rpc("repair", max_health * 0.24)
 
 func update_modulate():
@@ -125,14 +132,14 @@ func _on_BehindDetector_body_exited(body):
 func _on_RepairDetector_body_entered(body):
 	if status < 3 and body == Game.player:
 		body.interact_with = self
-		$Label.show()
+		label.show()
 	elif repairing and body.is_in_group("enemies"):
-		pass #stop_repair()
+		stop_repair()
 
 func _on_RepairDetector_body_exited(body):
 	if body == Game.player:
 		if body.interact_with == self:
 			body.interact_with = null
-		$Label.hide()
+		label.hide()
 		if repairing:
 			stop_repair()

@@ -3,6 +3,7 @@ class_name EnemyType
 
 var max_health = 50
 var movement_speed = 30
+var height = 30
 var avoid_players = false
 var custom_targeting = false
 var custom_pathing = false

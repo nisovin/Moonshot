@@ -2,6 +2,8 @@ extends EnemyType
 
 func init_sub(node):
 	max_health = 70
+	movement_speed = 40
+	height = 30
 	
 	target_players_weight = 75
 	target_keep_weight = 25

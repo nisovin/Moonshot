@@ -24,7 +24,7 @@ orbit_velocity_random = 0.0
 scale = 1.5
 color = Color( 0.752941, 0.152941, 0.152941, 1 )
 
-[sub_resource type="Animation" id=6]
+[sub_resource type="Animation" id=4]
 length = 2.0
 tracks/0/type = "value"
 tracks/0/path = NodePath(".:modulate")
@@ -51,7 +51,7 @@ tracks/1/keys = {
 "values": [ 0.0, 0.0, 90.0 ]
 }
 
-[sub_resource type="Animation" id=7]
+[sub_resource type="Animation" id=5]
 length = 0.5
 tracks/0/type = "value"
 tracks/0/path = NodePath(".:modulate")
@@ -66,7 +66,7 @@ tracks/0/keys = {
 "values": [ Color( 1, 1, 1, 1 ), Color( 1, 0.337255, 0.337255, 1 ), Color( 1, 1, 1, 1 ) ]
 }
 
-[sub_resource type="CapsuleShape2D" id=8]
+[sub_resource type="CapsuleShape2D" id=6]
 radius = 8.06553
 height = 18.8146
 
@@ -105,8 +105,8 @@ process_material = SubResource( 3 )
 position = Vector2( 0.420448, -14.1901 )
 
 [node name="AnimationPlayer" type="AnimationPlayer" parent="Visual"]
-anims/die = SubResource( 6 )
-anims/hurt = SubResource( 7 )
+anims/die = SubResource( 4 )
+anims/hurt = SubResource( 5 )
 
 [node name="Node2D" type="Node2D" parent="Visual"]
 position = Vector2( 0, -30 )
@@ -139,7 +139,7 @@ collision_mask = 0
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Hitbox"]
 position = Vector2( 0, -8.82941 )
-shape = SubResource( 8 )
+shape = SubResource( 6 )
 
 [node name="Line2D" type="Line2D" parent="."]
 width = 1.0

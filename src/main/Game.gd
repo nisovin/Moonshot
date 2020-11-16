@@ -4,6 +4,7 @@ signal input_method_changed
 signal entered_level
 
 const MAX_PLAYERS = 100
+const PLAYERS_TO_START = 2
 const VERSION = 1
 const TILE_SIZE = 16
 
@@ -66,8 +67,17 @@ func start_server():
 	multiplayer_controller.level = level
 	multiplayer_controller.init_server()
 	
-	
 	level.start_server()
+
+func restart_server():
+	level.name = "OldLevel"
+	level.queue_free()
+	yield(get_tree(), "idle_frame")
+	yield(get_tree(), "idle_frame")
+	level = R.Level.instance()
+	add_child(level)
+	multiplayer_controller.level = level
+	multiplayer_controller.restart_server()
 	
 func is_server():
 	return mp_mode == MPMode.SERVER
@@ -77,6 +87,9 @@ func is_host():
 
 func is_player():
 	return mp_mode == MPMode.CLIENT or mp_mode == MPMode.HOST or mp_mode == MPMode.SOLO
+
+func is_solo():
+	return mp_mode == MPMode.SOLO
 
 func start_menu():
 	R.load_resources(false)
@@ -91,8 +104,14 @@ func start_client(ip, port):
 	multiplayer_controller.level = level
 	multiplayer_controller.init_client(ip, port)
 
-	Audio.start_music()
-
+func restart_client():
+	level.name = "OldLevel"
+	level.queue_free()
+	level = R.Level.instance()
+	add_child(level)
+	level.visible = false
+	multiplayer_controller.level = level
+	
 func leave_game():
 	get_tree().network_peer = null
 	level.queue_free()
@@ -155,6 +174,8 @@ func parse_command(cmd_player, command: String):
 			var cap = int(param)
 			multiplayer_controller.max_players = cap
 			return "Player cap set to " + str(cap)
+	elif cmd == "startgame":
+		level.rpc("start_game")
 	elif cmd == "maxenemies":
 		if param.is_valid_integer():
 			var cap = int(param)
@@ -166,6 +187,12 @@ func parse_command(cmd_player, command: String):
 			return "Banned: name=" + param + ", id=" + str(banned[0]) + ", ip=" + banned[1] + ", uuid=" + banned[2]
 		else:
 			return "Unable to find player: " + param
+	elif cmd == "destroyshrine":
+		if level.current_shrine != null:
+			level.current_shrine.apply_damage(1000)
+	elif cmd == "killenemies":
+		for e in level.enemies_node.get_children():
+			e.hit({"damage": 1000})
 	return null
 
 func check_name(player_name: String):

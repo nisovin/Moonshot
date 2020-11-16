@@ -5,7 +5,7 @@
 [ext_resource path="res://map/Shrine.gd" type="Script" id=3]
 [ext_resource path="res://map/shrine_ground.png" type="Texture" id=4]
 
-[sub_resource type="Shader" id=6]
+[sub_resource type="Shader" id=1]
 code = "shader_type canvas_item;
 
 uniform sampler2D color_offset;
@@ -23,8 +23,8 @@ void fragment() {
 	}
 }"
 
-[sub_resource type="ShaderMaterial" id=7]
-shader = SubResource( 6 )
+[sub_resource type="ShaderMaterial" id=2]
+shader = SubResource( 1 )
 
 [sub_resource type="Gradient" id=3]
 offsets = PoolRealArray( 0, 0.717703, 1 )
@@ -50,7 +50,7 @@ color_ramp = SubResource( 4 )
 hue_variation = 0.02
 hue_variation_random = 0.36
 
-[sub_resource type="ParticlesMaterial" id=8]
+[sub_resource type="ParticlesMaterial" id=6]
 lifetime_randomness = 0.22
 emission_shape = 1
 emission_sphere_radius = 55.0
@@ -67,11 +67,11 @@ color_ramp = SubResource( 4 )
 hue_variation = 0.02
 hue_variation_random = 0.36
 
-[sub_resource type="CircleShape2D" id=1]
+[sub_resource type="CircleShape2D" id=7]
 radius = 36.8531
 
-[sub_resource type="CircleShape2D" id=2]
-radius = 80.0
+[sub_resource type="CircleShape2D" id=8]
+radius = 99.9134
 
 [node name="Shrine" type="Area2D" groups=[
 "shrines",
@@ -86,7 +86,7 @@ texture = ExtResource( 4 )
 
 [node name="Pool" type="Sprite" parent="."]
 modulate = Color( 1.5, 1.5, 1.25, 1 )
-material = SubResource( 7 )
+material = SubResource( 2 )
 texture = ExtResource( 1 )
 
 [node name="Moon" type="Sprite" parent="."]
@@ -103,21 +103,19 @@ process_material = SubResource( 5 )
 emitting = false
 amount = 200
 lifetime = 3.0
-process_material = SubResource( 8 )
+process_material = SubResource( 6 )
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
 position = Vector2( 0.293762, -33.1754 )
-shape = SubResource( 1 )
+shape = SubResource( 7 )
 
 [node name="CorruptionArea" type="Area2D" parent="."]
-visible = false
 monitorable = false
 collision_layer = 0
 collision_mask = 4
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="CorruptionArea"]
-visible = false
-shape = SubResource( 2 )
+shape = SubResource( 8 )
 
 [node name="Timer" type="Timer" parent="."]
 autostart = true

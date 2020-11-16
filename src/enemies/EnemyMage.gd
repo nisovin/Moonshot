@@ -7,7 +7,8 @@ var enemy_node
 func init_sub(node):
 	enemy_node = node
 	max_health = 40
-	movement_speed = 50
+	movement_speed = 60
+	height = 35
 	avoid_players = true
 
 	target_players_weight = 100
@@ -16,8 +17,8 @@ func init_sub(node):
 
 	attack_melee = 0
 	attack_damage = 12
-	attack_range = 6 * Game.TILE_SIZE
-	attack_range_min = 3 * Game.TILE_SIZE
+	attack_range = 8 * Game.TILE_SIZE
+	attack_range_min = 6 * Game.TILE_SIZE
 	attack_range_max = 10 * Game.TILE_SIZE
 	attack_cooldown = 6000
 	

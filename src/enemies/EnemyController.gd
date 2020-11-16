@@ -118,7 +118,12 @@ func attack(entity, melee):
 func find_target(players, walls):
 	var reconsider = false
 	if target != null:
-		if target.is_in_group("walls"):
+		if target.is_in_group("shrines"):
+			if target.health <= 0:
+				remove_target(target)
+			elif OS.get_ticks_msec() > target_time + type.target_reconsider_time:
+				reconsider = true
+		elif target.is_in_group("walls"):
 			if target.status == 0:
 				remove_target(target)
 			elif OS.get_ticks_msec() > target_time + type.target_reconsider_time:
@@ -170,7 +175,7 @@ func calculate_path_to_target():
 	var dist_to_target = owner.position.distance_to(target_position)
 	target_direction = (target_position - owner.position) / dist_to_target
 	
-	# adjust for attack range
+	# adjust for attack range TODO: is this wrong? mages act weird
 	if dist_to_target > type.attack_range_max:
 		target_position -= target_direction * type.attack_range
 		dist_to_target -= type.attack_range
@@ -222,7 +227,7 @@ func calculate_desired_velocity():
 		for i in neighbors.size():
 			if i > 15: break
 			neighbor = neighbors[i]
-			if neighbor != self:
+			if neighbor != owner:
 				var dist = neighbor.position.distance_to(owner.position)
 				if dist == 0:
 					dir = Vector2.DOWN

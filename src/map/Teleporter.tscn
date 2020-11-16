@@ -18,13 +18,15 @@ script = ExtResource( 2 )
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
 shape = SubResource( 1 )
 
-[node name="Node2D" type="Node2D" parent="."]
+[node name="Circle" type="Node2D" parent="."]
 script = ExtResource( 1 )
 color = Color( 0.690196, 0.992157, 1, 1 )
 radius = 16.0
 
-[node name="Label" type="Label" parent="."]
-visible = false
+[node name="Z" type="Node2D" parent="."]
+z_index = 1
+
+[node name="Label" type="Label" parent="Z"]
 margin_left = -100.0
 margin_top = 17.0
 margin_right = 100.0

@@ -12,7 +12,7 @@ func _draw():
 	for w in Game.level.walls_node.get_children():
 		if w.status > 0:
 			var px = get_pixel_coord(tile_corner, w.position) - Vector2(2, 1)
-			var c = Color(1 - .25 * w.status, 1 - .25 * w.status, 1 - .25 * w.status)
+			var c = Color(1 - .2 * w.status, 1 - .2 * w.status, 1 - .2 * w.status)
 			draw_rect(Rect2(px, Vector2(4, 1)), c)
 	if Game.player != null:
 		player_pixel = get_pixel_coord(tile_corner, Game.player.position)

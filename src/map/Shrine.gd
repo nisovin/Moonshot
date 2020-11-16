@@ -8,6 +8,8 @@ var health
 var heal_max
 var targeted_by_count = 0
 var time_since_corruption = 0
+var active = false
+var dead = false
 
 onready var corruption_area = $CorruptionArea
 
@@ -47,10 +49,11 @@ func set_time(time):
 			$Tween.start()
 
 func apply_damage(dam):
-	if health <= 0: return
+	if not active or dead: return
 	health -= dam
 	heal_max -= dam / 2.0
 	if health <= 0:
+		dead = true
 		rpc("die")
 		emit_signal("became_untargetable", self)
 		emit_signal("destroyed")
@@ -75,12 +78,16 @@ func _physics_process(delta):
 	$Moon.visible = false
 
 func _on_Timer_timeout():
-	if Game.is_host():
-		var c = corruption_area.get_overlapping_bodies().size()
-		if c > 0:
-			apply_damage(c)
-			time_since_corruption = 0
+	if not dead and Game.is_host():
+		var enemies = corruption_area.get_overlapping_bodies()
+		if active:
+			if enemies.size() > 0:
+				apply_damage(enemies.size())
+				time_since_corruption = 0
+			else:
+				time_since_corruption += 1
+				if time_since_corruption > 15:
+					health = clamp(health + 1, 0, ceil(heal_max))
 		else:
-			time_since_corruption += 1
-			if time_since_corruption > 15:
-				health = clamp(health + 1, 0, ceil(heal_max))
+			for enemy in enemies:
+				enemy.hit({"damage": 100})

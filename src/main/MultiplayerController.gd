@@ -69,16 +69,15 @@ func init_client(ip, port):
 	get_tree().network_peer = peer
 
 # SERVER-SIDE
-
+	
 func _on_NotifyTimer_timeout():
-	var status = "Unknown"
+	var status = level.get_game_status().replace(" ", "+")
 	var players = get_tree().multiplayer.get_network_connected_peers().size()
 	var url = "https://nisovin.com/gamejams/update_server.php?key=" + api_key + "&id=" + str(server_id) + "&players=" + str(players) + "&status=" + status
 	$HTTPRequest.request(url)
 	
 func _on_HTTPRequest_request_completed(result, response_code, headers, body: PoolByteArray):
-	pass
-	#print(result, " ", response_code, " ", body.get_string_from_utf8())
+	pass #print(result, " ", response_code, " ", body.get_string_from_utf8())
 
 func _on_server_player_connected(id):
 	print("Player connected: id=", id)
@@ -194,6 +193,21 @@ func save_ban_files():
 		file.store_line(uuid)
 	file.close()
 
+func restart_server():
+	name_to_id = {}
+	id_to_uuid = {}
+	saved_players = {}
+	for id in get_tree().multiplayer.get_network_connected_peers():
+		rpc_id(id, "restart_game")
+	
+	yield(get_tree().create_timer(3), "timeout")
+	
+	var data = {}
+	data.version = Game.VERSION
+	data.game_state = level.get_game_state()
+	for id in get_tree().multiplayer.get_network_connected_peers():
+		rpc_id(id, "load_game_state", data)
+
 # CLIENT-SIDE
 
 func _on_connected_to_server():
@@ -219,6 +233,10 @@ remote func restore_player():
 	var n = Game.get_node_or_null("JoinGameMenu")
 	if n != null:
 		n.queue_free()
+
+remote func restart_game():
+	Game.restart_client()
+	Game.show_centered_message("Restarting game...")
 
 func _on_join_option_selected(option, player_name):
 	if option == -1:
