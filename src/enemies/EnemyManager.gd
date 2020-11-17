@@ -4,7 +4,10 @@ const MAX_ENEMY_POWER_PER_PLAYER = 15
 
 const ENEMY_POWER = {
 	Game.EnemyClass.GRUNT: 1,
-	Game.EnemyClass.MAGE: 2
+	Game.EnemyClass.MAGE: 2,
+	Game.EnemyClass.ELITE: 3,
+	Game.EnemyClass.PHOENIX: 5,
+	Game.EnemyClass.BOMBER: 5
 }
 
 enum Directive { NONE, FOCUS_PLAYERS, FOCUS_KEEP, SWIFTNESS, ENRAGE }
@@ -22,6 +25,7 @@ var physics_tick_count = 0
 var last_loop_time = 0
 var wall_list = []
 var wall_down_percents = {}
+var sped_up = 0
 
 func _ready():
 	set_process(false)
@@ -39,11 +43,13 @@ func start_server():
 		wall_down_percents[w.section][1] += 1
 
 func speed_up_spawning():
+	sped_up += 1
 	var s = max($SpawnTimer.wait_time * 0.75, 1)
 	per_player_wave_size = clamp(per_player_wave_size + 0.2, 0.5, 2.5)
 	per_player_power_limit = clamp(per_player_power_limit + 1, 1, 8)
 	$SpawnTimer.wait_time = s
 	$SpawnTimer.start(s)
+	return sped_up
 	
 func pause_spawning():
 	$SpawnTimer.stop()
@@ -51,6 +57,9 @@ func pause_spawning():
 func unpause_spawning():
 	_on_SpawnTimer_timeout()
 	$SpawnTimer.start()
+
+func spawn(data):
+	rpc("spawn_enemy", data)
 
 remotesync func spawn_enemy(data):
 	var enemy = R.Enemy.instance()
@@ -151,30 +160,38 @@ func _on_SpawnTimer_timeout():
 	var player_count = get_tree().get_nodes_in_group("players").size()
 	if player_count == 0: return
 	
+	# get spawn points
 	var spawn_points = owner.get_enemy_spawn_points()
 	if spawn_points == null or spawn_points.size() == 0: return
+	var spawn_point = null
 	
+	# get current enemy counts and power
 	var max_enemy_power = clamp(player_count * per_player_power_limit, 6, 200)
-	var wave_size = clamp(int(ceil(per_player_wave_size * player_count)), 3, 20)
 	var count = 0
 	var power = 0
-	
-	
-	var spawn_point = null
 	for e in owner.enemies_node.get_children():
 		if not e.dead:
 			count += 1
 			power += ENEMY_POWER[e.type_id]
+			
+	# spawn enemies
+	var wave_size = clamp(int(ceil(per_player_wave_size * player_count)), 3, 20)
 	for x in wave_size:
 		if count < max_enemies and power < max_enemy_power:
 			if spawn_point == null or x % 4 == 0:
 				spawn_point = N.rand_array(spawn_points)
-			var type_id = Game.EnemyClass.GRUNT
-			var pct = float(count) / max_enemies
-			if pct > 0.9 and power < max_enemy_power - 10:
-				pass # high enemy count, make bigger enemies more likely
-			type_id = Game.EnemyClass.MAGE if N.rng.randf() < 0.1 else Game.EnemyClass.GRUNT
-			rpc("spawn_enemy", {"id": next_enemy_id, "type_id": type_id, "position": spawn_point.position + Vector2(N.rand_float(0, 16), N.rand_float(0, 16))})
+			var loc = spawn_point.global_position + Vector2(N.rand_float(0, 16), N.rand_float(0, 16))
+			var need_bigger_enemies = float(count) / max_enemies > 0.7 and power < max_enemy_power - 10
+			var options = {}
+			options[Game.EnemyClass.GRUNT] = 100 if not need_bigger_enemies else 50
+			options[Game.EnemyClass.MAGE] = 15
+			if sped_up > 1:
+				options[Game.EnemyClass.ELITE] = 10 if not need_bigger_enemies else 50
+				options[Game.EnemyClass.PHOENIX] = 4 if not need_bigger_enemies else 10
+			if sped_up > 3:
+				options[Game.EnemyClass.BOMBER] = 1
+			var type_id = N.rand_weighted(options)
+			spawn({"id": next_enemy_id, "type_id": type_id, "position": loc})
 			next_enemy_id += 1
 			count += 1
 			power += ENEMY_POWER[type_id]

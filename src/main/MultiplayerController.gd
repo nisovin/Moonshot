@@ -33,25 +33,27 @@ func init_server():
 			api_key = data.key
 			auth_password = data.auth
 			if data.has("cap"): max_players = int(data.cap)
-	if file.file_exists("banned_ips.txt"):
-		file.open("banned_ips.txt", File.READ)
-		while not file.eof_reached():
-			var l = file.get_line().strip_edges()
-			if l != "":
-				banned_ips.append(l)
-		file.close()
-	if file.file_exists("banned_uuids.txt"):
-		file.open("banned_uuids.txt", File.READ)
-		while not file.eof_reached():
-			var l = file.get_line().strip_edges()
-			if l != "":
-				banned_uuids.append(l)
-		file.close()
+	if file.file_exists("../banned_ips.txt"):
+		if file.open("../banned_ips.txt", File.READ) == OK:
+			while not file.eof_reached():
+				var l = file.get_line().strip_edges()
+				if l != "":
+					banned_ips.append(l)
+			file.close()
+			print("Loaded ", banned_ips.size(), " banned ips")
+	if file.file_exists("../banned_uuids.txt"):
+		if file.open("../banned_uuids.txt", File.READ) == OK:
+			while not file.eof_reached():
+				var l = file.get_line().strip_edges()
+				if l != "":
+					banned_uuids.append(l)
+			file.close()
+			print("Loaded ", banned_uuids.size(), " banned uuids")
 		
 	var peer = NetworkedMultiplayerENet.new()
 	peer.create_server(server_port, Game.MAX_PLAYERS)
 	get_tree().network_peer = peer
-	print("Server id ", server_id, " started on port ", server_port)
+	print("Server id ", server_id, " started on port ", server_port, " with player cap ", max_players)
 	
 	$NotifyTimer.start()
 	_on_NotifyTimer_timeout()
@@ -106,6 +108,11 @@ func _on_server_player_disconnected(id):
 	if p != null:
 		n = p.player_name
 		saved_players[p.uuid] = p.get_data()
+	else:
+		var data = level.get_dead_player_data(id)
+		if data != null:
+			n = data.player_name
+			saved_players[data.uuid] = data
 	level.remove_player(id)
 	print("Player disconnected: id=", id, " name=", n)
 

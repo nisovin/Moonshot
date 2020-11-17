@@ -4,14 +4,15 @@ signal input_method_changed
 signal entered_level
 
 const MAX_PLAYERS = 100
-const PLAYERS_TO_START = 2
+const PLAYERS_TO_START = 1
 const VERSION = 1
 const TILE_SIZE = 16
 
 enum MPMode { NONE, SOLO, CLIENT, SERVER, HOST, REMOTE }
 
+enum Layer { WALLS = 1, PLAYERS = 2, ENEMIES = 4, PLAYER_HITBOX = 8, ENEMY_HITBOX = 16, TEMP_WALLS = 32, SHRINES = 64 }
 enum PlayerClass { WARRIOR, ARCHER, PRIEST }
-enum EnemyClass { GRUNT, MAGE }
+enum EnemyClass { GRUNT, MAGE, ELITE, PHOENIX, BOMBER }
 
 var mp_mode = MPMode.NONE
 var using_controller = false
@@ -70,7 +71,7 @@ func start_server():
 	level.start_server()
 
 func restart_server():
-	level.name = "OldLevel"
+	print("Restarting server")
 	level.queue_free()
 	yield(get_tree(), "idle_frame")
 	yield(get_tree(), "idle_frame")
@@ -78,6 +79,7 @@ func restart_server():
 	add_child(level)
 	multiplayer_controller.level = level
 	multiplayer_controller.restart_server()
+	level.start_server()
 	
 func is_server():
 	return mp_mode == MPMode.SERVER
@@ -181,6 +183,9 @@ func parse_command(cmd_player, command: String):
 			var cap = int(param)
 			level.enemy_manager.max_enemies = cap
 			return "Max enemies set to " + str(cap)
+	elif cmd == "speedup":
+		var lvl = level.enemy_manager.speed_up_spawning()
+		return "Spawning at level " + str(lvl)
 	elif cmd == "ban":
 		var banned = multiplayer_controller.ban(param)
 		if banned:

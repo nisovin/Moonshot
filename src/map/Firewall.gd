@@ -14,4 +14,4 @@ func _physics_process(delta):
 
 func _on_Timer_timeout():
 	for p in N.get_overlapping_bodies(killzone):
-		p.apply_damage(5, true, 10)
+		p.apply_damage(10, true, 10)

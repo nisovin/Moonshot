@@ -12,10 +12,10 @@ script = ExtResource( 1 )
 [node name="MusicMain" type="AudioStreamPlayer" parent="."]
 bus = "Music"
 
-[node name="MusicDay" type="AudioStreamPlayer" parent="."]
+[node name="MusicDanger" type="AudioStreamPlayer" parent="."]
 bus = "Music"
 
-[node name="MusicNight" type="AudioStreamPlayer" parent="."]
+[node name="MusicEpic" type="AudioStreamPlayer" parent="."]
 bus = "Music"
 
 [node name="Tween" type="Tween" parent="."]

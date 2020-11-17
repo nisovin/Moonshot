@@ -1,4 +1,4 @@
-extends Node
+extends Node2D
 class_name EnemyType
 
 var max_health = 50
@@ -7,29 +7,34 @@ var height = 30
 var avoid_players = false
 var custom_targeting = false
 var custom_pathing = false
+var immune_to_knockback = false
+var immune_to_stun = false
 
-var target_range = 50 * Game.TILE_SIZE
+var target_range = 20 # tiles
 var target_range_sq
-var target_max_range = 60 * Game.TILE_SIZE
-var target_max_range_sq
-var target_locked_range = 0 * Game.TILE_SIZE
+var target_lost_range = 40 # tiles
+var target_lost_range_sq
+var target_locked_range = 0 # tiles
 var target_locked_range_sq
-var target_reconsider_time = 5000 # ms
+var target_reconsider_time = 3000 # ms
 var target_players_weight = 100
 var target_keep_weight = 10
 var target_shrine_weight = 10
 
-var attack_melee = 5
-var attack_damage = 5
-var attack_range = 8
-var attack_range_min = 0
-var attack_range_max = 0
+var attack_melee = 5 # walk collision damage
+var attack_damage = 5 # actual attack damage
+var attack_range = 8 # pixels
+var attack_range_min = 0 # pixels
+var attack_range_max = 0 # pixels
 var attack_cooldown = 1000
 
 func init(node):
 	init_sub(node)
+	target_range *= Game.TILE_SIZE
+	target_lost_range *= Game.TILE_SIZE
+	target_locked_range *= Game.TILE_SIZE
 	target_range_sq = target_range * target_range
-	target_max_range_sq = target_max_range * target_max_range
+	target_lost_range_sq = target_lost_range * target_lost_range
 	target_locked_range_sq = target_locked_range * target_locked_range
 	copy_up(node)
 	
@@ -40,7 +45,12 @@ func copy_up(node):
 	node.sprite.frames = $AnimatedSprite.frames
 	node.sprite.position = $AnimatedSprite.position
 	node.sprite.scale = $AnimatedSprite.scale
-	node.sprite.play("idle_down")
+	if node.sprite.frames.has_animation("idle_down"):
+		node.sprite.play("idle_down")
+	elif node.sprite.frames.has_animation("walk_down"):
+		node.sprite.play("walk_down")
+	else:
+		node.sprite.play("default")
 	node.hitbox_collision.shape = $Hitbox.shape
 	node.hitbox_collision.position = $Hitbox.position
 	var col = $Collision
@@ -74,3 +84,4 @@ func calculate_target_priority(target, distance_sq):
 
 func attack(entity, melee):
 	return entity.apply_damage(attack_melee if melee else attack_damage)
+

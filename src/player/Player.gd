@@ -7,6 +7,7 @@ enum PlayerState { LOADING, NORMAL, TELEPORTING, ABILITY, DEAD }
 const SERIALIZE_FIELDS = [ "player_name", "uuid", "state", "health", "last_combat", "exhaustion", "move_dir", "current_speed", "facing", "facing_dir", "class_id", "global_position" ]
 
 const NORMAL_SPEED = 100
+const EXHAUSTION_ON_DEATH = 10
 
 var player_name = "Player"
 var uuid = ""
@@ -31,6 +32,7 @@ var dead = false
 
 var class_id: int = Game.PlayerClass.WARRIOR
 var player_class = null
+var camera = null
 
 onready var collision = $CollisionShape2D
 onready var visual = $Visual
@@ -63,7 +65,8 @@ func load_data(data):
 	health = player_class.MAX_HEALTH
 		
 	if name == str(get_tree().get_network_unique_id()):
-		$Camera2D.current = true
+		camera = $Camera2D
+		camera.current = true
 		nameplate.visible = false
 		healthbar.visible = false
 		add_to_group("myself")
@@ -84,6 +87,21 @@ func get_data():
 		data[field] = get(field)
 	data.class_data = player_class.get_data()
 	return data
+
+func got_kill(enemy, killing_blow):
+	player_class.got_kill(enemy, killing_blow)
+
+func _physics_process(delta):
+	if state == PlayerState.NORMAL:
+		var before = position
+		var v = move_and_slide(move_dir * current_speed)
+		visual.move(position - before)
+		#if camera != null:
+		#	camera.global_position = Vector2(round(global_position.x), round(global_position.y))
+		if v != Vector2.ZERO:
+			sprite.play("walk_" + facing)
+		else:
+			sprite.play("idle_" + facing)
 	
 func apply_damage(dam, direct = false, energy_damage = 0):
 	if not direct:
@@ -99,31 +117,19 @@ func apply_damage(dam, direct = false, energy_damage = 0):
 	if dam <= 0:
 		return false
 	var new_health = health - dam
+	if new_health < 0: new_health = 0
 	if energy_damage > 0:
 		rpc("damage", new_health, energy_damage)
 	else:
 		rpc("damage", new_health)
 	return true
 
-func got_kill(enemy, killing_blow):
-	player_class.got_kill(enemy, killing_blow)
-
-func _physics_process(delta):
-	if state == PlayerState.NORMAL:
-		var before = position
-		var v = move_and_slide(move_dir * current_speed)
-		visual.move(position - before)
-		if v != Vector2.ZERO:
-			sprite.play("walk_" + facing)
-		else:
-			sprite.play("idle_" + facing)
-
 remotesync func damage(new_health, energy_damage = 0):
 	if new_health >= health: return
 	if is_network_master():
 		if energy_damage > 0:
 			player_class.energy = clamp(player_class.energy - energy_damage, 0, 100)
-		pass # show FCT
+		update_health_music()
 	health = new_health
 	last_combat = last_hit
 	if energy_damage > 0:
@@ -133,13 +139,42 @@ remotesync func damage(new_health, energy_damage = 0):
 		if not visual_anim.is_playing():
 			visual_anim.play("hit")
 	else:
-		pass # DEAD!
+		dead = true
+		state = PlayerState.DEAD
+		targetable = false
+		exhaustion = clamp(exhaustion + EXHAUSTION_ON_DEATH, 0, 100)
+		if Game.is_host():
+			emit_signal("became_untargetable", self)
+			Game.level.dead_players[int(name)] = get_data()
+		if Game.is_server():
+			delete()
+		else:
+			visual_anim.play("die")
+			sprite.play("idle_down")
+			yield(get_tree().create_timer(5), "timeout")
+			if Game.player == self:
+				Game.level.start_respawn()
+			delete()
 		
 remotesync func heal(new_health, show):
 	if show and new_health > health and is_network_master():
 		pass # show FCT
 	health = new_health
 	healthbar.value = health / player_class.MAX_HEALTH * 100
+	if is_network_master():
+		update_health_music()
+
+func update_health_music():
+	var pct = float(health) / player_class.MAX_HEALTH
+	if pct < 0.15:
+		Audio.music_transition("danger", 100, 1)
+	elif pct < 0.25:
+		Audio.music_transition("danger", 75, 2)
+	elif pct < 0.5:
+		Audio.music_transition("danger", 25, 3)
+	else:
+		Audio.music_transition("danger", 0, 3)
+	
 
 func increase_exhaustion(by):
 	exhaustion = clamp(exhaustion + by, 0, 100)
@@ -194,7 +229,7 @@ func resume_movement():
 
 func set_facing(v, set_anim = false):
 	facing_dir = v
-	if abs(v.x) > abs(v.y):
+	if abs(v.x) >= abs(v.y):
 		if v.x > 0:
 			facing = "right"
 		else:

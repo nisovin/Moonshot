@@ -1,6 +1,49 @@
-[gd_scene load_steps=2 format=2]
+[gd_scene load_steps=15 format=2]
 
 [ext_resource path="res://main/MainMenu.gd" type="Script" id=1]
+[ext_resource path="res://misc/bg2.png" type="Texture" id=2]
+[ext_resource path="res://gui/alagard.ttf" type="DynamicFontData" id=3]
+[ext_resource path="res://gui/alphbeta.ttf" type="DynamicFontData" id=4]
+[ext_resource path="res://misc/white_pixel.png" type="Texture" id=5]
+[ext_resource path="res://misc/border_filled.png" type="Texture" id=6]
+
+[sub_resource type="DynamicFont" id=1]
+size = 32
+extra_spacing_char = 1
+font_data = ExtResource( 3 )
+
+[sub_resource type="DynamicFont" id=2]
+outline_size = 1
+outline_color = Color( 0, 0.121569, 0.25098, 1 )
+font_data = ExtResource( 4 )
+
+[sub_resource type="DynamicFont" id=3]
+outline_size = 1
+outline_color = Color( 0, 0, 0, 1 )
+font_data = ExtResource( 4 )
+
+[sub_resource type="StyleBoxFlat" id=8]
+content_margin_left = 5.0
+content_margin_right = 5.0
+content_margin_top = 5.0
+content_margin_bottom = 5.0
+bg_color = Color( 0, 0, 0, 0.780392 )
+corner_radius_top_left = 5
+corner_radius_top_right = 5
+corner_radius_bottom_right = 5
+corner_radius_bottom_left = 5
+
+[sub_resource type="DynamicFont" id=5]
+font_data = ExtResource( 3 )
+
+[sub_resource type="DynamicFont" id=4]
+font_data = ExtResource( 4 )
+
+[sub_resource type="DynamicFont" id=6]
+font_data = ExtResource( 4 )
+
+[sub_resource type="DynamicFont" id=7]
+font_data = ExtResource( 4 )
 
 [node name="MainMenu" type="Control"]
 anchor_right = 1.0
@@ -10,90 +53,287 @@ __meta__ = {
 "_edit_use_anchors_": false
 }
 
-[node name="Menu" type="CenterContainer" parent="."]
+[node name="TextureRect" type="TextureRect" parent="."]
 anchor_right = 1.0
 anchor_bottom = 1.0
+texture = ExtResource( 2 )
+expand = true
+stretch_mode = 4
+__meta__ = {
+"_edit_use_anchors_": false
+}
 
-[node name="VBoxContainer" type="VBoxContainer" parent="Menu"]
-margin_left = 263.0
-margin_top = 125.0
-margin_right = 376.0
-margin_bottom = 235.0
-custom_constants/separation = 10
+[node name="Label" type="Label" parent="."]
+anchor_top = 0.1
+anchor_right = 1.0
+anchor_bottom = 0.1
+margin_bottom = 14.0
+custom_fonts/font = SubResource( 1 )
+custom_colors/font_color_shadow = Color( 0.4, 0.698039, 0.705882, 0.47451 )
+custom_constants/shadow_offset_x = 2
+custom_constants/shadow_offset_y = 1
+text = "Defense of Novalunis"
+align = 1
+__meta__ = {
+"_edit_use_anchors_": false
+}
 
-[node name="Singleplayer" type="Button" parent="Menu/VBoxContainer"]
-margin_right = 113.0
-margin_bottom = 20.0
-text = "Singleplayer"
-
-[node name="Multiplayer" type="Button" parent="Menu/VBoxContainer"]
-margin_top = 30.0
-margin_right = 113.0
-margin_bottom = 50.0
-text = "Multiplayer"
-
-[node name="Fullscreen" type="Button" parent="Menu/VBoxContainer"]
-margin_top = 60.0
-margin_right = 113.0
-margin_bottom = 80.0
-text = "Fullscreen (F11)"
-
-[node name="Quit" type="Button" parent="Menu/VBoxContainer"]
-margin_top = 90.0
-margin_right = 113.0
-margin_bottom = 110.0
-text = "Quit"
-
-[node name="ServerList" type="CenterContainer" parent="."]
+[node name="Menu" type="CenterContainer" parent="."]
 anchor_right = 1.0
 anchor_bottom = 1.0
 __meta__ = {
 "_edit_use_anchors_": false
 }
 
-[node name="List" type="VBoxContainer" parent="ServerList"]
-margin_left = 107.0
-margin_top = 170.0
-margin_right = 532.0
-margin_bottom = 190.0
+[node name="VBoxContainer" type="VBoxContainer" parent="Menu"]
+margin_left = 188.0
+margin_top = 92.0
+margin_right = 388.0
+margin_bottom = 231.0
+custom_constants/separation = 5
+
+[node name="Singleplayer" type="Button" parent="Menu/VBoxContainer"]
+margin_right = 200.0
+margin_bottom = 21.0
+custom_fonts/font = SubResource( 2 )
+text = "Singleplayer"
+flat = true
+
+[node name="NinePatchRect" type="NinePatchRect" parent="Menu/VBoxContainer/Singleplayer"]
+show_behind_parent = true
+anchor_right = 1.0
+anchor_bottom = 1.0
+texture = ExtResource( 6 )
+patch_margin_left = 6
+patch_margin_top = 6
+patch_margin_right = 6
+patch_margin_bottom = 6
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Multiplayer" type="Button" parent="Menu/VBoxContainer"]
+margin_top = 26.0
+margin_right = 200.0
+margin_bottom = 47.0
+custom_fonts/font = SubResource( 2 )
+text = "Multiplayer"
+flat = true
+
+[node name="NinePatchRect2" type="NinePatchRect" parent="Menu/VBoxContainer/Multiplayer"]
+show_behind_parent = true
+anchor_right = 1.0
+anchor_bottom = 1.0
+texture = ExtResource( 6 )
+patch_margin_left = 6
+patch_margin_top = 6
+patch_margin_right = 6
+patch_margin_bottom = 6
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="MPStatus" type="Label" parent="Menu/VBoxContainer"]
+margin_top = 52.0
+margin_right = 200.0
+margin_bottom = 67.0
+rect_min_size = Vector2( 200, 0 )
+custom_fonts/font = SubResource( 3 )
+text = "Checking..."
+align = 1
+
+[node name="Control" type="Control" parent="Menu/VBoxContainer"]
+margin_top = 72.0
+margin_right = 200.0
+margin_bottom = 87.0
+rect_min_size = Vector2( 0, 15 )
+
+[node name="Fullscreen" type="Button" parent="Menu/VBoxContainer"]
+margin_top = 92.0
+margin_right = 200.0
+margin_bottom = 113.0
+custom_fonts/font = SubResource( 2 )
+text = "Fullscreen (F11)"
+flat = true
+
+[node name="NinePatchRect3" type="NinePatchRect" parent="Menu/VBoxContainer/Fullscreen"]
+show_behind_parent = true
+anchor_right = 1.0
+anchor_bottom = 1.0
+texture = ExtResource( 6 )
+patch_margin_left = 6
+patch_margin_top = 6
+patch_margin_right = 6
+patch_margin_bottom = 6
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Quit" type="Button" parent="Menu/VBoxContainer"]
+margin_top = 118.0
+margin_right = 200.0
+margin_bottom = 139.0
+custom_fonts/font = SubResource( 2 )
+text = "Quit"
+flat = true
+
+[node name="NinePatchRect4" type="NinePatchRect" parent="Menu/VBoxContainer/Quit"]
+show_behind_parent = true
+anchor_right = 1.0
+anchor_bottom = 1.0
+texture = ExtResource( 6 )
+patch_margin_left = 6
+patch_margin_top = 6
+patch_margin_right = 6
+patch_margin_bottom = 6
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="ServerList" type="CenterContainer" parent="."]
+visible = false
+anchor_right = 1.0
+anchor_bottom = 1.0
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="PanelContainer" type="PanelContainer" parent="ServerList"]
+margin_left = 283.0
+margin_top = 157.0
+margin_right = 293.0
+margin_bottom = 167.0
+custom_styles/panel = SubResource( 8 )
+
+[node name="VBox" type="VBoxContainer" parent="ServerList/PanelContainer"]
+margin_left = 5.0
+margin_top = 5.0
+margin_right = 432.0
+margin_bottom = 112.0
+custom_constants/separation = 10
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Label" type="Label" parent="ServerList/PanelContainer/VBox"]
+margin_right = 427.0
+margin_bottom = 15.0
+custom_fonts/font = SubResource( 5 )
+text = "Server List"
+align = 1
+
+[node name="TextureRect3" type="TextureRect" parent="ServerList/PanelContainer/VBox"]
+margin_top = 25.0
+margin_right = 427.0
+margin_bottom = 27.0
+rect_min_size = Vector2( 0, 2 )
+texture = ExtResource( 5 )
+expand = true
+
+[node name="List" type="VBoxContainer" parent="ServerList/PanelContainer/VBox"]
+margin_top = 37.0
+margin_right = 427.0
+margin_bottom = 64.0
 custom_constants/separation = 4
 
-[node name="Entry" type="HBoxContainer" parent="ServerList/List"]
-margin_right = 425.0
-margin_bottom = 20.0
+[node name="Entry" type="HBoxContainer" parent="ServerList/PanelContainer/VBox/List"]
+margin_right = 427.0
+margin_bottom = 21.0
 
-[node name="Name" type="Label" parent="ServerList/List/Entry"]
+[node name="Name" type="Label" parent="ServerList/PanelContainer/VBox/List/Entry"]
 margin_top = 3.0
 margin_right = 100.0
-margin_bottom = 17.0
+margin_bottom = 18.0
 rect_min_size = Vector2( 100, 0 )
+custom_fonts/font = SubResource( 4 )
 text = "Name"
 
-[node name="Status" type="Label" parent="ServerList/List/Entry"]
+[node name="Status" type="Label" parent="ServerList/PanelContainer/VBox/List/Entry"]
 margin_left = 104.0
 margin_top = 3.0
 margin_right = 304.0
-margin_bottom = 17.0
+margin_bottom = 18.0
 rect_min_size = Vector2( 200, 0 )
+custom_fonts/font = SubResource( 4 )
 text = "Status"
 
-[node name="Players" type="Label" parent="ServerList/List/Entry"]
+[node name="Players" type="Label" parent="ServerList/PanelContainer/VBox/List/Entry"]
 margin_left = 308.0
 margin_top = 3.0
 margin_right = 383.0
-margin_bottom = 17.0
+margin_bottom = 18.0
 rect_min_size = Vector2( 75, 0 )
+custom_fonts/font = SubResource( 4 )
 text = "Players"
 
-[node name="Join" type="Button" parent="ServerList/List/Entry"]
+[node name="Join" type="Button" parent="ServerList/PanelContainer/VBox/List/Entry"]
 margin_left = 387.0
-margin_right = 425.0
-margin_bottom = 20.0
+margin_right = 427.0
+margin_bottom = 21.0
+custom_fonts/font = SubResource( 6 )
 text = "Play"
+flat = true
+
+[node name="NinePatchRect3" type="NinePatchRect" parent="ServerList/PanelContainer/VBox/List/Entry/Join"]
+show_behind_parent = true
+anchor_right = 1.0
+anchor_bottom = 1.0
+texture = ExtResource( 6 )
+patch_margin_left = 6
+patch_margin_top = 6
+patch_margin_right = 6
+patch_margin_bottom = 6
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="TextureRect" type="TextureRect" parent="ServerList/PanelContainer/VBox/List"]
+margin_top = 25.0
+margin_right = 427.0
+margin_bottom = 27.0
+rect_min_size = Vector2( 0, 2 )
+texture = ExtResource( 5 )
+expand = true
+
+[node name="TextureRect2" type="TextureRect" parent="ServerList/PanelContainer/VBox"]
+margin_top = 74.0
+margin_right = 427.0
+margin_bottom = 76.0
+rect_min_size = Vector2( 0, 2 )
+texture = ExtResource( 5 )
+expand = true
+
+[node name="HBoxContainer" type="HBoxContainer" parent="ServerList/PanelContainer/VBox"]
+margin_top = 86.0
+margin_right = 427.0
+margin_bottom = 107.0
+alignment = 1
+
+[node name="CancelButton" type="Button" parent="ServerList/PanelContainer/VBox/HBoxContainer"]
+margin_left = 185.0
+margin_right = 241.0
+margin_bottom = 21.0
+custom_fonts/font = SubResource( 7 )
+text = "Cancel"
+flat = true
+
+[node name="NinePatchRect5" type="NinePatchRect" parent="ServerList/PanelContainer/VBox/HBoxContainer/CancelButton"]
+show_behind_parent = true
+anchor_right = 1.0
+anchor_bottom = 1.0
+texture = ExtResource( 6 )
+patch_margin_left = 6
+patch_margin_top = 6
+patch_margin_right = 6
+patch_margin_bottom = 6
+__meta__ = {
+"_edit_use_anchors_": false
+}
 
 [node name="HTTPRequest" type="HTTPRequest" parent="."]
 [connection signal="pressed" from="Menu/VBoxContainer/Singleplayer" to="." method="_on_Singleplayer_pressed"]
 [connection signal="pressed" from="Menu/VBoxContainer/Multiplayer" to="." method="_on_Multiplayer_pressed"]
 [connection signal="pressed" from="Menu/VBoxContainer/Fullscreen" to="." method="_on_Fullscreen_pressed"]
 [connection signal="pressed" from="Menu/VBoxContainer/Quit" to="." method="_on_Quit_pressed"]
+[connection signal="pressed" from="ServerList/PanelContainer/VBox/HBoxContainer/CancelButton" to="." method="_on_CancelButton_pressed"]
 [connection signal="request_completed" from="HTTPRequest" to="." method="_on_HTTPRequest_request_completed"]

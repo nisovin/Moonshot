@@ -2,6 +2,11 @@ extends Node
 
 var rng := RandomNumberGenerator.new()
 
+#640x360 40x22.5
+#576x324 36x20.25
+#512x288 32x18
+
+
 func _ready():
 	rng.randomize()
 
@@ -30,6 +35,10 @@ func rand_weighted(options):
 
 # *** PHYSICS *** #
 
+func raycast(node, from, to, mask, exclude = []):
+	var space = node.get_world_2d().direct_space_state
+	return space.intersect_ray(from, to, exclude, mask)
+
 func get_overlapping_bodies(area: Area2D, group = "", mask = 0):
 	var space = area.get_world_2d().direct_space_state
 	var query = Physics2DShapeQueryParameters.new()
@@ -43,7 +52,6 @@ func get_overlapping_bodies(area: Area2D, group = "", mask = 0):
 		if group == "" or r.collider.is_in_group(group):
 			bodies.append(r.collider)
 	return bodies
-	
 
 func get_overlapping_hitboxes(area: Area2D, group = ""):
 	var space = area.get_world_2d().direct_space_state

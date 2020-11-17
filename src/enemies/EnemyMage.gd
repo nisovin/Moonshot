@@ -11,6 +11,8 @@ func init_sub(node):
 	height = 35
 	avoid_players = true
 
+	target_range = 40
+	target_lost_range = 60
 	target_players_weight = 100
 	target_keep_weight = 1
 	target_shrine_weight = 5

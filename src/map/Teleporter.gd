@@ -6,6 +6,8 @@ export (Vector2) var target = Vector2.UP * 64 setget set_target
 onready var label = $Z/Label
 
 func _ready():
+	$Sprite.rotation = target.angle()
+	$Sprite/Particles2D.lifetime = target.length() / 32
 	label.hide()
 	if Game.is_server():
 		$CollisionShape2D.disabled = true
@@ -14,6 +16,8 @@ func _ready():
 func set_target(val):
 	target = val
 	if Engine.editor_hint:
+		$Sprite.rotation = target.angle()
+		$Sprite/Particles2D.lifetime = target.length() / 32
 		update()
 
 func interact(body):

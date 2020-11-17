@@ -95,11 +95,13 @@ z_index = -1
 texture = ExtResource( 2 )
 
 [node name="Particles" type="Particles2D" parent="."]
+light_mask = 0
 amount = 40
 lifetime = 3.0
 process_material = SubResource( 5 )
 
 [node name="MidnightParticles" type="Particles2D" parent="."]
+light_mask = 0
 emitting = false
 amount = 200
 lifetime = 3.0

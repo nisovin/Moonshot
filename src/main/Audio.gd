@@ -3,6 +3,11 @@ extends Node
 const SFX_CHANNELS = 30
 
 onready var footsteps_player = $Footsteps
+onready var music_layers = {
+	"main": $MusicMain,
+	"danger": $MusicDanger,
+	"epic": $MusicEpic
+}
 
 var channels_avail = []
 var loops = {}
@@ -17,29 +22,27 @@ func _ready():
 
 func start_music():
 	$MusicMain.stream = R.Sounds.music_main
-	$MusicDay.stream = R.Sounds.music_day
-	$MusicNight.stream = R.Sounds.music_night
+	$MusicDanger.stream = R.Sounds.music_danger
+	$MusicEpic.stream = R.Sounds.music_epic
 	$MusicMain.volume_db = linear2db(0.1)
-	$MusicDay.volume_db = linear2db(0)
-	$MusicNight.volume_db = linear2db(0)
+	$MusicDanger.volume_db = linear2db(0)
+	$MusicEpic.volume_db = linear2db(0)
 	$MusicMain.play(0)
-	$MusicDay.play(0)
-	$MusicNight.play(0)
+	$MusicDanger.play(0)
+	$MusicEpic.play(0)
 	
-func music_time_update(time):
-	if time == "dawn":
-		$Tween.interpolate_method(self, "_day_volume", 0, 0.2, 20, Tween.TRANS_LINEAR)
-		$Tween.interpolate_method(self, "_night_volume", db2linear($MusicNight.volume_db), 0, 20, Tween.TRANS_LINEAR)
-		$Tween.start()
-	elif time == "dusk":
-		$Tween.interpolate_method(self, "_night_volume", 0, 0.2, 20, Tween.TRANS_LINEAR)
-		$Tween.interpolate_method(self, "_day_volume", db2linear($MusicDay.volume_db), 0, 20, Tween.TRANS_LINEAR)
-		$Tween.start()
+func music_transition(type, volume = 50, time = 5):
+	volume /= 500.0
+	$Tween.remove(self, "volume_" + type)
+	$Tween.interpolate_method(self, "volume_" + type, db2linear(music_layers[type].volume_db), volume, time)
+	$Tween.start()
 
-func _day_volume(vol):
-	$MusicDay.volume_db = linear2db(vol)
-func _night_volume(vol):
-	$MusicNight.volume_db = linear2db(vol)
+func volume_main(vol):
+	$MusicMain.volume_db = linear2db(vol)
+func volume_danger(vol):
+	$MusicDanger.volume_db = linear2db(vol)
+func volume_epic(vol):
+	$MusicEpic.volume_db = linear2db(vol)
 
 func play(sound_name, volume = 1.0):
 	if Game.is_server(): return null

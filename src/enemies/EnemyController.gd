@@ -28,6 +28,12 @@ func init(type_id):
 			type = R.EnemyGrunt.instance()
 		Game.EnemyClass.MAGE:
 			type = R.EnemyMage.instance()
+		Game.EnemyClass.ELITE:
+			type = R.EnemyElite.instance()
+		Game.EnemyClass.PHOENIX:
+			type = R.EnemyPhoenix.instance()
+		Game.EnemyClass.BOMBER:
+			type = R.EnemyBomber.instance()
 		_:
 			assert(false)
 			owner.queue_free()
@@ -45,12 +51,12 @@ func collide(collision):
 func hit(data):
 	if dead: return false
 	var set_stun = false
-	if "knockback" in data:
+	if "knockback" in data and not type.immune_to_knockback:
 		knockback_direction = data.knockback
 		knockback_duration = data.knockback_dur
 		if stun_duration < knockback_duration:
 			stun_duration = knockback_duration
-	if "stun" in data and stun_duration < data.stun and data.stun > 0:
+	if "stun" in data and stun_duration < data.stun and data.stun > 0 and not type.immune_to_stun:
 		stun_duration = data.stun
 		if "stun_break" in data:
 			stun_can_break = data.stun_break
@@ -130,7 +136,7 @@ func find_target(players, walls):
 				reconsider = true
 		else:
 			var d = target.position.distance_squared_to(owner.position)
-			if d > type.target_max_range_sq:
+			if d > type.target_lost_range_sq:
 				remove_target(target)
 			elif OS.get_ticks_msec() > target_time + type.target_reconsider_time and d > type.target_locked_range_sq:
 				reconsider = true
@@ -138,7 +144,7 @@ func find_target(players, walls):
 		var best_target = target
 		var best_priority = 0 if target == null else type.calculate_target_priority(target, target.position.distance_squared_to(owner.position)) * 1.5
 		for p in players:
-			if not p.targetable or p == target or p.targeted_by_count >= MAX_ENEMIES_ON_PLAYER: continue
+			if p.dead or not p.targetable or p == target or p.targeted_by_count >= MAX_ENEMIES_ON_PLAYER: continue
 			var d = p.position.distance_squared_to(owner.position)
 			var prio = type.calculate_target_priority(p, d)
 			if prio > best_priority:
@@ -163,8 +169,13 @@ func find_target(players, walls):
 		if best_target != null:
 			target_time = OS.get_ticks_msec()
 			if target != best_target:
+				#print("Targeting ", best_target.name, " previous=", "x" if target == null else target.name, " who=", owner.name, "/", owner.type_id)
+				if target != null:
+					remove_target(target)
 				target = best_target
-				target.connect("became_untargetable", self, "remove_target")
+				var err = target.connect("became_untargetable", self, "remove_target")
+				if err != OK:
+					print("connect error ", err, ": t=", target, " e=", self)
 				target.targeted_by_count += 1
 
 func calculate_path_to_target():
@@ -211,14 +222,14 @@ func calculate_path_to_target():
 					next_point = target_position
 				else:
 					next_point = path_to_target[0]
-		#owner.get_node("Line2D").points = path_to_target
-		#owner.get_node("Line2D").set_as_toplevel(true)
+		owner.get_node("Line2D").points = path_to_target
+		owner.get_node("Line2D").set_as_toplevel(true)
 	target_direction = owner.position.direction_to(next_point)
 
 func calculate_desired_velocity():
 	var separation_direction = Vector2.ZERO
 	var avoid_direction = Vector2.ZERO
-	var neighbors = N.get_overlapping_bodies(owner.neighbors, "", 6 if type.avoid_players else 4)
+	var neighbors = N.get_overlapping_bodies(owner.neighbors, "", Game.Layer.ENEMIES + (Game.Layer.PLAYERS if type.avoid_players else 0))
 	if neighbors.size() > 1:
 		var neighbor
 		var dir

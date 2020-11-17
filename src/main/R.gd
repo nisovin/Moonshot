@@ -6,6 +6,9 @@ var Player
 var Enemy
 var EnemyGrunt
 var EnemyMage
+var EnemyElite
+var EnemyPhoenix
+var EnemyBomber
 
 var CrescentArrow
 var Volley
@@ -26,6 +29,9 @@ func load_resources(is_server):
 	Enemy = load("res://enemies/Enemy.tscn")
 	EnemyGrunt = load("res://enemies/EnemyGrunt.tscn")
 	EnemyMage = load("res://enemies/EnemyMage.tscn")
+	EnemyElite = load("res://enemies/EnemyElite.tscn")
+	EnemyPhoenix = load("res://enemies/EnemyPhoenix.tscn")
+	EnemyBomber = load("res://enemies/EnemyBomber.tscn")
 	
 	CrescentArrow = load("res://player/Arrow.tscn")
 	Volley = load("res://player/Volley.tscn")
@@ -42,8 +48,8 @@ func load_resources(is_server):
 		
 		Sounds = {
 			"music_main": load("res://music/track_main.ogg"),
-			"music_day": load("res://music/track_choir.ogg"),
-			"music_night": load("res://music/track_strings.ogg"),
+			"music_danger": load("res://music/track_choir.ogg"),
+			"music_epic": load("res://music/track_strings.ogg"),
 			"warrior_attack1_swing": [
 				load("res://sfx/warrior_attack1_1.wav"),
 				load("res://sfx/warrior_attack1_2.wav"),

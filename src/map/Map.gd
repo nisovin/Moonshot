@@ -47,6 +47,7 @@ func _ready():
 				var id = _get_vector_point_id(p)
 				wall_ids.append(id)
 				wall.ids.append(id)
+		wall_ids = []
 				
 		var exclude_polys = []
 		for p in exclusions.get_children():
@@ -54,6 +55,7 @@ func _ready():
 			for point in p.polygon:
 				poly.append(point + p.position)
 			exclude_polys.append(poly)
+		exclude_polys = []
 		
 		for x in map_size.x:
 			for y in map_size.y:
@@ -78,12 +80,17 @@ func _ready():
 				var id = _get_point_id(x, y)
 				if not astar.has_point(id):
 					continue
-				var id_down = _get_point_id(x, y + 1)
-				var id_left = _get_point_id(x - 1, y)
-				var id_right = _get_point_id(x + 1, y)
-				var id_downleft = _get_point_id(x - 1, y + 1)
-				var id_downright = _get_point_id(x + 1, y + 1)
-				if astar.has_point(id_down):
+				var id_right = -1
+				var id_left = -1
+				var id_down = -1
+				var id_downleft = -1
+				var id_downright = -1
+				if x < map_size.x - 1: id_right = _get_point_id(x + 1, y)
+				if x > 0: id_left = _get_point_id(x - 1, y)
+				if y < map_size.y - 1: id_down = _get_point_id(x, y + 1)
+				if y < map_size.y - 1 and x > 0: id_downleft = _get_point_id(x - 1, y + 1)
+				if x < map_size.x - 1 and y < map_size.y - 1: id_downright = _get_point_id(x + 1, y + 1)
+				if astar.has_point(id_down) and y < map_size.y - 1:
 					astar.connect_points(id, id_down)
 				if astar.has_point(id_right):
 					astar.connect_points(id, id_right)

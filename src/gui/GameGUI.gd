@@ -17,7 +17,7 @@ onready var control_tooltips = [
 		"control": $Exhaustion,
 		"corner": "BL",
 		"name": "Exhaustion",
-		"description": "Exhaustion increases slowly over time, and in response to certain events. Exhaustion slows down your health and energy regeneration."
+		"description": "Exhaustion increases slowly over time, when you die, and in response to certain events. Exhaustion slows down your health and energy regeneration."
 	},
 	{
 		"control": $Statuses/Midnight,
@@ -89,6 +89,7 @@ func _ready():
 	$Abilities.hide()
 	$PlayerBars.hide()
 	$Exhaustion.hide()
+	$Respawn.hide()
 	yield(get_tree(), "idle_frame")
 	map.texture = owner.map.map_texture
 
@@ -186,6 +187,13 @@ func _on_entered_level():
 	$Abilities.show()
 	$PlayerBars.show()
 
+func show_respawn():
+	$Respawn.show()
+
+func _on_RespawnButton_pressed():
+	$Respawn.hide()
+	Game.level.rpc("respawn")
+	
 func _process(delta):
 	if Game.player != null:
 		update_ui()
@@ -268,13 +276,16 @@ func hide_tooltip():
 	showing_tooltip = null
 
 func _on_Resume_pressed():
-	$Menu.hide()
 	Game.lock_player_input = false
+	$Menu.hide()
 
 func _on_Disconnect_pressed():
+	Game.lock_player_input = false
 	Game.leave_game()
 
 func _on_Quit_pressed():
 	get_tree().quit()
+
+
 
 

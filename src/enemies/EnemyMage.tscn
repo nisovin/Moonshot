@@ -17,19 +17,19 @@ region = Rect2( 120, 0, 60, 64 )
 
 [sub_resource type="AtlasTexture" id=4]
 atlas = ExtResource( 3 )
-region = Rect2( 60, 192, 60, 64 )
+region = Rect2( 60, 64, 60, 64 )
 
 [sub_resource type="AtlasTexture" id=5]
 atlas = ExtResource( 3 )
-region = Rect2( 0, 128, 60, 64 )
+region = Rect2( 0, 192, 60, 64 )
 
 [sub_resource type="AtlasTexture" id=6]
 atlas = ExtResource( 3 )
-region = Rect2( 60, 128, 60, 64 )
+region = Rect2( 60, 192, 60, 64 )
 
 [sub_resource type="AtlasTexture" id=7]
 atlas = ExtResource( 3 )
-region = Rect2( 120, 128, 60, 64 )
+region = Rect2( 120, 192, 60, 64 )
 
 [sub_resource type="AtlasTexture" id=8]
 atlas = ExtResource( 3 )
@@ -45,23 +45,23 @@ region = Rect2( 120, 64, 60, 64 )
 
 [sub_resource type="AtlasTexture" id=11]
 atlas = ExtResource( 3 )
-region = Rect2( 0, 192, 60, 64 )
+region = Rect2( 0, 128, 60, 64 )
 
 [sub_resource type="AtlasTexture" id=12]
 atlas = ExtResource( 3 )
-region = Rect2( 60, 192, 60, 64 )
+region = Rect2( 60, 128, 60, 64 )
 
 [sub_resource type="AtlasTexture" id=13]
 atlas = ExtResource( 3 )
-region = Rect2( 120, 192, 60, 64 )
+region = Rect2( 120, 128, 60, 64 )
 
 [sub_resource type="AtlasTexture" id=14]
 atlas = ExtResource( 3 )
-region = Rect2( 60, 64, 60, 64 )
+region = Rect2( 60, 128, 60, 64 )
 
 [sub_resource type="AtlasTexture" id=15]
 atlas = ExtResource( 3 )
-region = Rect2( 60, 128, 60, 64 )
+region = Rect2( 60, 192, 60, 64 )
 
 [sub_resource type="AtlasTexture" id=16]
 atlas = ExtResource( 3 )
@@ -76,12 +76,12 @@ animations = [ {
 }, {
 "frames": [ SubResource( 4 ) ],
 "loop": true,
-"name": "idle_up",
+"name": "idle_left",
 "speed": 5.0
 }, {
 "frames": [ SubResource( 5 ), SubResource( 6 ), SubResource( 7 ), SubResource( 6 ) ],
 "loop": true,
-"name": "walk_right",
+"name": "walk_up",
 "speed": 10.0
 }, {
 "frames": [ SubResource( 8 ), SubResource( 9 ), SubResource( 10 ), SubResource( 9 ) ],
@@ -91,17 +91,17 @@ animations = [ {
 }, {
 "frames": [ SubResource( 11 ), SubResource( 12 ), SubResource( 13 ), SubResource( 12 ) ],
 "loop": true,
-"name": "walk_up",
+"name": "walk_right",
 "speed": 10.0
 }, {
 "frames": [ SubResource( 14 ) ],
 "loop": true,
-"name": "idle_left",
+"name": "idle_right",
 "speed": 5.0
 }, {
 "frames": [ SubResource( 15 ) ],
 "loop": true,
-"name": "idle_right",
+"name": "idle_up",
 "speed": 5.0
 }, {
 "frames": [ SubResource( 16 ) ],

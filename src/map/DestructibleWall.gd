@@ -55,11 +55,11 @@ func apply_damage(dam):
 	var new_status = status
 	if health <= 0:
 		new_status = 0
-	elif health <= max_health * .25:
+	elif health <= max_health * .3:
 		new_status = 1
-	elif health <= max_health * .50:
+	elif health <= max_health * .6:
 		new_status = 2
-	elif health <= max_health * .75:
+	elif health <= max_health * .9:
 		new_status = 3
 	else:
 		new_status = 4
@@ -84,7 +84,7 @@ remotesync func update_status(new_status):
 		stop_repair()
 	status = new_status
 	if status == 4:
-		$Sprite.texture = preload("res://map/wall3.png")
+		$Sprite.texture = preload("res://map/wall4.png")
 	elif status == 3:
 		$Sprite.texture = preload("res://map/wall3.png")
 	elif status == 2:

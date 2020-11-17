@@ -10,6 +10,8 @@ var last_physics_tick = 0
 var type_id = 0
 var health: float = 50
 var max_health: float = 50
+var immune_to_knockback = false
+var immune_to_stun = false
 var last_hit = 0
 var dead = false
 
@@ -40,6 +42,8 @@ func load_data(data):
 	$Visual/Node2D.position.y = -controller.type.height - 5
 	max_health = controller.type.max_health
 	health = max_health
+	immune_to_knockback = controller.type.immune_to_knockback
+	immune_to_stun = controller.type.immune_to_stun
 	if not is_network_master():
 		controller.queue_free()
 		visual.enable_smoothing()
@@ -92,7 +96,8 @@ func local_hit(vel = null, dur = 0):
 	if dead: return
 	last_hit = OS.get_ticks_msec()
 	if vel != null:
-		set_movement(vel, position, dur)
+		if (vel == Vector2.ZERO and not immune_to_stun) or (vel != Vector2.ZERO and not immune_to_knockback):
+			set_movement(vel, position, dur)
 	Audio.play("enemy_hit", 0.4)
 	
 func physics_tick(delta):
@@ -124,11 +129,20 @@ func _physics_process(delta):
 				dir = "down"
 			else:
 				dir = "up"
-		sprite.play("walk_" + dir)
+		if sprite.frames.has_animation("walk_" + dir):
+			sprite.play("walk_" + dir)
+		else:
+			sprite.play("default")
 	else:
-		sprite.play("idle_" + dir)
+		if sprite.frames.has_animation("idle_" + dir):
+			sprite.play("idle_" + dir)
+		elif sprite.frames.has_animation("walk_" + dir):
+			sprite.play("walk_" + dir)
+		else:
+			sprite.play("default")
 	
 remotesync func die():
+	if dead: return
 	dead = true
 	if not Game.is_server():
 		if Game.player != null and last_hit > OS.get_ticks_msec() - 10000:

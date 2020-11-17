@@ -30,6 +30,8 @@ var next_event = 0
 var spawning_paused_for = 0
 var no_players_counter = 0
 
+var dead_players = {}
+
 func _ready():
 	player_spawn.position = player_spawns.get_child(0).position
 
@@ -82,9 +84,16 @@ func time_event(event):
 		elif event == "midnight":
 			pause_spawning(20)
 	if Game.is_player():
-		Audio.music_time_update(event)
 		shrine1.set_time(event)
 		shrine2.set_time(event)
+		if event == "dusk":
+			Audio.music_transition("epic", 50, 30)
+		elif event == "midnight":
+			Audio.music_transition("epic", 100, 2)
+		elif event == "latenight":
+			Audio.music_transition("epic", 50, 2)
+		elif event == "dawn":
+			Audio.music_transition("epic", 10, 30)
 
 func _on_shrine1_destroyed():
 	rpc("add_system_message", "The moonshrine has been corrupted!")
@@ -92,6 +101,7 @@ func _on_shrine1_destroyed():
 	pause_spawning(30)
 	shrine1.active = false
 	current_shrine = null
+	player_spawn.position = player_spawns.get_child(2).position
 	# TODO: explosion event
 	yield(get_tree().create_timer(30), "timeout")
 	state = GameState.STAGE2
@@ -129,13 +139,22 @@ func game_tick():
 		else:
 			no_players_counter = 0
 	
-	
-	
 	if spawning_paused_for > 0:
 		spawning_paused_for -= 1
 		if spawning_paused_for == 0:
 			enemy_manager.unpause_spawning()
 			print("unpause!")
+
+func start_event(type = ""):
+	if type == "":
+		var options = {
+			"focus_keep": 10,
+			"focus_players": 10,
+			"swiftness": 10,
+			"bombers": 10,
+			"elites": 10,
+			"phoenix": 10,
+		}
 
 func _on_HealTick_timeout():
 	if Game.is_host():
@@ -246,17 +265,31 @@ func load_game_state(game_state):
 		if n:
 			n.update_status(game_state.walls[w])
 			
+func start_respawn():
+	player_spawn.get_node("StartCam").current = true
+	gui.show_respawn()
+
+master func respawn():
+	var id = get_tree().get_rpc_sender_id()
+	if id in dead_players:
+		var old_data = dead_players[id]
+		var exh = old_data.exhaustion if old_data.exhaustion > base_exhaustion else base_exhaustion
+		var data = {"id": id, "class_id": old_data.class_id, "player_name": old_data.player_name, "uuid": old_data.uuid, "exhaustion": exh}
+		add_new_player(data)
+
 ###################
 # helpers
 ###################
 
 func get_enemy_spawn_points():
-	if state == GameState.STAGE1:
-		return enemy_spawns.get_child(0).get_children()
-	elif state == GameState.STAGE2:
-		return enemy_spawns.get_child(1).get_children()
-	else:
-		return null
+	var y = firewall.position.y
+	if state == GameState.STAGE2 and shrine1.position.y > y:
+		y = shrine1.position.y
+	var spawns = enemy_spawns.get_child(0)
+	for n in enemy_spawns.get_children():
+		if n.position.y < y:
+			spawns = n
+	return spawns.get_children()
 
 func get_nav_path(from, to, smooth = true, get_cost = false):
 	return map.get_nav_path(from, to, smooth, get_cost)
@@ -268,6 +301,11 @@ func get_player_by_name(n):
 	for p in players_node.get_children():
 		if p.player_name.to_lower() == n.to_lower():
 			return p
+	return null
+
+func get_dead_player_data(id):
+	if id in dead_players:
+		return dead_players[id]
 	return null
 
 func get_enemy_by_id(id):

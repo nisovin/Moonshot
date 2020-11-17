@@ -9,7 +9,7 @@
 config_version=4
 
 _global_script_classes=[ {
-"base": "Node",
+"base": "Node2D",
 "class": "EnemyType",
 "language": "GDScript",
 "path": "res://enemies/EnemyType.gd"
@@ -42,8 +42,8 @@ gdscript/warnings/integer_division=false
 
 [display]
 
-window/size/width=640
-window/size/height=360
+window/size/width=576
+window/size/height=324
 window/size/test_width=1920
 window/size/test_height=1080
 window/stretch/mode="2d"
@@ -117,7 +117,6 @@ attack2={
 ultimate={
 "deadzone": 0.5,
 "events": [ Object(InputEventKey,"resource_local_to_scene":false,"resource_name":"","device":0,"alt":false,"shift":false,"control":false,"meta":false,"command":false,"pressed":false,"scancode":82,"unicode":0,"echo":false,"script":null)
-, Object(InputEventKey,"resource_local_to_scene":false,"resource_name":"","device":0,"alt":false,"shift":false,"control":false,"meta":false,"command":false,"pressed":false,"scancode":81,"unicode":0,"echo":false,"script":null)
 , Object(InputEventJoypadButton,"resource_local_to_scene":false,"resource_name":"","device":-1,"button_index":3,"pressure":0.0,"pressed":false,"script":null)
  ]
 }

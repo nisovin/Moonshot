@@ -1,4 +1,4 @@
-[gd_scene load_steps=24 format=2]
+[gd_scene load_steps=28 format=2]
 
 [ext_resource path="res://main/Minimap.gd" type="Script" id=1]
 [ext_resource path="res://gui/GameGUI.gd" type="Script" id=2]
@@ -17,6 +17,8 @@
 [ext_resource path="res://gui/icons/status_focus_players.png" type="Texture" id=15]
 [ext_resource path="res://misc/white_pixel.png" type="Texture" id=16]
 [ext_resource path="res://gui/MapTexture.gd" type="Script" id=17]
+[ext_resource path="res://misc/border.png" type="Texture" id=18]
+[ext_resource path="res://gui/alagard.ttf" type="DynamicFontData" id=19]
 
 [sub_resource type="DynamicFont" id=1]
 outline_size = 1
@@ -41,6 +43,17 @@ font_data = ExtResource( 3 )
 
 [sub_resource type="DynamicFont" id=6]
 font_data = ExtResource( 8 )
+
+[sub_resource type="DynamicFont" id=7]
+size = 24
+outline_size = 2
+outline_color = Color( 0.678431, 0, 0, 1 )
+font_data = ExtResource( 19 )
+
+[sub_resource type="DynamicFont" id=8]
+extra_spacing_top = 4
+extra_spacing_bottom = 4
+font_data = ExtResource( 3 )
 
 [node name="GUI" type="CanvasLayer"]
 script = ExtResource( 2 )
@@ -144,9 +157,9 @@ __meta__ = {
 }
 
 [node name="Attack1" type="TextureProgress" parent="Abilities"]
-margin_top = 217.0
+margin_top = 181.0
 margin_right = 32.0
-margin_bottom = 249.0
+margin_bottom = 213.0
 mouse_filter = 2
 max_value = 1.0
 step = 0.001
@@ -156,9 +169,9 @@ fill_mode = 3
 tint_under = Color( 1, 1, 1, 0.392157 )
 
 [node name="Attack2" type="TextureProgress" parent="Abilities"]
-margin_top = 253.0
+margin_top = 217.0
 margin_right = 32.0
-margin_bottom = 285.0
+margin_bottom = 249.0
 mouse_filter = 2
 max_value = 1.0
 step = 0.001
@@ -168,9 +181,9 @@ fill_mode = 3
 tint_under = Color( 1, 1, 1, 0.392157 )
 
 [node name="Movement" type="TextureProgress" parent="Abilities"]
-margin_top = 289.0
+margin_top = 253.0
 margin_right = 32.0
-margin_bottom = 321.0
+margin_bottom = 285.0
 mouse_filter = 2
 max_value = 1.0
 step = 0.001
@@ -180,9 +193,9 @@ fill_mode = 3
 tint_under = Color( 1, 1, 1, 0.392157 )
 
 [node name="Ultimate" type="TextureProgress" parent="Abilities"]
-margin_top = 325.0
+margin_top = 289.0
 margin_right = 32.0
-margin_bottom = 357.0
+margin_bottom = 321.0
 mouse_filter = 2
 max_value = 1.0
 step = 0.001
@@ -204,8 +217,8 @@ __meta__ = {
 }
 
 [node name="Health" type="TextureProgress" parent="PlayerBars"]
-margin_left = 218.0
-margin_right = 318.0
+margin_left = 186.0
+margin_right = 286.0
 margin_bottom = 15.0
 rect_min_size = Vector2( 100, 15 )
 mouse_filter = 2
@@ -232,8 +245,8 @@ __meta__ = {
 }
 
 [node name="Energy" type="TextureProgress" parent="PlayerBars"]
-margin_left = 322.0
-margin_right = 422.0
+margin_left = 290.0
+margin_right = 390.0
 margin_bottom = 15.0
 rect_min_size = Vector2( 100, 15 )
 mouse_filter = 2
@@ -302,14 +315,14 @@ __meta__ = {
 }
 
 [node name="ScrollContainer" type="ScrollContainer" parent="Chat"]
-margin_right = 560.0
+margin_right = 496.0
 margin_bottom = 126.0
 mouse_filter = 2
 size_flags_vertical = 11
 scroll_horizontal_enabled = false
 
 [node name="VBoxContainer" type="VBoxContainer" parent="Chat/ScrollContainer"]
-margin_right = 560.0
+margin_right = 496.0
 margin_bottom = 126.0
 mouse_filter = 2
 size_flags_horizontal = 3
@@ -318,7 +331,7 @@ alignment = 2
 
 [node name="ChatLine" type="LineEdit" parent="Chat"]
 margin_top = 130.0
-margin_right = 560.0
+margin_right = 496.0
 margin_bottom = 140.0
 mouse_filter = 2
 custom_styles/focus = SubResource( 2 )
@@ -438,6 +451,66 @@ __meta__ = {
 "_edit_use_anchors_": false
 }
 
+[node name="Respawn" type="ColorRect" parent="."]
+anchor_right = 1.0
+anchor_bottom = 1.0
+color = Color( 0.211765, 0, 0, 0.709804 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="CenterContainer" type="CenterContainer" parent="Respawn"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="VBoxContainer" type="VBoxContainer" parent="Respawn/CenterContainer"]
+margin_left = 159.0
+margin_top = 126.0
+margin_right = 416.0
+margin_bottom = 198.0
+custom_constants/separation = 20
+
+[node name="Label" type="Label" parent="Respawn/CenterContainer/VBoxContainer"]
+margin_right = 257.0
+margin_bottom = 23.0
+custom_fonts/font = SubResource( 7 )
+text = "You have died bravely."
+align = 1
+
+[node name="HBoxContainer" type="HBoxContainer" parent="Respawn/CenterContainer/VBoxContainer"]
+margin_top = 43.0
+margin_right = 257.0
+margin_bottom = 72.0
+alignment = 1
+
+[node name="RespawnButton" type="Button" parent="Respawn/CenterContainer/VBoxContainer/HBoxContainer"]
+margin_left = 78.0
+margin_right = 178.0
+margin_bottom = 29.0
+rect_min_size = Vector2( 100, 0 )
+custom_fonts/font = SubResource( 8 )
+text = "Respawn"
+flat = true
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="NinePatchRect" type="NinePatchRect" parent="Respawn/CenterContainer/VBoxContainer/HBoxContainer/RespawnButton"]
+show_behind_parent = true
+anchor_right = 1.0
+anchor_bottom = 1.0
+texture = ExtResource( 18 )
+patch_margin_left = 6
+patch_margin_top = 6
+patch_margin_right = 6
+patch_margin_bottom = 6
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
 [node name="Menu" type="ColorRect" parent="."]
 visible = false
 anchor_right = 1.0
@@ -455,10 +528,10 @@ __meta__ = {
 }
 
 [node name="VBoxContainer" type="VBoxContainer" parent="Menu/CenterContainer"]
-margin_left = 278.0
-margin_top = 146.0
-margin_right = 362.0
-margin_bottom = 214.0
+margin_left = 246.0
+margin_top = 128.0
+margin_right = 330.0
+margin_bottom = 196.0
 
 [node name="Resume" type="Button" parent="Menu/CenterContainer/VBoxContainer"]
 margin_right = 84.0
@@ -477,6 +550,7 @@ margin_right = 84.0
 margin_bottom = 68.0
 text = "Quit"
 [connection signal="text_entered" from="Chat/ChatLine" to="." method="_on_ChatLine_text_entered"]
+[connection signal="pressed" from="Respawn/CenterContainer/VBoxContainer/HBoxContainer/RespawnButton" to="." method="_on_RespawnButton_pressed"]
 [connection signal="pressed" from="Menu/CenterContainer/VBoxContainer/Resume" to="." method="_on_Resume_pressed"]
 [connection signal="pressed" from="Menu/CenterContainer/VBoxContainer/Disconnect" to="." method="_on_Disconnect_pressed"]
 [connection signal="pressed" from="Menu/CenterContainer/VBoxContainer/Quit" to="." method="_on_Quit_pressed"]
