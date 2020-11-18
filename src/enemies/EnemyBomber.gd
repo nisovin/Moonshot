@@ -42,7 +42,7 @@ func attack(entity, melee):
 		if target.is_in_group("walls"):
 			target.apply_damage(attack_damage * 10)
 		elif target.is_in_group("players"):
-			target.apply_damage(attack_damage)
+			target.apply_damage(modify_damage(attack_damage, target))
 	enemy_node.rpc("die")
 
 remotesync func show_blast():

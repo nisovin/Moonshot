@@ -12,7 +12,8 @@ enum MPMode { NONE, SOLO, CLIENT, SERVER, HOST, REMOTE }
 
 enum Layer { WALLS = 1, PLAYERS = 2, ENEMIES = 4, PLAYER_HITBOX = 8, ENEMY_HITBOX = 16, TEMP_WALLS = 32, SHRINES = 64 }
 enum PlayerClass { WARRIOR, ARCHER, PRIEST }
-enum EnemyClass { GRUNT, MAGE, ELITE, PHOENIX, BOMBER }
+enum EnemyClass { GRUNT, MAGE, ELITE, PHOENIX, BOMBER, SIEGE }
+enum Effects { MIDNIGHT, MIDDAY, SHRINEDEATH, RAGE, FATIGUE, FEAR, FOCUS_KEEP }
 
 var mp_mode = MPMode.NONE
 var using_controller = false
@@ -37,6 +38,18 @@ func _ready():
 func _unhandled_key_input(event):
 	if event.scancode == KEY_F11 and event.pressed:
 		OS.window_fullscreen = not OS.window_fullscreen
+	
+func is_server():
+	return mp_mode == MPMode.SERVER
+
+func is_host():
+	return mp_mode == MPMode.SERVER or mp_mode == MPMode.HOST or mp_mode == MPMode.SOLO
+
+func is_player():
+	return mp_mode == MPMode.CLIENT or mp_mode == MPMode.HOST or mp_mode == MPMode.SOLO
+
+func is_solo():
+	return mp_mode == MPMode.SOLO
 
 func load_persistent():
 	var file = File.new()
@@ -72,26 +85,17 @@ func start_server():
 
 func restart_server():
 	print("Restarting server")
-	level.queue_free()
-	yield(get_tree(), "idle_frame")
-	yield(get_tree(), "idle_frame")
-	level = R.Level.instance()
-	add_child(level)
-	multiplayer_controller.level = level
-	multiplayer_controller.restart_server()
-	level.start_server()
-	
-func is_server():
-	return mp_mode == MPMode.SERVER
-
-func is_host():
-	return mp_mode == MPMode.SERVER or mp_mode == MPMode.HOST or mp_mode == MPMode.SOLO
-
-func is_player():
-	return mp_mode == MPMode.CLIENT or mp_mode == MPMode.HOST or mp_mode == MPMode.SOLO
-
-func is_solo():
-	return mp_mode == MPMode.SOLO
+	if is_solo():
+		leave_game()
+	else:
+		level.queue_free()
+		yield(get_tree(), "idle_frame")
+		yield(get_tree(), "idle_frame")
+		level = R.Level.instance()
+		add_child(level)
+		multiplayer_controller.level = level
+		multiplayer_controller.restart_server()
+		level.start_server()
 
 func start_menu():
 	R.load_resources(false)
@@ -139,7 +143,7 @@ func start_solo():
 	level.add_new_player({"class_id": Game.PlayerClass.WARRIOR, "id": get_tree().get_network_unique_id(), "player_name": "Player"})
 
 	level.start_server()
-	Audio.start_music()
+	#Audio.start_music()
 
 func show_centered_message(text):
 	centered_message.text = text
@@ -186,32 +190,29 @@ func parse_command(cmd_player, command: String):
 	elif cmd == "speedup":
 		var lvl = level.enemy_manager.speed_up_spawning()
 		return "Spawning at level " + str(lvl)
+	elif cmd == "event":
+		var type = level.start_event(param)
+		if param == "":
+			return "Started event " + type
 	elif cmd == "ban":
 		var banned = multiplayer_controller.ban(param)
 		if banned:
 			return "Banned: name=" + param + ", id=" + str(banned[0]) + ", ip=" + banned[1] + ", uuid=" + banned[2]
 		else:
 			return "Unable to find player: " + param
+	elif cmd == "kick":
+		var kicked = multiplayer_controller.kick(param)
+		if kicked:
+			return "Kicked: name=" + param + ", id=" + str(kicked)
+		else:
+			return "Unable to find player: " + param
 	elif cmd == "destroyshrine":
 		if level.current_shrine != null:
 			level.current_shrine.apply_damage(1000)
+			return "Dealt 1000 damage to current shrine"
 	elif cmd == "killenemies":
 		for e in level.enemies_node.get_children():
 			e.hit({"damage": 1000})
 	return null
-
-func check_name(player_name: String):
-	var p := player_name.to_lower()
-	for n in RESERVED_NAMES:
-		if p == n:
-			return false
-	p = p.replace(" ", "").replace("_", "")
-	for n in BAD_WORDS:
-		if p.find(n) >= 0:
-			return false
-	return true
-	
-const RESERVED_NAMES = [ "server" ]
-const BAD_WORDS = [ "" ]
 
 

@@ -112,6 +112,24 @@ margin_bottom = 32.0
 mouse_filter = 2
 texture = ExtResource( 13 )
 
+[node name="Fear" type="TextureRect" parent="Statuses"]
+visible = false
+modulate = Color( 1, 0.4, 0, 1 )
+margin_left = 108.0
+margin_right = 140.0
+margin_bottom = 32.0
+mouse_filter = 2
+texture = ExtResource( 13 )
+
+[node name="Fatigue" type="TextureRect" parent="Statuses"]
+visible = false
+modulate = Color( 1, 0.4, 0, 1 )
+margin_left = 108.0
+margin_right = 140.0
+margin_bottom = 32.0
+mouse_filter = 2
+texture = ExtResource( 13 )
+
 [node name="FocusKeep" type="TextureRect" parent="Statuses"]
 visible = false
 modulate = Color( 1, 0.4, 0, 1 )

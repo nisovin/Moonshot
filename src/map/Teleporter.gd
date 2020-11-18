@@ -9,7 +9,7 @@ func _ready():
 	$Sprite.rotation = target.angle()
 	$Sprite/Particles2D.lifetime = target.length() / 32
 	label.hide()
-	if Game.is_server():
+	if not Engine.editor_hint and Game.is_server():
 		$CollisionShape2D.disabled = true
 		monitoring = false
 

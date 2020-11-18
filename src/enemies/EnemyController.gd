@@ -34,6 +34,8 @@ func init(type_id):
 			type = R.EnemyPhoenix.instance()
 		Game.EnemyClass.BOMBER:
 			type = R.EnemyBomber.instance()
+		Game.EnemyClass.SIEGE:
+			type = R.EnemySiege.instance()
 		_:
 			assert(false)
 			owner.queue_free()
@@ -68,7 +70,10 @@ func hit(data):
 	elif stun_duration > 0:
 		owner.rpc("set_movement", Vector2.ZERO, owner.position)
 	if "damage" in data:
-		owner.health -= data.damage
+		var dam = data.damage
+		if Game.level.is_effect_active(Game.Effects.RAGE):
+			dam *= 2
+		owner.health -= dam
 		if owner.health <= 0:
 			dead = true
 			owner.rpc("die")
@@ -147,6 +152,8 @@ func find_target(players, walls):
 			if p.dead or not p.targetable or p == target or p.targeted_by_count >= MAX_ENEMIES_ON_PLAYER: continue
 			var d = p.position.distance_squared_to(owner.position)
 			var prio = type.calculate_target_priority(p, d)
+			if Game.level.is_effect_active(Game.Effects.FOCUS_KEEP):
+				prio *= 0.1
 			if prio > best_priority:
 				best_priority = prio
 				best_target = p
@@ -212,7 +219,7 @@ func calculate_path_to_target():
 			path_to_target = Game.level.get_nav_path(owner.position, target_position)
 			target_last_tile_pos = target_tile_pos
 		if path_to_target.size() == 0:
-			assert(false)
+			#assert(false)
 			next_point = target_position
 		else:
 			next_point = path_to_target[0]

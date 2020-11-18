@@ -7,7 +7,7 @@ const SERIALIZE_FIELDS = [ "state", "ultimate_duration" ]
 const MAX_HEALTH = 150
 const HEALTH_REGEN = 1
 const ENERGY_REGEN = 10
-const ENERGY_EXHAUSTION_MULT = 0.5
+const ENERGY_EXHAUSTION_MULT = 0.7
 const NORMAL_ARMOR = 0.25
 
 const ATTACK_SWING_TIME = 0.25
@@ -151,7 +151,7 @@ func got_kill(enemy, killing_blow):
 func calculate_damage(dam):
 	if ultimate_duration > 0:
 		dam *= ULTIMATE_ATTACK_MULT
-	if Game.level.time_of_day == "midnight":
+	if Game.level.is_effect_active(Game.Effects.MIDNIGHT):
 		dam *= 2
 	return dam
 
@@ -355,8 +355,10 @@ func _physics_process(delta):
 			attack1_press()
 			
 	var regen = ENERGY_REGEN
-	if Game.level.time_of_day == "midnight":
+	if Game.level.is_effect_active(Game.Effects.MIDNIGHT) or Game.level.is_effect_active(Game.Effects.SHRINEDEATH):
 		regen *= 2
+	if Game.level.is_effect_active(Game.Effects.FATIGUE):
+		regen *= 0.5
 	regen *= ((100 - owner.exhaustion * ENERGY_EXHAUSTION_MULT) / 100.0)
 	if ultimate_duration > 0:
 		ultimate_duration -= delta

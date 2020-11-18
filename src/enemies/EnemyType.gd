@@ -83,5 +83,11 @@ func calculate_target_priority(target, distance_sq):
 		return 0
 
 func attack(entity, melee):
-	return entity.apply_damage(attack_melee if melee else attack_damage)
+	return entity.apply_damage(modify_damage(attack_melee, entity) if melee else modify_damage(attack_damage, entity))
 
+func modify_damage(dam, target):
+	if Game.level.is_effect_active(Game.Effects.MIDDAY):
+		dam *= 1.5
+	if Game.level.is_effect_active(Game.Effects.RAGE):
+		dam *= 2.0
+	return dam

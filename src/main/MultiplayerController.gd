@@ -6,6 +6,7 @@ var server_id = 1
 var server_port = 20514
 var api_key = ""
 var auth_password = ""
+var bad_words = []
 var banned_ips = []
 var banned_uuids = []
 
@@ -33,6 +34,14 @@ func init_server():
 			api_key = data.key
 			auth_password = data.auth
 			if data.has("cap"): max_players = int(data.cap)
+	if file.file_exists("../bad_words.txt"):
+		if file.open("../bad_words.txt", File.READ) == OK:
+			while not file.eof_reached():
+				var l = file.get_line().strip_edges()
+				if l != "":
+					bad_words.append(l)
+			file.close()
+			print("Loaded ", bad_words.size(), " bad words")
 	if file.file_exists("../banned_ips.txt"):
 		if file.open("../banned_ips.txt", File.READ) == OK:
 			while not file.eof_reached():
@@ -167,6 +176,14 @@ remote func player_join(class_id, player_name: String, uuid: String):
 	id_to_uuid[id] = uuid
 	print("Player joined: id=", id, " name=" , player_name, " class=", class_id, " uuid=", uuid)
 
+func check_name(player_name: String):
+	var p := player_name.to_lower()
+	p = p.replace(" ", "").replace("_", "")
+	for n in bad_words:
+		if p.find(n) >= 0:
+			return false
+	return true
+
 func ban(player_name):
 	player_name = player_name.to_lower()
 	var id = -1
@@ -184,8 +201,19 @@ func ban(player_name):
 			banned_uuids.append(uuid)
 	save_ban_files()
 	if id > 0 and (ip != "" or uuid != ""):
+		get_tree().network_peer.disconnect_peer(id)
 		print("Banned: name=" + player_name + " id=" + str(id) + " ip=" + ip + " uuid=" + uuid)
 		return [id, ip, uuid]
+	else:
+		return false
+
+func kick(player_name):
+	player_name = player_name.to_lower()
+	if player_name in name_to_id:
+		var id = name_to_id[player_name]
+		get_tree().network_peer.disconnect_peer(id)
+		print("Kicked: name=" + player_name + " id=" + str(id))
+		return id
 	else:
 		return false
 

@@ -94,7 +94,16 @@ func got_kill(enemy, killing_blow):
 func _physics_process(delta):
 	if state == PlayerState.NORMAL:
 		var before = position
-		var v = move_and_slide(move_dir * current_speed)
+		var speed = current_speed
+		if Game.level.is_effect_active(Game.Effects.FATIGUE):
+			speed *= 0.75
+			sprite.speed_scale = 0.75
+		elif Game.level.is_effect_active(Game.Effects.SHRINEDEATH):
+			speed *= 1.5
+			sprite.speed_scale = 1.5
+		else:
+			sprite.speed_scale = 1.0
+		var v = move_and_slide(move_dir * speed)
 		visual.move(position - before)
 		#if camera != null:
 		#	camera.global_position = Vector2(round(global_position.x), round(global_position.y))

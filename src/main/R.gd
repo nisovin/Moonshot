@@ -9,12 +9,14 @@ var EnemyMage
 var EnemyElite
 var EnemyPhoenix
 var EnemyBomber
+var EnemySiege
 
 var CrescentArrow
 var Volley
 var Moonshot
 
 var Fireball
+var Boulder
 
 var MainMenu
 var JoinGameMenu
@@ -32,12 +34,14 @@ func load_resources(is_server):
 	EnemyElite = load("res://enemies/EnemyElite.tscn")
 	EnemyPhoenix = load("res://enemies/EnemyPhoenix.tscn")
 	EnemyBomber = load("res://enemies/EnemyBomber.tscn")
+	EnemySiege = load("res://enemies/EnemySiege.tscn")
 	
 	CrescentArrow = load("res://player/Arrow.tscn")
 	Volley = load("res://player/Volley.tscn")
 	Moonshot = load("res://player/Moonshot.tscn")
 	
 	Fireball = load("res://enemies/Fireball.tscn")
+	Boulder = load("res://enemies/Boulder.tscn")
 	
 	if not is_server:
 		

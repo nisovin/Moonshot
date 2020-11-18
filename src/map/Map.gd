@@ -27,7 +27,7 @@ onready var exclusions = $NavExclusions
 var corner = Vector2.ZERO
 var map_size = Vector2.ZERO
 
-var list = []
+#var list = []
 var astar := AStar2D.new()
 var map_texture: Texture = null
 
@@ -37,8 +37,13 @@ func _ready():
 	corner = Vector2(min(rect1.position.x, rect2.position.x), min(rect1.position.y, rect2.position.y))
 	map_size = Vector2(max(rect1.size.x, rect2.size.x), max(rect1.size.y, rect2.size.y))
 	
+	print(corner)
+	print(map_size)
+	
+	var test = true
+	
 	# generate astar navigation
-	if Game.is_host():
+	if test or Game.is_host():
 		
 		var wall_ids = []
 		for wall in des_walls.get_children():
@@ -47,7 +52,6 @@ func _ready():
 				var id = _get_vector_point_id(p)
 				wall_ids.append(id)
 				wall.ids.append(id)
-		wall_ids = []
 				
 		var exclude_polys = []
 		for p in exclusions.get_children():
@@ -55,10 +59,9 @@ func _ready():
 			for point in p.polygon:
 				poly.append(point + p.position)
 			exclude_polys.append(poly)
-		exclude_polys = []
 		
-		for x in map_size.x:
-			for y in map_size.y:
+		for y in map_size.y:
+			for x in map_size.x:
 				var id = _get_point_id(x, y)
 				var v = Vector2(x, y)
 				var t = v + corner
@@ -72,25 +75,20 @@ func _ready():
 						break
 				if ground_cell >= 0 and wall_cell < 0 and not excluded:
 					var is_wall = id in wall_ids
-					astar.add_point(id, point, WALL_WEIGHT_3 if is_wall else 1)
-					list.append(point)
+					astar.add_point(id, point, WALL_WEIGHT_4 if is_wall else 1)
+					#list.append(point)
 					
-		for x in map_size.x:
-			for y in map_size.y:
+		for y in map_size.y - 1:
+			for x in map_size.x - 1:
 				var id = _get_point_id(x, y)
 				if not astar.has_point(id):
 					continue
-				var id_right = -1
-				var id_left = -1
-				var id_down = -1
-				var id_downleft = -1
-				var id_downright = -1
-				if x < map_size.x - 1: id_right = _get_point_id(x + 1, y)
-				if x > 0: id_left = _get_point_id(x - 1, y)
-				if y < map_size.y - 1: id_down = _get_point_id(x, y + 1)
-				if y < map_size.y - 1 and x > 0: id_downleft = _get_point_id(x - 1, y + 1)
-				if x < map_size.x - 1 and y < map_size.y - 1: id_downright = _get_point_id(x + 1, y + 1)
-				if astar.has_point(id_down) and y < map_size.y - 1:
+				var id_right = _get_point_id(x + 1, y)
+				var id_left = -1 if x == 0 else _get_point_id(x - 1, y)
+				var id_down = _get_point_id(x, y + 1)
+				var id_downleft = -1 if x == 0 else _get_point_id(x - 1, y + 1)
+				var id_downright = _get_point_id(x + 1, y + 1)
+				if astar.has_point(id_down):
 					astar.connect_points(id, id_down)
 				if astar.has_point(id_right):
 					astar.connect_points(id, id_right)
@@ -184,4 +182,4 @@ func _get_vector_point_id(v):
 	return _get_point_id(int(v.x), int(v.y))
 
 func _get_point_id(x: int, y: int):
-	return x * map_size.x + y
+	return x + y * map_size.x

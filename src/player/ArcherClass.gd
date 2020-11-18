@@ -7,7 +7,7 @@ const SERIALIZE_FIELDS = [ "state" ]
 const MAX_HEALTH = 100
 const HEALTH_REGEN = 0.5
 const ENERGY_REGEN = 5
-const ENERGY_EXHAUSTION_MULT = 0.6
+const ENERGY_EXHAUSTION_MULT = 0.8
 
 const SHOOT_AIM_TIME = 0.5
 const SHOOT_ARROW_COUNT = 5
@@ -120,7 +120,7 @@ func get_armor():
 	return 0
 
 func calculate_damage(dam):
-	if Game.level.time_of_day == "midnight":
+	if Game.level.is_effect_active(Game.Effects.MIDNIGHT):
 		dam *= 2
 	return dam
 	
@@ -354,8 +354,10 @@ func _physics_process(delta):
 			rpc("stop_shadow", owner.position)
 	else:
 		var regen = ENERGY_REGEN
-		if Game.level.time_of_day == "midnight":
+		if Game.level.is_effect_active(Game.Effects.MIDNIGHT) or Game.level.is_effect_active(Game.Effects.SHRINEDEATH):
 			regen *= 2
+		if Game.level.is_effect_active(Game.Effects.FATIGUE):
+			regen *= 0.5
 		regen *= (100 - owner.exhaustion * ENERGY_EXHAUSTION_MULT) / 100.0
 		energy = min(energy + regen * delta, 100)
 

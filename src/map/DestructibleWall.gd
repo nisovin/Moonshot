@@ -5,6 +5,7 @@ signal became_untargetable
 
 const REPAIR_SPEED = 50
 const FULL_STATUS = 4
+const TILE_IDS = [3,4,5,6,7]
 
 export(int) var max_health = 100
 export(int) var health = 100
@@ -21,6 +22,8 @@ var repair_amount = 0
 onready var target_position = $Target.global_position
 onready var label = $Z/Label
 onready var progress = $Z/RepairProgress
+var tile_map: TileMap
+var tile_v
 
 func _ready():
 	points.append(global_position + Vector2(-24, -8))
@@ -33,6 +36,9 @@ func _ready():
 		$BehindDetector.queue_free()
 		$RepairDetector.queue_free()
 		set_physics_process(false)
+	tile_map = get_parent().get_parent()
+	tile_v = tile_map.world_to_map(position + Vector2(-24, 8))
+	#tile_map.set_cellv(tile_v, TILE_IDS[FULL_STATUS])
 		
 func _physics_process(delta):
 	if repairing:
@@ -82,7 +88,9 @@ remotesync func update_status(new_status):
 		$CollisionRight.set_deferred("disabled", true)
 	if new_status < status:
 		stop_repair()
+		$Particles2D.emitting = true
 	status = new_status
+	#tile_map.set_cellv(tile_v, TILE_IDS[status])
 	if status == 4:
 		$Sprite.texture = preload("res://map/wall4.png")
 	elif status == 3:
@@ -115,7 +123,7 @@ func finish_repair():
 	rpc("repair", max_health * 0.24)
 
 func update_modulate():
-	if behind_count > 0 and status >= 2:
+	if behind_count > 0 and status >= 3:
 		$Sprite.modulate = Color(1, 1, 1, 0.6)
 	else:
 		$Sprite.modulate = Color.white

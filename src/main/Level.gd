@@ -27,6 +27,7 @@ var base_exhaustion = 0
 var time_of_day = "start"
 var current_shrine = null
 var next_event = 0
+var active_effects = []
 var spawning_paused_for = 0
 var no_players_counter = 0
 
@@ -78,22 +79,29 @@ func time_event(event):
 			$FirewallTick.start()
 			enemy_manager.speed_up_spawning()
 			next_event = N.rand_int(30, 120)
+		elif event == "midday":
+			rpc("start_effect", Game.Effects.MIDDAY)
+		elif event == "afternoon":
+			rpc("end_effect", Game.Effects.MIDDAY)
 		elif event == "night":
 			$ExhaustionTick.stop()
 			enemy_manager.speed_up_spawning()
 		elif event == "midnight":
+			rpc("start_effect", Game.Effects.MIDNIGHT)
 			pause_spawning(20)
+		elif event == "latenight":
+			rpc("end_effect", Game.Effects.MIDNIGHT)
 	if Game.is_player():
 		shrine1.set_time(event)
 		shrine2.set_time(event)
 		if event == "dusk":
-			Audio.music_transition("epic", 50, 30)
+			Audio.music_transition("epic", 30, 30)
 		elif event == "midnight":
-			Audio.music_transition("epic", 100, 2)
+			Audio.music_transition("epic", 70, 2)
 		elif event == "latenight":
-			Audio.music_transition("epic", 50, 2)
+			Audio.music_transition("epic", 30, 2)
 		elif event == "dawn":
-			Audio.music_transition("epic", 10, 30)
+			Audio.music_transition("epic", 1, 30)
 
 func _on_shrine1_destroyed():
 	rpc("add_system_message", "The moonshrine has been corrupted!")
@@ -102,8 +110,17 @@ func _on_shrine1_destroyed():
 	shrine1.active = false
 	current_shrine = null
 	player_spawn.position = player_spawns.get_child(2).position
-	# TODO: explosion event
+	rpc("start_effect", Game.Effects.SHRINEDEATH)
+	for e in enemies_node.get_children():
+		if not e.dead:
+			e.hit({"damage": 60})
+	for w in walls_node.get_children():
+		if w.status > 0 and w.position.y < shrine1.position.y + 10 * 16:
+			w.apply_damage(5000)
+	if firewall.position.y < shrine1.position.y:
+		rpc("move_firewall", shrine1.position.y - firewall.position.y + 64)
 	yield(get_tree().create_timer(30), "timeout")
+	rpc("end_effect", Game.Effects.SHRINEDEATH)
 	state = GameState.STAGE2
 	current_shrine = shrine2
 	shrine2.active = true
@@ -112,7 +129,10 @@ func _on_shrine2_destroyed():
 	rpc("add_system_message", "The moonstone has been destroyed. The bastion has been lost.")
 	state = GameState.GAMEOVER
 	yield(get_tree().create_timer(30), "timeout")
-	Game.restart_server()
+	if Game.is_solo():
+		Game.leave_game()
+	elif Game.is_server():
+		Game.restart_server()
 
 func game_tick():
 	if state == GameState.PREGAME:
@@ -131,13 +151,18 @@ func game_tick():
 			next_event -= 1
 			if next_event == 0:
 				next_event = N.rand_int(90, 180)
-				# do event
+				start_event()
 		if Game.is_server() and get_tree().multiplayer.get_network_connected_peers().size() == 0:
 			no_players_counter += 1
 			if no_players_counter > 60:
 				Game.restart_server()
 		else:
 			no_players_counter = 0
+	elif state == GameState.BETWEEN:
+		for p in players_node.get_children():
+			if not p.dead:
+				p.increase_exhaustion(-1)
+			
 	
 	if spawning_paused_for > 0:
 		spawning_paused_for -= 1
@@ -148,27 +173,59 @@ func game_tick():
 func start_event(type = ""):
 	if type == "":
 		var options = {
-			"focus_keep": 10,
-			"focus_players": 10,
-			"swiftness": 10,
+			"rage": 10,
+			"fatigue": 10,
+			"focuskeep": 10,
 			"bombers": 10,
-			"elites": 10,
-			"phoenix": 10,
+			"siege": 10,
+			"elites": 10
+			#"earthquake": 10
 		}
+		type = N.rand_weighted(options)
+	print("Event: ", type)
+	if type == "rage":
+		rpc("start_effect", Game.Effects.RAGE)
+		rpc("add_system_message", "The enemy force has become enraged!")
+		yield(get_tree().create_timer(20), "timeout")
+		rpc("end_effect", Game.Effects.RAGE)
+	elif type == "fatigue":
+		rpc("start_effect", Game.Effects.FATIGUE)
+		rpc("add_system_message", "You have been cursed with fatigue!")
+		yield(get_tree().create_timer(20), "timeout")
+		rpc("end_effect", Game.Effects.FATIGUE)
+	elif type == "focuskeep":
+		rpc("start_effect", Game.Effects.FOCUS_KEEP)
+		yield(get_tree().create_timer(20), "timeout")
+		rpc("end_effect", Game.Effects.FOCUS_KEEP)
+	elif type == "bombers":
+		var count = clamp(ceil(players_node.get_child_count() / 6.0), 1, 4)
+		enemy_manager.spawn_special_wave(Game.EnemyClass.BOMBER, count, true)
+	elif type == "siege":
+		var count = clamp(ceil(players_node.get_child_count() / 6.0), 1, 4)
+		enemy_manager.spawn_special_wave(Game.EnemyClass.SIEGE, count, true)
+	elif type == "elites":
+		var count = clamp(ceil(players_node.get_child_count() / 3.0), 1, 5)
+		enemy_manager.spawn_special_wave(Game.EnemyClass.ELITE, count, false)
+	return type
+		
+		
 
 func _on_HealTick_timeout():
 	if Game.is_host():
 		for p in players_node.get_children():
-			if not p.dead and p.health < p.player_class.MAX_HEALTH and p.last_combat < OS.get_ticks_msec() - 5000 and p.last_heal_tick < OS.get_ticks_msec() - 500:
+			var in_combat = false if is_effect_active(Game.Effects.SHRINEDEATH) else p.last_combat > OS.get_ticks_msec() - 5000
+			if not p.dead and p.health < p.player_class.MAX_HEALTH and not in_combat and p.last_heal_tick < OS.get_ticks_msec() - 500:
 				var heal = p.player_class.HEALTH_REGEN * 0.5
-				if p.exhaustion > 50:
+				if is_effect_active(Game.Effects.SHRINEDEATH):
+					heal *= 3
+				elif p.exhaustion > 50:
 					var e = p.exhaustion - 50
 					heal *= (50 - e * 0.75) / 50.0
 				p.rpc("heal", min(p.health + heal, p.player_class.MAX_HEALTH), false)
 				p.last_heal_tick = OS.get_ticks_msec()
 
 func _on_ExhaustionTick_timeout():
-	if Game.is_host() and players_node.get_child_count() > 0:
+	if Game.is_host() and players_node.get_child_count() > 0 and state != GameState.BETWEEN:
 		base_exhaustion = clamp(base_exhaustion + 1, 0, 100)
 		for p in players_node.get_children():
 			if not p.dead:
@@ -180,13 +237,19 @@ func _on_FirewallTick_timeout():
 		if state == GameState.STAGE1 and firewall.position.y > shrine1.position.y - 128:
 			amt = 0
 		elif state == GameState.STAGE2 and firewall.position.y < shrine1.position.y:
-			amt *= 4
+			amt = shrine1.position.y - firewall.position.y
 		elif state == GameState.STAGE2 and firewall.position.y > shrine2.position.y - 128:
+			amt = 0
+		elif state == GameState.BETWEEN:
 			amt = 0
 		if amt > 0:
 			rpc("move_firewall", firewall.position.y + amt)
+			for w in walls_node.get_children():
+				if w.status > 0 and w.position.y < firewall.position.y:
+					w.apply_damage(200)
 
 remotesync func move_firewall(y):
+	$Tween.remove(firewall, "position.y")
 	$Tween.interpolate_property(firewall, "position:y", firewall.position.y, y, $FirewallTick.wait_time * .9)
 	$Tween.start()
 
@@ -195,6 +258,20 @@ func pause_spawning(time):
 		spawning_paused_for = time
 	enemy_manager.pause_spawning()
 	print("Spawning paused ", spawning_paused_for)
+
+###################
+# game effects
+###################
+
+remotesync func start_effect(effect):
+	if not effect in active_effects:
+		active_effects.append(effect)
+		
+remotesync func end_effect(effect):
+	active_effects.erase(effect)
+
+func is_effect_active(effect):
+	return effect in active_effects
 
 ###################
 # player adding
@@ -238,6 +315,7 @@ func get_game_state():
 	game_state.time = 0 if state == GameState.PREGAME else daynight_anim.current_animation_position
 	game_state.player_spawn = player_spawn.position
 	game_state.firewall = firewall.position.y
+	game_state.effects = active_effects
 	game_state.players = []
 	game_state.enemies = []
 	game_state.walls = {}
@@ -256,6 +334,7 @@ func load_game_state(game_state):
 		daynight_anim.seek(game_state.time)
 	player_spawn.position = game_state.player_spawn
 	firewall.position.y = game_state.firewall
+	active_effects = game_state.effects
 	for p in game_state.players:
 		add_player_from_data(p)
 	for e in game_state.enemies:

@@ -38,4 +38,4 @@ remotesync func launch_fireball(pos, vel):
 		fireball.connect("impact", self, "_on_impact")
 	
 func _on_impact(entity):
-	entity.apply_damage(attack_damage)
+	entity.apply_damage(modify_damage(attack_damage, entity))

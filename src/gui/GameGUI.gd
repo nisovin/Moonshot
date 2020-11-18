@@ -29,7 +29,7 @@ onready var control_tooltips = [
 		"control": $Statuses/ShrineDeath,
 		"corner": "TL",
 		"name": "Energized",
-		"description": "Just before the moon shrine was corrupted, it released a burst of lunar energy. Your health regen, energy regen, and cooldown recovery are increased."
+		"description": "Just before the moon shrine was corrupted, it released a burst of lunar energy. Your health and energy regen are increased, your speed is increased, and your exhaustion is falling."
 	},
 	{
 		"control": $Statuses/Midday,
@@ -42,6 +42,12 @@ onready var control_tooltips = [
 		"corner": "TL",
 		"name": "AAARRG!",
 		"description": "The enemy is filled with fiery rage. Their damage is greatly increased, but they also take more damage."
+	},
+	{
+		"control": $Statuses/Fatigue,
+		"corner": "TL",
+		"name": "Curse of Fatigue",
+		"description": "The enemy has cursed you with fatigue. Your movement speed and energy regeneration are reduced."
 	},
 	{
 		"control": $Statuses/Swiftness,
@@ -205,8 +211,12 @@ func update_ui():
 	var binding = 1 if Game.using_controller else 0
 	var i = 0
 
-	$Statuses/Midnight.visible = Game.level.time_of_day == "midnight"
-	$Statuses/Midday.visible = Game.level.time_of_day == "midday"
+	$Statuses/Midnight.visible = Game.level.is_effect_active(Game.Effects.MIDNIGHT)
+	$Statuses/Midday.visible = Game.level.is_effect_active(Game.Effects.MIDDAY)
+	$Statuses/ShrineDeath.visible = Game.level.is_effect_active(Game.Effects.SHRINEDEATH)
+	$Statuses/Rage.visible = Game.level.is_effect_active(Game.Effects.RAGE)
+	$Statuses/Fatigue.visible = Game.level.is_effect_active(Game.Effects.FATIGUE)
+	$Statuses/FocusKeep.visible = Game.level.is_effect_active(Game.Effects.FOCUS_KEEP)
 
 	$PlayerBars/Health.value = float(Game.player.health) / cls.MAX_HEALTH * 100
 	$PlayerBars/Health/Label.text = str(ceil(Game.player.health))
