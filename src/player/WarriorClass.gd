@@ -197,7 +197,7 @@ remotesync func attack1(pos, dir):
 	attack1tween.interpolate_property(attack1sword, "rotation", start_angle, end_angle, ATTACK_SWING_TIME)
 	attack1tween.start()
 	attack1particles.emitting = true
-	Audio.play("warrior_attack1_swing", 0.6 if is_network_master() else 0.2)
+	Audio.play("warrior_attack1_swing", Audio.PLAYER, 0.6 if is_network_master() else 0.2)
 	
 	# hit enemies
 	var dam = calculate_damage(ATTACK_DAMAGE)
@@ -237,7 +237,7 @@ remotesync func attack2(pos):
 	
 	# anim
 	attack2particles.emitting = true
-	Audio.play("warrior_attack2", 0.6 if is_network_master() else 0.3)
+	Audio.play("warrior_attack2", Audio.PLAYER, 0.6 if is_network_master() else 0.3)
 	
 	# hit enemies
 	for enemy in N.get_overlapping_bodies(attack2area, "enemies"):
@@ -298,7 +298,7 @@ remotesync func start_rush(start_pos, rush_dir, max_dist):
 	rush_max_distance = max_dist
 	rush_particles.emitting = true
 	state = WarriorState.RUSHING
-	Audio.play("warrior_movement", 0.7 if is_network_master() else 0.4)
+	Audio.play("warrior_movement", Audio.PLAYER, 0.7 if is_network_master() else 0.4)
 
 remotesync func end_rush(end_pos, collided):
 	owner.position = end_pos
@@ -335,7 +335,7 @@ remotesync func ultimate():
 	ultimate_tween.interpolate_property(owner.visual, "scale", Vector2.ONE, Vector2(ULTIMATE_SCALE, ULTIMATE_SCALE), 0.5)
 	ultimate_tween.interpolate_property(owner.sprite, "modulate", Color.white, ULTIMATE_MODULATE, 0.5)
 	ultimate_tween.start()
-	Audio.play("warrior_ultimate")
+	Audio.play("warrior_ultimate", Audio.PLAYER)
 
 remotesync func end_ultimate():
 	ultimate_duration = 0

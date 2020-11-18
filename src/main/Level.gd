@@ -53,6 +53,7 @@ remotesync func start_game():
 	if Game.is_host():
 		enemy_manager.start_server()
 	add_system_message("The enemy forces have arrived!")
+	Audio.start_music()
 
 func get_game_status():
 	if state == GameState.PREGAME:
@@ -266,6 +267,7 @@ func pause_spawning(time):
 remotesync func start_effect(effect):
 	if not effect in active_effects:
 		active_effects.append(effect)
+		#Audio.play("effect_" +) TODO
 		
 remotesync func end_effect(effect):
 	active_effects.erase(effect)

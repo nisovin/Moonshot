@@ -1,0 +1,21 @@
+[remap]
+
+importer="wav"
+type="AudioStreamSample"
+path="res://.import/siege_impact.wav-e6ee89bbfaeeb056d9c8e8618d4e6ce6.sample"
+
+[deps]
+
+source_file="res://sfx/siege_impact.wav"
+dest_files=[ "res://.import/siege_impact.wav-e6ee89bbfaeeb056d9c8e8618d4e6ce6.sample" ]
+
+[params]
+
+force/8_bit=false
+force/mono=false
+force/max_rate=false
+force/max_rate_hz=44100
+edit/trim=false
+edit/normalize=false
+edit/loop=false
+compress/mode=0

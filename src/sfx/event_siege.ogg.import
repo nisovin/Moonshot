@@ -1,0 +1,15 @@
+[remap]
+
+importer="ogg_vorbis"
+type="AudioStreamOGGVorbis"
+path="res://.import/event_siege.ogg-b300f600b6a24b4d2d107da8ce7b90d4.oggstr"
+
+[deps]
+
+source_file="res://sfx/event_siege.ogg"
+dest_files=[ "res://.import/event_siege.ogg-b300f600b6a24b4d2d107da8ce7b90d4.oggstr" ]
+
+[params]
+
+loop=false
+loop_offset=0

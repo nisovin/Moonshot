@@ -74,12 +74,15 @@ func load_resources(is_server):
 				load("res://sfx/enemy_hit_4.ogg")
 			],
 			"hit": [
-				load("res://sfx/hit1.ogg"),
-				load("res://sfx/hit2.ogg"),
-				load("res://sfx/hit3.ogg"),
-				load("res://sfx/hit4.ogg"),
-				load("res://sfx/hit5.ogg")
-			]
+				load("res://sfx/player_hit.wav")
+			],
+			"mage_fireball": load("res://sfx/mage_fireball.wav"),
+			"siege_throw": load("res://sfx/siege_throw.wav"),
+			"siege_impact": load("res://sfx/siege_impact.wav"),
+			"bomber_ignite": load("res://sfx/bomber_ignite.wav"),
+			"bomber_explode": load("res://sfx/explode.wav"),
+			"wall_break": load("res://sfx/wall_break.wav"),
+			"wall_destroyed": load("res://sfx/wall_destroyed.wav")
 		}
 		
 		Icons = {

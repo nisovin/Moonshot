@@ -1,7 +1,7 @@
 extends EnemyType
 
 func init_sub(node):
-	max_health = 150
+	max_health = 140
 	movement_speed = 50
 	height = 30
 	

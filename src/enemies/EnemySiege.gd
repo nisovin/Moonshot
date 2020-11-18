@@ -35,6 +35,7 @@ remotesync func launch_boulder(pos, vel, target_pos):
 	boulder.init(pos, vel, target_pos)
 	if is_network_master():
 		boulder.connect("impact", self, "_on_impact")
+	Audio.play_at_position(pos, "siege_throw", Audio.ENEMIES, 0.3)
 	
 func _on_impact(targets):
 	for t in targets:

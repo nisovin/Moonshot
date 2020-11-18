@@ -39,6 +39,7 @@ remotesync func launch_fireballs(pos, vels):
 		fireball.init(pos, vel)
 		if is_network_master():
 			fireball.connect("impact", self, "_on_impact")
+	Audio.play_at_position(pos, "mage_fireball", Audio.ENEMIES)
 
 func _on_impact(entity):
 	entity.apply_damage(modify_damage(attack_damage, entity))

@@ -135,7 +135,7 @@ func attack1_press():
 	if state != ArcherState.NORMAL: return
 	if shoot_cd > 0: return
 	if energy < SHOOT_COST: return
-	Audio.play("archer_attack1_draw")
+	Audio.play("archer_attack1_draw", Audio.PLAYER)
 	rpc("shoot_aim", owner.position)
 	
 func attack1_release():
@@ -170,7 +170,7 @@ remotesync func shoot_fire(pos, dir):
 		vel = vel.rotated(SHOOT_ARROW_SPREAD / (SHOOT_ARROW_COUNT - 1))
 		arrow.connect("hit", self, "shoot_hit")
 		shoot_end()
-	Audio.play("archer_attack1_fire", 1.0 if is_network_master() else 0.25)
+	Audio.play("archer_attack1_fire", Audio.PLAYER, 1.0 if is_network_master() else 0.25)
 
 func shoot_hit(enemy, vel, mini):
 	var knockback = SHOOT_SIDE_KNOCKBACK_STR if mini else SHOOT_CENTER_KNOCKBACK_STR
@@ -220,7 +220,7 @@ remotesync func volley(pos):
 	var volley = R.Volley.instance()
 	Game.level.ground_effects_node.add_child(volley)
 	volley.init(pos, VOLLEY_RADIUS)
-	Audio.play("archer_attack2")
+	Audio.play("archer_attack2", Audio.PLAYER)
 	yield(get_tree().create_timer(VOLLEY_DAMAGE_DELAY), "timeout")
 	var dam = calculate_damage(VOLLEY_DAMAGE)
 	for enemy in volley.get_overlapping_bodies():
@@ -261,7 +261,7 @@ remotesync func start_shadow(pos):
 	shadow_tween.interpolate_property(owner.sprite, "modulate", Color.white, SHADOW_MODULATE, 0.2)
 	shadow_tween.start()
 	if is_network_master():
-		Audio.loop("archer_movement")
+		Audio.loop("archer_movement", Audio.PLAYER)
 	
 remotesync func stop_shadow(pos):
 	state = ArcherState.NORMAL

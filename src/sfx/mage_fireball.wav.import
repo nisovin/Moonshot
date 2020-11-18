@@ -1,0 +1,21 @@
+[remap]
+
+importer="wav"
+type="AudioStreamSample"
+path="res://.import/mage_fireball.wav-99e23e51ba1719f80b12b79eb59563c4.sample"
+
+[deps]
+
+source_file="res://sfx/mage_fireball.wav"
+dest_files=[ "res://.import/mage_fireball.wav-99e23e51ba1719f80b12b79eb59563c4.sample" ]
+
+[params]
+
+force/8_bit=false
+force/mono=false
+force/max_rate=false
+force/max_rate_hz=44100
+edit/trim=false
+edit/normalize=false
+edit/loop=false
+compress/mode=0

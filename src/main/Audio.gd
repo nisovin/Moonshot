@@ -1,6 +1,14 @@
 extends Node
 
 const SFX_CHANNELS = 30
+const POSITIONAL_DROP_START = 300
+const POSITIONAL_DROP_END = 600
+
+const SFX = "SFX"
+const PLAYER = "Self"
+const OTHERS = "Others"
+const ENEMIES = "Enemies"
+const MAP = "Map"
 
 onready var footsteps_player = $Footsteps
 onready var music_layers = {
@@ -11,6 +19,7 @@ onready var music_layers = {
 
 var channels_avail = []
 var loops = {}
+var last_played = {}
 
 func _ready():
 	if Game.is_server(): return
@@ -44,9 +53,10 @@ func volume_danger(vol):
 func volume_epic(vol):
 	$MusicEpic.volume_db = linear2db(vol)
 
-func play(sound_name, volume = 1.0):
+func play(sound_name, bus = SFX, volume = 1.0, avoid_overlap = 10):
 	if Game.is_server(): return null
-	assert(sound_name in R.Sounds)
+	if not sound_name in R.Sounds: return null
+	if avoid_overlap > 0 and sound_name in last_played and last_played[sound_name] > OS.get_ticks_msec() - avoid_overlap: return null
 	var channel: AudioStreamPlayer = channels_avail.pop_back()
 	if channel != null:
 		var s = R.Sounds[sound_name]
@@ -55,16 +65,31 @@ func play(sound_name, volume = 1.0):
 			sound = N.rand_array(R.Sounds[sound_name])
 		else:
 			sound = s
-		if typeof(sound) == TYPE_STRING:
-			sound = load(sound)
+		channel.bus = bus
 		channel.stream = sound
 		channel.volume_db = linear2db(volume)
 		channel.play()
+		last_played[sound_name] = OS.get_ticks_msec()
 	return channel
-		
-func loop(sound_name, volume = 1.0):
+
+func play_at_position(position, sound_name, bus = SFX, min_volume = 0.0, volume = 1.0):
+	if Game.is_server() or Game.player == null: return
+	var dist = Game.player.position.distance_to(position)
+	var vol = 0
+	if dist < POSITIONAL_DROP_START:
+		vol = 1
+	elif dist > POSITIONAL_DROP_END:
+		vol = min_volume
+	else:
+		vol = clamp((dist - POSITIONAL_DROP_START) / (POSITIONAL_DROP_END - POSITIONAL_DROP_START), min_volume, 1.0)
+	print(vol)
+	if vol > 0:
+		play(sound_name, bus, vol * volume, 0)
+	
+
+func loop(sound_name, bus = SFX, volume = 1.0):
 	if Game.is_server(): return
-	var ch = play(sound_name, volume)
+	var ch = play(sound_name, bus, volume, 0)
 	if ch != null:
 		loops[sound_name] = ch
 	

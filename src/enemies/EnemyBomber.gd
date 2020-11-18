@@ -50,3 +50,6 @@ remotesync func show_blast():
 	$BlastRadius.show()
 	$Tween.interpolate_property(enemy_node.visual, "modulate", Color.white, Color.red, BLAST_TIME)
 	$Tween.start()
+	Audio.play_at_position(enemy_node.position, "bomber_ignite", Audio.ENEMIES)
+	yield(get_tree().create_timer(BLAST_TIME), "timeout")
+	Audio.play("bomber_explode", Audio.ENEMIES)

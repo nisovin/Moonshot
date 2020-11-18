@@ -7,16 +7,19 @@ func _ready():
 	get_servers()
 
 func _on_Singleplayer_pressed():
+	$Click.play()
 	Game.start_solo()
 	queue_free()
 
 func _on_Multiplayer_pressed():
+	$Click.play()
 	$Menu.hide()
 	Game.show_centered_message("Finding servers...")
 	join = true
 	get_servers()
 	
 func _on_Fullscreen_pressed():
+	$Click.play()
 	OS.window_fullscreen = not OS.window_fullscreen
 
 func _on_Quit_pressed():
@@ -74,3 +77,6 @@ func _on_join_pressed(server):
 func _on_CancelButton_pressed():
 	$ServerList.hide()
 	$Menu.show()
+
+func _on_button_over():
+	$Rollover.play()

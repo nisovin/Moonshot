@@ -6,14 +6,14 @@
 
 [sub_resource type="CircleShape2D" id=1]
 
-[sub_resource type="Gradient" id=4]
+[sub_resource type="Gradient" id=2]
 offsets = PoolRealArray( 0, 0.40566, 0.716981, 1 )
 colors = PoolColorArray( 0.556863, 1, 0.988235, 1, 0.333333, 0.572549, 0.572549, 1, 0.0823529, 0.262745, 0.427451, 1, 0.027451, 0.14902, 0.305882, 0 )
 
-[sub_resource type="GradientTexture" id=5]
-gradient = SubResource( 4 )
+[sub_resource type="GradientTexture" id=3]
+gradient = SubResource( 2 )
 
-[sub_resource type="ParticlesMaterial" id=3]
+[sub_resource type="ParticlesMaterial" id=4]
 emission_shape = 1
 emission_sphere_radius = 14.0
 flag_disable_z = true
@@ -22,9 +22,9 @@ gravity = Vector3( 0, 0, 0 )
 initial_velocity = 32.0
 orbit_velocity = 0.0
 orbit_velocity_random = 0.0
-color_ramp = SubResource( 5 )
+color_ramp = SubResource( 3 )
 
-[sub_resource type="DynamicFont" id=2]
+[sub_resource type="DynamicFont" id=5]
 outline_size = 1
 outline_color = Color( 0, 0, 0, 1 )
 font_data = ExtResource( 3 )
@@ -39,13 +39,14 @@ script = ExtResource( 2 )
 shape = SubResource( 1 )
 
 [node name="Sprite" type="Sprite" parent="."]
+modulate = Color( 2, 2, 2, 0.341176 )
 rotation = -1.5708
 texture = ExtResource( 1 )
 
 [node name="Particles2D" type="Particles2D" parent="Sprite"]
 amount = 10
 lifetime = 2.0
-process_material = SubResource( 3 )
+process_material = SubResource( 4 )
 
 [node name="Z" type="Node2D" parent="."]
 z_index = 1
@@ -56,11 +57,12 @@ margin_left = -100.0
 margin_top = 17.0
 margin_right = 100.0
 margin_bottom = 32.0
-custom_fonts/font = SubResource( 2 )
+custom_fonts/font = SubResource( 5 )
 text = "Teleport (E)"
 align = 1
 __meta__ = {
 "_edit_use_anchors_": false
 }
+
 [connection signal="body_entered" from="." to="." method="_on_Teleporter_body_entered"]
 [connection signal="body_exited" from="." to="." method="_on_Teleporter_body_exited"]

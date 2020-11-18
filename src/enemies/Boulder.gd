@@ -24,4 +24,5 @@ func _physics_process(delta):
 	if distance_total - distance_traveled < 5:
 		var bodies = N.get_overlapping_bodies($Area2D)
 		emit_signal("impact", bodies)
+		Audio.play_at_position(position, "siege_impact", Audio.ENEMIES)
 		queue_free()

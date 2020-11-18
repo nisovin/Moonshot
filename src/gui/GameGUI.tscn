@@ -1,6 +1,6 @@
 [gd_scene load_steps=28 format=2]
 
-[ext_resource path="res://main/Minimap.gd" type="Script" id=1]
+[ext_resource path="res://gui/Minimap.gd" type="Script" id=1]
 [ext_resource path="res://gui/GameGUI.gd" type="Script" id=2]
 [ext_resource path="res://gui/alphbeta.ttf" type="DynamicFontData" id=3]
 [ext_resource path="res://gui/icons/warrior_attack2.png" type="Texture" id=4]
@@ -19,6 +19,7 @@
 [ext_resource path="res://gui/MapTexture.gd" type="Script" id=17]
 [ext_resource path="res://misc/border.png" type="Texture" id=18]
 [ext_resource path="res://gui/alagard.ttf" type="DynamicFontData" id=19]
+
 
 [sub_resource type="DynamicFont" id=1]
 outline_size = 1

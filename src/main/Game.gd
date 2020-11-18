@@ -146,7 +146,6 @@ func start_solo():
 	level.add_new_player({"class_id": Game.PlayerClass.WARRIOR, "id": get_tree().get_network_unique_id(), "player_name": "Player"})
 
 	level.start_server()
-	#Audio.start_music()
 
 func show_centered_message(text):
 	centered_message.text = text

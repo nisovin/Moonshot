@@ -131,4 +131,5 @@ position = Vector2( -75.038, -0.23597 )
 [node name="Sprite2" type="Sprite" parent="."]
 visible = false
 position = Vector2( 85.4206, 0 )
+
 [connection signal="timeout" from="Timer" to="." method="_on_Timer_timeout"]

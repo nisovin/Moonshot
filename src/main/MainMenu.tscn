@@ -1,11 +1,14 @@
-[gd_scene load_steps=15 format=2]
+[gd_scene load_steps=18 format=2]
 
 [ext_resource path="res://main/MainMenu.gd" type="Script" id=1]
-[ext_resource path="res://misc/bg2.png" type="Texture" id=2]
+[ext_resource path="res://misc/bg3.png" type="Texture" id=2]
 [ext_resource path="res://gui/alagard.ttf" type="DynamicFontData" id=3]
 [ext_resource path="res://gui/alphbeta.ttf" type="DynamicFontData" id=4]
 [ext_resource path="res://misc/white_pixel.png" type="Texture" id=5]
 [ext_resource path="res://misc/border_filled.png" type="Texture" id=6]
+[ext_resource path="res://music/oppressive_gloom.ogg" type="AudioStream" id=7]
+[ext_resource path="res://sfx/rollover6.ogg" type="AudioStream" id=8]
+[ext_resource path="res://sfx/click3.ogg" type="AudioStream" id=9]
 
 [sub_resource type="DynamicFont" id=1]
 size = 32
@@ -22,7 +25,7 @@ outline_size = 1
 outline_color = Color( 0, 0, 0, 1 )
 font_data = ExtResource( 4 )
 
-[sub_resource type="StyleBoxFlat" id=8]
+[sub_resource type="StyleBoxFlat" id=4]
 content_margin_left = 5.0
 content_margin_right = 5.0
 content_margin_top = 5.0
@@ -36,13 +39,13 @@ corner_radius_bottom_left = 5
 [sub_resource type="DynamicFont" id=5]
 font_data = ExtResource( 3 )
 
-[sub_resource type="DynamicFont" id=4]
-font_data = ExtResource( 4 )
-
 [sub_resource type="DynamicFont" id=6]
 font_data = ExtResource( 4 )
 
 [sub_resource type="DynamicFont" id=7]
+font_data = ExtResource( 4 )
+
+[sub_resource type="DynamicFont" id=8]
 font_data = ExtResource( 4 )
 
 [node name="MainMenu" type="Control"]
@@ -203,7 +206,7 @@ margin_left = 283.0
 margin_top = 157.0
 margin_right = 293.0
 margin_bottom = 167.0
-custom_styles/panel = SubResource( 8 )
+custom_styles/panel = SubResource( 4 )
 
 [node name="VBox" type="VBoxContainer" parent="ServerList/PanelContainer"]
 margin_left = 5.0
@@ -245,7 +248,7 @@ margin_top = 3.0
 margin_right = 100.0
 margin_bottom = 18.0
 rect_min_size = Vector2( 100, 0 )
-custom_fonts/font = SubResource( 4 )
+custom_fonts/font = SubResource( 6 )
 text = "Name"
 
 [node name="Status" type="Label" parent="ServerList/PanelContainer/VBox/List/Entry"]
@@ -254,7 +257,7 @@ margin_top = 3.0
 margin_right = 304.0
 margin_bottom = 18.0
 rect_min_size = Vector2( 200, 0 )
-custom_fonts/font = SubResource( 4 )
+custom_fonts/font = SubResource( 6 )
 text = "Status"
 
 [node name="Players" type="Label" parent="ServerList/PanelContainer/VBox/List/Entry"]
@@ -263,14 +266,14 @@ margin_top = 3.0
 margin_right = 383.0
 margin_bottom = 18.0
 rect_min_size = Vector2( 75, 0 )
-custom_fonts/font = SubResource( 4 )
+custom_fonts/font = SubResource( 6 )
 text = "Players"
 
 [node name="Join" type="Button" parent="ServerList/PanelContainer/VBox/List/Entry"]
 margin_left = 387.0
 margin_right = 427.0
 margin_bottom = 21.0
-custom_fonts/font = SubResource( 6 )
+custom_fonts/font = SubResource( 7 )
 text = "Play"
 flat = true
 
@@ -313,7 +316,7 @@ alignment = 1
 margin_left = 185.0
 margin_right = 241.0
 margin_bottom = 21.0
-custom_fonts/font = SubResource( 7 )
+custom_fonts/font = SubResource( 8 )
 text = "Cancel"
 flat = true
 
@@ -331,9 +334,25 @@ __meta__ = {
 }
 
 [node name="HTTPRequest" type="HTTPRequest" parent="."]
+
+[node name="Music" type="AudioStreamPlayer" parent="."]
+stream = ExtResource( 7 )
+volume_db = -20.0
+autoplay = true
+
+[node name="Rollover" type="AudioStreamPlayer" parent="."]
+stream = ExtResource( 8 )
+
+[node name="Click" type="AudioStreamPlayer" parent="."]
+stream = ExtResource( 9 )
+
+[connection signal="mouse_entered" from="Menu/VBoxContainer/Singleplayer" to="." method="_on_button_over"]
 [connection signal="pressed" from="Menu/VBoxContainer/Singleplayer" to="." method="_on_Singleplayer_pressed"]
+[connection signal="mouse_entered" from="Menu/VBoxContainer/Multiplayer" to="." method="_on_button_over"]
 [connection signal="pressed" from="Menu/VBoxContainer/Multiplayer" to="." method="_on_Multiplayer_pressed"]
+[connection signal="mouse_entered" from="Menu/VBoxContainer/Fullscreen" to="." method="_on_button_over"]
 [connection signal="pressed" from="Menu/VBoxContainer/Fullscreen" to="." method="_on_Fullscreen_pressed"]
+[connection signal="mouse_entered" from="Menu/VBoxContainer/Quit" to="." method="_on_button_over"]
 [connection signal="pressed" from="Menu/VBoxContainer/Quit" to="." method="_on_Quit_pressed"]
 [connection signal="pressed" from="ServerList/PanelContainer/VBox/HBoxContainer/CancelButton" to="." method="_on_CancelButton_pressed"]
 [connection signal="request_completed" from="HTTPRequest" to="." method="_on_HTTPRequest_request_completed"]

@@ -16,20 +16,20 @@ radius = 8.0
 [sub_resource type="CircleShape2D" id=3]
 radius = 8.0
 
-[sub_resource type="CanvasItemMaterial" id=7]
+[sub_resource type="CanvasItemMaterial" id=4]
 particles_animation = true
 particles_anim_h_frames = 5
 particles_anim_v_frames = 1
 particles_anim_loop = false
 
-[sub_resource type="Gradient" id=9]
+[sub_resource type="Gradient" id=5]
 offsets = PoolRealArray( 0, 0.683962, 1 )
 colors = PoolColorArray( 1, 1, 1, 1, 1, 1, 1, 1, 0.317647, 0.317647, 0.317647, 0 )
 
-[sub_resource type="GradientTexture" id=10]
-gradient = SubResource( 9 )
+[sub_resource type="GradientTexture" id=6]
+gradient = SubResource( 5 )
 
-[sub_resource type="ParticlesMaterial" id=8]
+[sub_resource type="ParticlesMaterial" id=7]
 emission_shape = 2
 emission_box_extents = Vector3( 24, 16, 1 )
 flag_disable_z = true
@@ -41,17 +41,17 @@ angular_velocity = 339.84
 angular_velocity_random = 1.0
 orbit_velocity = 0.0
 orbit_velocity_random = 0.0
-color_ramp = SubResource( 10 )
+color_ramp = SubResource( 6 )
 anim_offset = 1.0
 anim_offset_random = 1.0
 
-[sub_resource type="RectangleShape2D" id=4]
+[sub_resource type="RectangleShape2D" id=8]
 extents = Vector2( 32, 24 )
 
-[sub_resource type="RectangleShape2D" id=5]
+[sub_resource type="RectangleShape2D" id=9]
 extents = Vector2( 32, 16 )
 
-[sub_resource type="DynamicFont" id=6]
+[sub_resource type="DynamicFont" id=10]
 outline_size = 1
 outline_color = Color( 0, 0, 0, 1 )
 font_data = ExtResource( 3 )
@@ -85,14 +85,14 @@ position = Vector2( 0, -32 )
 texture = ExtResource( 1 )
 
 [node name="Particles2D" type="Particles2D" parent="."]
-material = SubResource( 7 )
+material = SubResource( 4 )
 position = Vector2( 0, -16.1068 )
 emitting = false
 amount = 10
 lifetime = 1.2
 one_shot = true
 explosiveness = 0.81
-process_material = SubResource( 8 )
+process_material = SubResource( 7 )
 texture = ExtResource( 5 )
 
 [node name="BehindDetector" type="Area2D" parent="."]
@@ -103,7 +103,7 @@ collision_mask = 6
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="BehindDetector"]
 position = Vector2( 0, -24 )
-shape = SubResource( 4 )
+shape = SubResource( 8 )
 
 [node name="RepairDetector" type="Area2D" parent="."]
 visible = false
@@ -113,7 +113,7 @@ collision_mask = 6
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="RepairDetector"]
 position = Vector2( 0, -8 )
-shape = SubResource( 5 )
+shape = SubResource( 9 )
 
 [node name="Target" type="Position2D" parent="."]
 position = Vector2( 0, -12 )
@@ -127,7 +127,7 @@ margin_left = -34.5055
 margin_top = -44.4204
 margin_right = 35.4945
 margin_bottom = -29.4204
-custom_fonts/font = SubResource( 6 )
+custom_fonts/font = SubResource( 10 )
 text = "Repair (E)"
 align = 1
 __meta__ = {
@@ -148,6 +148,7 @@ nine_patch_stretch = true
 __meta__ = {
 "_edit_use_anchors_": false
 }
+
 [connection signal="body_entered" from="BehindDetector" to="." method="_on_BehindDetector_body_entered"]
 [connection signal="body_exited" from="BehindDetector" to="." method="_on_BehindDetector_body_exited"]
 [connection signal="body_entered" from="RepairDetector" to="." method="_on_RepairDetector_body_entered"]

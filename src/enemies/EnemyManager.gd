@@ -14,7 +14,7 @@ const ENEMY_POWER = {
 enum Directive { NONE, FOCUS_PLAYERS, FOCUS_KEEP, SWIFTNESS, ENRAGE }
 
 var max_enemies = 90
-var per_player_power_limit = 2
+var per_player_power_limit = 3
 var per_player_wave_size = 0.5
 var next_enemy_id = 1
 
@@ -47,7 +47,7 @@ func speed_up_spawning():
 	sped_up += 1
 	var s = max($SpawnTimer.wait_time * 0.75, 1)
 	per_player_wave_size = clamp(per_player_wave_size + 0.2, 0.5, 2.5)
-	per_player_power_limit = clamp(per_player_power_limit + 1, 1, 8)
+	per_player_power_limit = clamp(per_player_power_limit + 1, 1, MAX_ENEMY_POWER_PER_PLAYER)
 	$SpawnTimer.wait_time = s
 	$SpawnTimer.start(s)
 	return sped_up
@@ -178,7 +178,7 @@ func _on_SpawnTimer_timeout():
 	var spawn_point = null
 	
 	# get current enemy counts and power
-	var max_enemy_power = 20 #clamp(player_count * per_player_power_limit, 6, 200)
+	var max_enemy_power = clamp(player_count * per_player_power_limit, 6, 200)
 	var count = 0
 	var power = 0
 	for e in owner.enemies_node.get_children():
@@ -193,7 +193,8 @@ func _on_SpawnTimer_timeout():
 			if spawn_point == null or x % 4 == 0:
 				spawn_point = N.rand_array(spawn_points)
 			var loc = spawn_point.global_position + Vector2(N.rand_float(0, 16), N.rand_float(0, 16))
-			var need_bigger_enemies = float(count) / max_enemies > 0.7 and power < max_enemy_power - 10
+			var need_bigger_enemies = true #float(count) / max_enemies > 0.7 and power < max_enemy_power - 10
+			sped_up = 10
 			var options = {}
 			options[Game.EnemyClass.GRUNT] = 100 if not need_bigger_enemies else 50
 			options[Game.EnemyClass.MAGE] = 15

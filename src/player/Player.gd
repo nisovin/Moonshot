@@ -145,6 +145,7 @@ remotesync func damage(new_health, energy_damage = 0):
 			player_class.energy = clamp(player_class.energy - energy_damage, 0, 100)
 			N.fct(self, round(energy_damage), Color.yellow)
 		update_health_music()
+		Audio.play("hit", Audio.PLAYER)
 	health = new_health
 	last_combat = last_hit
 	if energy_damage > 0:

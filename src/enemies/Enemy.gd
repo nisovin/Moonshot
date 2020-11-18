@@ -49,7 +49,7 @@ func load_data(data):
 		visual.enable_smoothing()
 	if not Game.is_server():
 		healthbar.rect_size.x = min(ceil(health / 5), 32)
-		if health > 32 * 5:
+		if health >= 150:
 			healthbar.rect_size.y = 6
 		healthbar.rect_position.x = -healthbar.rect_size.x / 2
 		healthbar.visible = false
@@ -95,6 +95,8 @@ remotesync func show_hit(h):
 		visual_anim.play("hurt")
 	if Game.is_client() and last_hit > OS.get_ticks_msec() - 500:
 		N.fct(self, dam, Color.magenta)
+	if Game.is_solo():
+		Audio.play("enemy_hit", Audio.ENEMIES, 0.4)
 
 func local_hit(vel = null, dur = 0):
 	if dead: return
@@ -102,7 +104,7 @@ func local_hit(vel = null, dur = 0):
 	if vel != null:
 		if (vel == Vector2.ZERO and not immune_to_stun) or (vel != Vector2.ZERO and not immune_to_knockback):
 			set_movement(vel, position, dur)
-	Audio.play("enemy_hit", 0.4)
+	Audio.play("enemy_hit", Audio.ENEMIES, 0.4)
 	
 func physics_tick(delta):
 	last_physics_tick = Engine.get_physics_frames()
