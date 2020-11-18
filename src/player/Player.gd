@@ -123,6 +123,9 @@ func apply_damage(dam, direct = false, energy_damage = 0):
 		else:
 			last_hit = OS.get_ticks_msec()
 			last_hit_amount = dam
+	else:
+		last_hit = OS.get_ticks_msec()
+		last_hit_amount = dam
 	if dam <= 0:
 		return false
 	var new_health = health - dam
@@ -135,9 +138,12 @@ func apply_damage(dam, direct = false, energy_damage = 0):
 
 remotesync func damage(new_health, energy_damage = 0):
 	if new_health >= health: return
+	var damage = health - new_health
 	if is_network_master():
+		N.fct(self, round(damage), Color.red)
 		if energy_damage > 0:
 			player_class.energy = clamp(player_class.energy - energy_damage, 0, 100)
+			N.fct(self, round(energy_damage), Color.yellow)
 		update_health_music()
 	health = new_health
 	last_combat = last_hit
@@ -167,7 +173,8 @@ remotesync func damage(new_health, energy_damage = 0):
 		
 remotesync func heal(new_health, show):
 	if show and new_health > health and is_network_master():
-		pass # show FCT
+		var amt = new_health - health
+		N.fct(self, amt, Color.green)
 	health = new_health
 	healthbar.value = health / player_class.MAX_HEALTH * 100
 	if is_network_master():

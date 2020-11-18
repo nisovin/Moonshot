@@ -165,7 +165,7 @@ remote func player_join(class_id, player_name: String, uuid: String):
 			return
 	
 	# check invalid name
-	if not Game.check_name(player_name):
+	if not check_name(player_name):
 		rpc_id(id, "invalid_name")
 		return
 	

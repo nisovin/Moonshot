@@ -51,6 +51,9 @@ func is_player():
 func is_solo():
 	return mp_mode == MPMode.SOLO
 
+func is_client():
+	return mp_mode == MPMode.CLIENT
+	
 func load_persistent():
 	var file = File.new()
 	if file.file_exists("user://moon.sav"):

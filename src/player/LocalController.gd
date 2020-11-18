@@ -16,7 +16,7 @@ func _physics_process(delta):
 		tick = 0
 	var has_motion = (owner.move_dir != Vector2.ZERO and owner.current_speed > 0) or owner.player_class.is_moving()
 	if has_motion or sync_move:
-		if tick == 0 and get_tree().has_network_peer():
+		if tick == 0 and get_tree().has_network_peer() and not owner.dead:
 			owner.rpc_unreliable_id(1, "update_position", owner.position)
 			if has_motion:
 				sync_move = true
@@ -24,7 +24,7 @@ func _physics_process(delta):
 				sync_move = false
 
 func _unhandled_input(event):
-	if Game.lock_player_input: return
+	if Game.lock_player_input or owner.dead: return
 	
 	# joystick
 	
@@ -125,7 +125,7 @@ func _unhandled_input(event):
 		owner.player_class.movement_release()
 		
 func _apply_movement():
-	if get_tree().has_network_peer():
+	if get_tree().has_network_peer() and not owner.dead:
 		owner.rpc("set_movement", move_h, move_v, owner.position)
 	else:
 		owner.set_movement(move_h, move_v, owner.position)

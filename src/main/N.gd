@@ -10,6 +10,13 @@ var rng := RandomNumberGenerator.new()
 func _ready():
 	rng.randomize()
 
+# *** UTIL *** #
+
+func fct(obj, text, color, crit = false):
+	var t = R.FCT.instance()
+	obj.add_child(t)
+	t.init(text, color, crit)
+
 # *** RANDOM *** #
 
 func rand_int(from, to):

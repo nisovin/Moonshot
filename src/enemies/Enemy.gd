@@ -80,17 +80,21 @@ remotesync func set_movement(vel, pos, dur = 0):
 	#	stun_particles.visible = stun_particles.emitting
 
 func hit(data):
+	last_hit = OS.get_ticks_msec()
 	if controller.hit(data):
 		rpc("show_hit", health)
 	
 remotesync func show_hit(h):
 	if dead or Game.is_server(): return
+	var dam = health - h
 	health = h
 	if health < max_health:
 		healthbar.visible = true
 		healthbar.value = health / max_health
 	if not visual_anim.is_playing():
 		visual_anim.play("hurt")
+	if Game.is_client() and last_hit > OS.get_ticks_msec() - 500:
+		N.fct(self, dam, Color.magenta)
 
 func local_hit(vel = null, dur = 0):
 	if dead: return

@@ -1,6 +1,7 @@
 extends Node
 
 var Level
+var FCT
 
 var Player
 var Enemy
@@ -27,6 +28,7 @@ var Icons
 
 func load_resources(is_server):
 	Level = load("res://main/Level.tscn")
+	FCT = load("res://misc/FCT.tscn")
 	Player = load("res://player/Player.tscn")
 	Enemy = load("res://enemies/Enemy.tscn")
 	EnemyGrunt = load("res://enemies/EnemyGrunt.tscn")

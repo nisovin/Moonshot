@@ -214,14 +214,14 @@ func _on_HealTick_timeout():
 	if Game.is_host():
 		for p in players_node.get_children():
 			var in_combat = false if is_effect_active(Game.Effects.SHRINEDEATH) else p.last_combat > OS.get_ticks_msec() - 5000
-			if not p.dead and p.health < p.player_class.MAX_HEALTH and not in_combat and p.last_heal_tick < OS.get_ticks_msec() - 500:
-				var heal = p.player_class.HEALTH_REGEN * 0.5
+			if not p.dead and p.health < p.player_class.MAX_HEALTH and not in_combat and p.last_heal_tick < OS.get_ticks_msec() - 1000:
+				var heal = p.player_class.HEALTH_REGEN
 				if is_effect_active(Game.Effects.SHRINEDEATH):
 					heal *= 3
 				elif p.exhaustion > 50:
 					var e = p.exhaustion - 50
 					heal *= (50 - e * 0.75) / 50.0
-				p.rpc("heal", min(p.health + heal, p.player_class.MAX_HEALTH), false)
+				p.rpc("heal", min(p.health + heal, p.player_class.MAX_HEALTH), true)
 				p.last_heal_tick = OS.get_ticks_msec()
 
 func _on_ExhaustionTick_timeout():
