@@ -27,6 +27,8 @@ func init_sub(node):
 	attack_range_max = 32
 	attack_cooldown = 1000
 
+	Audio.play("bomber_spawn", Audio.MAP)
+
 func attack(entity, melee):
 	if exploded: return
 	if melee and entity.is_in_group("players"):

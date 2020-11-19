@@ -9,6 +9,7 @@ var custom_targeting = false
 var custom_pathing = false
 var immune_to_knockback = false
 var immune_to_stun = false
+var death_sound = null
 
 var target_range = 20 # tiles
 var target_range_sq

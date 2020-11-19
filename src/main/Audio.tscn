@@ -19,3 +19,5 @@ bus = "Music"
 bus = "Music"
 
 [node name="Tween" type="Tween" parent="."]
+
+[connection signal="finished" from="MusicMain" to="." method="_on_MusicMain_finished"]

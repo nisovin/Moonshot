@@ -2,6 +2,15 @@ extends Node2D
 
 enum GameState { PREGAME, STAGE1, BETWEEN, STAGE2, GAMEOVER }
 
+const EVENTS = {
+	"rage": 1,
+	"fatigue": 1,
+	"focuskeep": 1,
+	"bombers": 1,
+	"siege": 1,
+	"elites": 1
+}
+
 var chat_history = []
 
 onready var gui = $GUI
@@ -31,10 +40,15 @@ var active_effects = []
 var spawning_paused_for = 0
 var no_players_counter = 0
 
+
+var event_options = {}
+
 var dead_players = {}
 
 func _ready():
 	player_spawn.position = player_spawns.get_child(0).position
+	for key in EVENTS:
+		event_options[key] = EVENTS[key]
 
 func start_server():
 	$GameTick.start()
@@ -169,20 +183,14 @@ func game_tick():
 		spawning_paused_for -= 1
 		if spawning_paused_for == 0:
 			enemy_manager.unpause_spawning()
-			print("unpause!")
+			print("Unpause!")
 
 func start_event(type = ""):
 	if type == "":
-		var options = {
-			"rage": 10,
-			"fatigue": 10,
-			"focuskeep": 10,
-			"bombers": 10,
-			"siege": 10,
-			"elites": 10
-			#"earthquake": 10
-		}
-		type = N.rand_weighted(options)
+		type = N.rand_weighted(event_options)
+		for key in event_options:
+			event_options[key] += EVENTS[key]
+		event_options[type] = 0
 	print("Event: ", type)
 	if type == "rage":
 		rpc("start_effect", Game.Effects.RAGE)
@@ -194,6 +202,11 @@ func start_event(type = ""):
 		rpc("add_system_message", "You have been cursed with fatigue!")
 		yield(get_tree().create_timer(20), "timeout")
 		rpc("end_effect", Game.Effects.FATIGUE)
+	elif type == "confusion":
+		rpc("start_effect", Game.Effects.CONFUSION)
+		rpc("add_system_message", "You have been cursed with confusion!")
+		yield(get_tree().create_timer(15), "timeout")
+		rpc("end_effect", Game.Effects.CONFUSION)
 	elif type == "focuskeep":
 		rpc("start_effect", Game.Effects.FOCUS_KEEP)
 		yield(get_tree().create_timer(20), "timeout")
@@ -201,6 +214,10 @@ func start_event(type = ""):
 	elif type == "bombers":
 		var count = clamp(ceil(players_node.get_child_count() / 6.0), 1, 4)
 		enemy_manager.spawn_special_wave(Game.EnemyClass.BOMBER, count, true)
+		if count == 1:
+			rpc("add_system_message", "Bomber sighted! Bring him down, archers! Kill him!")
+		else:
+			rpc("add_system_message", "Bombers sighted! Bring them down, archers! Kill them!")
 	elif type == "siege":
 		var count = clamp(ceil(players_node.get_child_count() / 6.0), 1, 4)
 		enemy_manager.spawn_special_wave(Game.EnemyClass.SIEGE, count, true)
@@ -208,8 +225,6 @@ func start_event(type = ""):
 		var count = clamp(ceil(players_node.get_child_count() / 3.0), 1, 5)
 		enemy_manager.spawn_special_wave(Game.EnemyClass.ELITE, count, false)
 	return type
-		
-		
 
 func _on_HealTick_timeout():
 	if Game.is_host():
@@ -218,11 +233,11 @@ func _on_HealTick_timeout():
 			if not p.dead and p.health < p.player_class.MAX_HEALTH and not in_combat and p.last_heal_tick < OS.get_ticks_msec() - 1000:
 				var heal = p.player_class.HEALTH_REGEN
 				if is_effect_active(Game.Effects.SHRINEDEATH):
-					heal *= 3
+					heal *= 4
 				elif p.exhaustion > 50:
 					var e = p.exhaustion - 50
 					heal *= (50 - e * 0.75) / 50.0
-				p.rpc("heal", min(p.health + heal, p.player_class.MAX_HEALTH), true)
+				p.apply_healing(heal)
 				p.last_heal_tick = OS.get_ticks_msec()
 
 func _on_ExhaustionTick_timeout():
@@ -267,7 +282,8 @@ func pause_spawning(time):
 remotesync func start_effect(effect):
 	if not effect in active_effects:
 		active_effects.append(effect)
-		#Audio.play("effect_" +) TODO
+		if effect == Game.Effects.FATIGUE:
+			Audio.play("effect_fatigue", Audio.MAP)
 		
 remotesync func end_effect(effect):
 	active_effects.erase(effect)

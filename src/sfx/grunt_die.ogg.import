@@ -1,0 +1,15 @@
+[remap]
+
+importer="ogg_vorbis"
+type="AudioStreamOGGVorbis"
+path="res://.import/grunt_die.ogg-24184cfeedf2288d77276aaa3c7509ba.oggstr"
+
+[deps]
+
+source_file="res://sfx/grunt_die.ogg"
+dest_files=[ "res://.import/grunt_die.ogg-24184cfeedf2288d77276aaa3c7509ba.oggstr" ]
+
+[params]
+
+loop=false
+loop_offset=0

@@ -1,4 +1,4 @@
-[gd_scene load_steps=28 format=2]
+[gd_scene load_steps=31 format=2]
 
 [ext_resource path="res://gui/Minimap.gd" type="Script" id=1]
 [ext_resource path="res://gui/GameGUI.gd" type="Script" id=2]
@@ -19,7 +19,8 @@
 [ext_resource path="res://gui/MapTexture.gd" type="Script" id=17]
 [ext_resource path="res://misc/border.png" type="Texture" id=18]
 [ext_resource path="res://gui/alagard.ttf" type="DynamicFontData" id=19]
-
+[ext_resource path="res://gui/icons/status_fatigue.png" type="Texture" id=20]
+[ext_resource path="res://gui/icons/status_confusion.png" type="Texture" id=21]
 
 [sub_resource type="DynamicFont" id=1]
 outline_size = 1
@@ -27,31 +28,47 @@ outline_color = Color( 0, 0, 0, 1 )
 extra_spacing_top = 3
 font_data = ExtResource( 8 )
 
-[sub_resource type="StyleBoxFlat" id=2]
+[sub_resource type="Animation" id=2]
+resource_name = "health_warning"
+loop = true
+tracks/0/type = "value"
+tracks/0/path = NodePath(".:tint_progress")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/keys = {
+"times": PoolRealArray( 0, 0.5, 1 ),
+"transitions": PoolRealArray( 1, 1, 1 ),
+"update": 0,
+"values": [ Color( 0.5, 0, 0, 1 ), Color( 1, 0, 0, 1 ), Color( 0.5, 0, 0, 1 ) ]
+}
+
+[sub_resource type="StyleBoxFlat" id=3]
 bg_color = Color( 0, 0, 0, 0.670588 )
 expand_margin_left = 3.0
 expand_margin_right = 3.0
 expand_margin_top = 3.0
 expand_margin_bottom = 3.0
 
-[sub_resource type="StyleBoxEmpty" id=3]
-
-[sub_resource type="DynamicFont" id=4]
-font_data = ExtResource( 8 )
+[sub_resource type="StyleBoxEmpty" id=4]
 
 [sub_resource type="DynamicFont" id=5]
-font_data = ExtResource( 3 )
-
-[sub_resource type="DynamicFont" id=6]
 font_data = ExtResource( 8 )
 
+[sub_resource type="DynamicFont" id=6]
+font_data = ExtResource( 3 )
+
 [sub_resource type="DynamicFont" id=7]
+font_data = ExtResource( 8 )
+
+[sub_resource type="DynamicFont" id=8]
 size = 24
 outline_size = 2
 outline_color = Color( 0.678431, 0, 0, 1 )
 font_data = ExtResource( 19 )
 
-[sub_resource type="DynamicFont" id=8]
+[sub_resource type="DynamicFont" id=9]
 extra_spacing_top = 4
 extra_spacing_bottom = 4
 font_data = ExtResource( 3 )
@@ -73,15 +90,15 @@ __meta__ = {
 visible = false
 modulate = Color( 0, 0.647059, 1, 1 )
 margin_right = 24.0
-margin_bottom = 24.0
+margin_bottom = 32.0
 mouse_filter = 2
 texture = ExtResource( 9 )
 
 [node name="ShrineDeath" type="TextureRect" parent="Statuses"]
 visible = false
 modulate = Color( 0, 0.647059, 1, 1 )
-margin_left = 36.0
-margin_right = 68.0
+margin_left = 28.0
+margin_right = 52.0
 margin_bottom = 32.0
 mouse_filter = 2
 texture = ExtResource( 11 )
@@ -89,8 +106,8 @@ texture = ExtResource( 11 )
 [node name="Midday" type="TextureRect" parent="Statuses"]
 visible = false
 modulate = Color( 1, 0.4, 0, 1 )
-margin_left = 72.0
-margin_right = 104.0
+margin_left = 56.0
+margin_right = 80.0
 margin_bottom = 32.0
 mouse_filter = 2
 texture = ExtResource( 12 )
@@ -98,26 +115,17 @@ texture = ExtResource( 12 )
 [node name="Rage" type="TextureRect" parent="Statuses"]
 visible = false
 modulate = Color( 1, 0.4, 0, 1 )
-margin_left = 28.0
-margin_right = 52.0
+margin_left = 84.0
+margin_right = 108.0
 margin_bottom = 32.0
 mouse_filter = 2
 texture = ExtResource( 10 )
 
-[node name="Swiftness" type="TextureRect" parent="Statuses"]
-visible = false
-modulate = Color( 1, 0.4, 0, 1 )
-margin_left = 108.0
-margin_right = 140.0
-margin_bottom = 32.0
-mouse_filter = 2
-texture = ExtResource( 13 )
-
 [node name="Fear" type="TextureRect" parent="Statuses"]
 visible = false
 modulate = Color( 1, 0.4, 0, 1 )
-margin_left = 108.0
-margin_right = 140.0
+margin_left = 112.0
+margin_right = 136.0
 margin_bottom = 32.0
 mouse_filter = 2
 texture = ExtResource( 13 )
@@ -125,17 +133,26 @@ texture = ExtResource( 13 )
 [node name="Fatigue" type="TextureRect" parent="Statuses"]
 visible = false
 modulate = Color( 1, 0.4, 0, 1 )
-margin_left = 108.0
-margin_right = 140.0
+margin_left = 112.0
+margin_right = 136.0
 margin_bottom = 32.0
 mouse_filter = 2
-texture = ExtResource( 13 )
+texture = ExtResource( 20 )
 
-[node name="FocusKeep" type="TextureRect" parent="Statuses"]
+[node name="Confusion" type="TextureRect" parent="Statuses"]
 visible = false
 modulate = Color( 1, 0.4, 0, 1 )
 margin_right = 24.0
 margin_bottom = 24.0
+mouse_filter = 2
+texture = ExtResource( 21 )
+
+[node name="FocusKeep" type="TextureRect" parent="Statuses"]
+visible = false
+modulate = Color( 1, 0.4, 0, 1 )
+margin_left = 112.0
+margin_right = 136.0
+margin_bottom = 32.0
 mouse_filter = 2
 texture = ExtResource( 14 )
 
@@ -246,7 +263,7 @@ value = 100.0
 texture_under = ExtResource( 16 )
 texture_progress = ExtResource( 16 )
 tint_under = Color( 0.168627, 0.168627, 0.168627, 1 )
-tint_progress = Color( 0.588235, 0.12549, 0, 1 )
+tint_progress = Color( 0.5, 0, 0, 1 )
 nine_patch_stretch = true
 __meta__ = {
 "_edit_use_anchors_": false
@@ -262,6 +279,9 @@ valign = 1
 __meta__ = {
 "_edit_use_anchors_": false
 }
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="PlayerBars/Health"]
+anims/health_warning = SubResource( 2 )
 
 [node name="Energy" type="TextureProgress" parent="PlayerBars"]
 margin_left = 290.0
@@ -353,9 +373,9 @@ margin_top = 130.0
 margin_right = 496.0
 margin_bottom = 140.0
 mouse_filter = 2
-custom_styles/focus = SubResource( 2 )
-custom_styles/normal = SubResource( 3 )
-custom_fonts/font = SubResource( 4 )
+custom_styles/focus = SubResource( 3 )
+custom_styles/normal = SubResource( 4 )
+custom_fonts/font = SubResource( 5 )
 max_length = 150
 placeholder_text = "Say something..."
 placeholder_alpha = 0.3
@@ -450,7 +470,7 @@ __meta__ = {
 [node name="Title" type="Label" parent="Tooltip/VBoxContainer"]
 margin_right = 240.0
 margin_bottom = 15.0
-custom_fonts/font = SubResource( 5 )
+custom_fonts/font = SubResource( 6 )
 custom_colors/font_color = Color( 0, 0.976471, 1, 1 )
 text = "Ability"
 __meta__ = {
@@ -462,7 +482,7 @@ margin_top = 19.0
 margin_right = 240.0
 margin_bottom = 30.0
 mouse_filter = 2
-custom_fonts/normal_font = SubResource( 6 )
+custom_fonts/normal_font = SubResource( 7 )
 bbcode_text = "This is a tooltip"
 text = "This is a tooltip"
 fit_content_height = true
@@ -471,6 +491,7 @@ __meta__ = {
 }
 
 [node name="Respawn" type="ColorRect" parent="."]
+visible = false
 anchor_right = 1.0
 anchor_bottom = 1.0
 color = Color( 0.211765, 0, 0, 0.709804 )
@@ -495,7 +516,7 @@ custom_constants/separation = 20
 [node name="Label" type="Label" parent="Respawn/CenterContainer/VBoxContainer"]
 margin_right = 257.0
 margin_bottom = 23.0
-custom_fonts/font = SubResource( 7 )
+custom_fonts/font = SubResource( 8 )
 text = "You have died bravely."
 align = 1
 
@@ -510,7 +531,7 @@ margin_left = 78.0
 margin_right = 178.0
 margin_bottom = 29.0
 rect_min_size = Vector2( 100, 0 )
-custom_fonts/font = SubResource( 8 )
+custom_fonts/font = SubResource( 9 )
 text = "Respawn"
 flat = true
 __meta__ = {

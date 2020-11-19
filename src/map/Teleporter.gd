@@ -23,6 +23,7 @@ func set_target(val):
 func interact(body):
 	if overlaps_body(body):
 		body.teleport(position + target)
+		Audio.play("teleport", Audio.MAP)
 
 func _on_Teleporter_body_entered(body):
 	if body.is_network_master():

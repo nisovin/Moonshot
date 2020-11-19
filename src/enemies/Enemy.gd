@@ -12,6 +12,7 @@ var health: float = 50
 var max_health: float = 50
 var immune_to_knockback = false
 var immune_to_stun = false
+var death_sound = null
 var last_hit = 0
 var dead = false
 
@@ -44,6 +45,7 @@ func load_data(data):
 	health = max_health
 	immune_to_knockback = controller.type.immune_to_knockback
 	immune_to_stun = controller.type.immune_to_stun
+	death_sound = controller.type.death_sound
 	if not is_network_master():
 		controller.queue_free()
 		visual.enable_smoothing()
@@ -156,6 +158,8 @@ remotesync func die():
 		healthbar.visible = false
 		stun_particles.visible = false
 		visual_anim.play("die")
+		if death_sound != null:
+			Audio.play_at_position(position, death_sound, Audio.ENEMIES)
 		# disable player collision
 		set_deferred("collision_layer", 0)
 		set_deferred("collision_mask", 1)

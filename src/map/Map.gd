@@ -37,9 +37,6 @@ func _ready():
 	corner = Vector2(min(rect1.position.x, rect2.position.x), min(rect1.position.y, rect2.position.y))
 	map_size = Vector2(max(rect1.size.x, rect2.size.x), max(rect1.size.y, rect2.size.y))
 	
-	print(corner)
-	print(map_size)
-	
 	var test = true
 	
 	# generate astar navigation
@@ -147,17 +144,16 @@ func get_nav_path(from, to, smooth = true, get_cost = false):
 			cost += astar.get_point_weight_scale(id)
 	else:
 		path = Array(astar.get_point_path(id_from, id_to))
-	if false and smooth and path.size() > 3:
-		var space = get_world_2d().direct_space_state
-		var start = path.pop_front()
-		var col = null
-		while path.size() > 1:
-			print(path.size(), start, path[0])
-			col = space.intersect_ray(start, path[0], [], 1)
-			if col:
-				break
-			else:
-				path.pop_front()
+#	if false and smooth and path.size() > 3:
+#		var space = get_world_2d().direct_space_state
+#		var start = path.pop_front()
+#		var col = null
+#		while path.size() > 1:
+#			col = space.intersect_ray(start, path[0], [], 1)
+#			if col:
+#				break
+#			else:
+#				path.pop_front()
 	if get_cost:
 		return [path, cost]
 	else:

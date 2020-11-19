@@ -1,9 +1,10 @@
-[gd_scene load_steps=13 format=2]
+[gd_scene load_steps=15 format=2]
 
 [ext_resource path="res://map/shrine.png" type="Texture" id=1]
 [ext_resource path="res://map/shrine_moon.png" type="Texture" id=2]
 [ext_resource path="res://map/Shrine.gd" type="Script" id=3]
 [ext_resource path="res://map/shrine_ground.png" type="Texture" id=4]
+[ext_resource path="res://misc/Circle.gd" type="Script" id=5]
 
 [sub_resource type="Shader" id=1]
 code = "shader_type canvas_item;
@@ -71,6 +72,9 @@ hue_variation_random = 0.36
 radius = 36.8531
 
 [sub_resource type="CircleShape2D" id=8]
+radius = 62.3941
+
+[sub_resource type="CircleShape2D" id=9]
 radius = 99.9134
 
 [node name="Shrine" type="Area2D" groups=[
@@ -94,6 +98,78 @@ modulate = Color( 1, 1, 1, 0 )
 z_index = -1
 texture = ExtResource( 2 )
 
+[node name="HealthDisplay" type="Node2D" parent="."]
+
+[node name="Node2D" type="Node2D" parent="HealthDisplay"]
+modulate = Color( 0, 1, 1, 1 )
+position = Vector2( 0, 9.81096 )
+script = ExtResource( 5 )
+color = Color( 1, 1, 1, 1 )
+radius = 2.0
+
+[node name="Node2D2" type="Node2D" parent="HealthDisplay"]
+modulate = Color( 0, 1, 1, 1 )
+position = Vector2( -30.6221, -2.37841 )
+script = ExtResource( 5 )
+color = Color( 1, 1, 1, 1 )
+radius = 2.0
+
+[node name="Node2D3" type="Node2D" parent="HealthDisplay"]
+modulate = Color( 0, 1, 1, 1 )
+position = Vector2( 31.6626, -5.20278 )
+script = ExtResource( 5 )
+color = Color( 1, 1, 1, 1 )
+radius = 2.0
+
+[node name="Node2D4" type="Node2D" parent="HealthDisplay"]
+modulate = Color( 0, 1, 1, 1 )
+position = Vector2( -43.7034, -42.0682 )
+script = ExtResource( 5 )
+color = Color( 1, 1, 1, 1 )
+radius = 2.0
+
+[node name="Node2D5" type="Node2D" parent="HealthDisplay"]
+modulate = Color( 0, 1, 1, 1 )
+position = Vector2( 44.298, -42.2168 )
+script = ExtResource( 5 )
+color = Color( 1, 1, 1, 1 )
+radius = 2.0
+
+[node name="Node2D6" type="Node2D" parent="HealthDisplay"]
+modulate = Color( 0, 1, 1, 1 )
+position = Vector2( -60.6496, 12.6353 )
+script = ExtResource( 5 )
+color = Color( 1, 1, 1, 1 )
+radius = 2.0
+
+[node name="Node2D7" type="Node2D" parent="HealthDisplay"]
+modulate = Color( 0, 1, 1, 1 )
+position = Vector2( 60.2036, 15.0137 )
+script = ExtResource( 5 )
+color = Color( 1, 1, 1, 1 )
+radius = 2.0
+
+[node name="Node2D8" type="Node2D" parent="HealthDisplay"]
+modulate = Color( 0, 1, 1, 1 )
+position = Vector2( -41.3249, 47.4196 )
+script = ExtResource( 5 )
+color = Color( 1, 1, 1, 1 )
+radius = 2.0
+
+[node name="Node2D9" type="Node2D" parent="HealthDisplay"]
+modulate = Color( 0, 1, 1, 1 )
+position = Vector2( 40.5817, 48.3115 )
+script = ExtResource( 5 )
+color = Color( 1, 1, 1, 1 )
+radius = 2.0
+
+[node name="Node2D10" type="Node2D" parent="HealthDisplay"]
+modulate = Color( 0, 1, 1, 1 )
+position = Vector2( 7.62939e-06, 61.9874 )
+script = ExtResource( 5 )
+color = Color( 1, 1, 1, 1 )
+radius = 2.0
+
 [node name="Particles" type="Particles2D" parent="."]
 light_mask = 0
 amount = 40
@@ -108,16 +184,26 @@ lifetime = 3.0
 process_material = SubResource( 6 )
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+visible = false
 position = Vector2( 0.293762, -33.1754 )
 shape = SubResource( 7 )
 
+[node name="HealArea" type="Area2D" parent="."]
+visible = false
+collision_layer = 0
+collision_mask = 2
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="HealArea"]
+shape = SubResource( 8 )
+
 [node name="CorruptionArea" type="Area2D" parent="."]
+visible = false
 monitorable = false
 collision_layer = 0
 collision_mask = 4
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="CorruptionArea"]
-shape = SubResource( 8 )
+shape = SubResource( 9 )
 
 [node name="Timer" type="Timer" parent="."]
 autostart = true
@@ -131,5 +217,4 @@ position = Vector2( -75.038, -0.23597 )
 [node name="Sprite2" type="Sprite" parent="."]
 visible = false
 position = Vector2( 85.4206, 0 )
-
 [connection signal="timeout" from="Timer" to="." method="_on_Timer_timeout"]

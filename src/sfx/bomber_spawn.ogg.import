@@ -1,0 +1,15 @@
+[remap]
+
+importer="ogg_vorbis"
+type="AudioStreamOGGVorbis"
+path="res://.import/bomber_spawn.ogg-286834b2e376e75f24f2c2252255988c.oggstr"
+
+[deps]
+
+source_file="res://sfx/bomber_spawn.ogg"
+dest_files=[ "res://.import/bomber_spawn.ogg-286834b2e376e75f24f2c2252255988c.oggstr" ]
+
+[params]
+
+loop=false
+loop_offset=0

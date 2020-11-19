@@ -24,8 +24,8 @@ func init_sub(node):
 	attack_range_max = 10 * Game.TILE_SIZE
 	attack_cooldown = 6000
 	
-	node.get_node("Visual/AnimatedSprite").modulate = Color.orange
-
+	death_sound = "mage_die"
+	
 func attack(entity, melee):
 	var vel = enemy_node.position.direction_to(entity.position) * FIREBALL_SPEED
 	rpc("launch_fireball", enemy_node.position, vel)

@@ -74,6 +74,8 @@ remotesync func spawn_enemy(data):
 
 func _process(delta): # TEST ME
 	
+	# TODO: auto-kill enemies when it gets laggy
+	
 #	if frames_since_physics == 0:
 #		print("WARNING: no process frames since last physics!")
 #		return
@@ -127,6 +129,7 @@ func _process(delta): # TEST ME
 	#var path_to_shrine = owner.get_nav_path(owner.firewall.position, owner.current_shrine.position, false, true)
 	#print(path_to_shrine[1])
 	#print(wall_down_percents)
+	# TODO: use wall status to remove some wall targets
 	
 	# do ai ticks
 	if enemy_count > 0:
@@ -193,8 +196,7 @@ func _on_SpawnTimer_timeout():
 			if spawn_point == null or x % 4 == 0:
 				spawn_point = N.rand_array(spawn_points)
 			var loc = spawn_point.global_position + Vector2(N.rand_float(0, 16), N.rand_float(0, 16))
-			var need_bigger_enemies = true #float(count) / max_enemies > 0.7 and power < max_enemy_power - 10
-			sped_up = 10
+			var need_bigger_enemies = float(count) / max_enemies > 0.7 and power < max_enemy_power - 10
 			var options = {}
 			options[Game.EnemyClass.GRUNT] = 100 if not need_bigger_enemies else 50
 			options[Game.EnemyClass.MAGE] = 15
@@ -202,8 +204,8 @@ func _on_SpawnTimer_timeout():
 				options[Game.EnemyClass.ELITE] = 10 if not need_bigger_enemies else 50
 				options[Game.EnemyClass.PHOENIX] = 4 if not need_bigger_enemies else 10
 				options[Game.EnemyClass.SIEGE] = 4 if not need_bigger_enemies else 15
-			if sped_up > 3:
-				options[Game.EnemyClass.BOMBER] = 1
+			if sped_up > 5:
+				options[Game.EnemyClass.BOMBER] = 4
 				options[Game.EnemyClass.SIEGE] = 8 if not need_bigger_enemies else 25
 			var type_id = N.rand_weighted(options)
 			spawn({"id": next_enemy_id, "type_id": type_id, "position": loc})

@@ -94,16 +94,13 @@ func got_kill(enemy, killing_blow):
 func _physics_process(delta):
 	if state == PlayerState.NORMAL:
 		var before = position
-		var speed = current_speed
+		var speed_mult = 1.0
 		if Game.level.is_effect_active(Game.Effects.FATIGUE):
-			speed *= 0.75
-			sprite.speed_scale = 0.75
-		elif Game.level.is_effect_active(Game.Effects.SHRINEDEATH):
-			speed *= 1.5
-			sprite.speed_scale = 1.5
-		else:
-			sprite.speed_scale = 1.0
-		var v = move_and_slide(move_dir * speed)
+			speed_mult *= 0.75
+		if Game.level.is_effect_active(Game.Effects.SHRINEDEATH):
+			speed_mult *= 1.5
+		sprite.speed_scale = speed_mult
+		var v = move_and_slide(move_dir * current_speed * speed_mult)
 		visual.move(position - before)
 		#if camera != null:
 		#	camera.global_position = Vector2(round(global_position.x), round(global_position.y))
@@ -169,11 +166,17 @@ remotesync func damage(new_health, energy_damage = 0):
 			sprite.play("idle_down")
 			yield(get_tree().create_timer(5), "timeout")
 			if Game.player == self:
+				Game.player = null
 				Game.level.start_respawn()
 			delete()
 		
-remotesync func heal(new_health, show):
-	if show and new_health > health and is_network_master():
+func apply_healing(amt):
+	if health < player_class.MAX_HEALTH:
+		var new_health = clamp(health + amt, 0, player_class.MAX_HEALTH)
+		rpc("heal", new_health)
+		
+remotesync func heal(new_health):
+	if new_health > health and is_network_master():
 		var amt = new_health - health
 		N.fct(self, amt, Color.green)
 	health = new_health

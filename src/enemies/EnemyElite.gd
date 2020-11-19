@@ -16,3 +16,4 @@ func init_sub(node):
 	attack_range_min = 0
 	attack_range_max = 14
 
+	death_sound = "grunt_die"

@@ -23,7 +23,7 @@ func init_sub(node):
 	attack_range_max = 15 * Game.TILE_SIZE
 	attack_cooldown = 5000
 	
-	node.get_node("Visual/AnimatedSprite").modulate = Color.orange
+	Audio.play("siege_spawn", Audio.MAP)
 
 func attack(entity, melee):
 	var vel = global_position.direction_to(entity.position) * PROJECTILE_SPEED

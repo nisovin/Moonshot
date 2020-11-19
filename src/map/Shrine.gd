@@ -6,16 +6,19 @@ signal destroyed
 export (int) var max_health = 500
 var health
 var heal_max
+var health_stones = 0
 var targeted_by_count = 0
 var time_since_corruption = 0
 var active = false
 var dead = false
 
 onready var corruption_area = $CorruptionArea
+onready var heal_area = $HealArea
 
 func _ready():
 	health = max_health
 	heal_max = max_health
+	health_stones = $HealthDisplay.get_child_count()
 	
 	var noise = OpenSimplexNoise.new()
 	
@@ -50,13 +53,26 @@ func set_time(time):
 
 func apply_damage(dam):
 	if not active or dead: return
+	print(dam, " ", health)
 	health -= dam
 	heal_max -= dam / 2.0
+	var stones = ceil(float(health) / max_health * $HealthDisplay.get_child_count())
+	print(stones, " ", health_stones)
+	if stones != health_stones:
+		rpc("update_health_display", stones)
 	if health <= 0:
 		dead = true
 		rpc("die")
 		emit_signal("became_untargetable", self)
 		emit_signal("destroyed")
+
+remotesync func update_health_display(stones):
+	print("stones", stones)
+	health_stones = stones
+	for i in $HealthDisplay.get_child_count():
+		var s = $HealthDisplay.get_child(i)
+		s.modulate = Color.aqua if i < health_stones else Color.black
+		print(s.color)
 
 remotesync func die():
 	print("Shrine died")
@@ -91,3 +107,6 @@ func _on_Timer_timeout():
 		else:
 			for enemy in enemies:
 				enemy.hit({"damage": 100})
+		if enemies.size() == 0:
+			for p in heal_area.get_overlapping_bodies():
+				p.apply_healing(2)

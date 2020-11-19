@@ -56,6 +56,7 @@ func load_resources(is_server):
 			"music_main": load("res://music/track_main.ogg"),
 			"music_danger": load("res://music/track_choir.ogg"),
 			"music_epic": load("res://music/track_strings.ogg"),
+			"teleport": load("res://sfx/teleport.wav"),
 			"warrior_attack1_swing": [
 				load("res://sfx/warrior_attack1_1.wav"),
 				load("res://sfx/warrior_attack1_2.wav"),
@@ -76,9 +77,12 @@ func load_resources(is_server):
 			"hit": [
 				load("res://sfx/player_hit.wav")
 			],
+			"grunt_die": load("res://sfx/grunt_die.ogg"),
 			"mage_fireball": load("res://sfx/mage_fireball.wav"),
+			"mage_die": load("res://sfx/mage_die.ogg"),
 			"siege_throw": load("res://sfx/siege_throw.wav"),
 			"siege_impact": load("res://sfx/siege_impact.wav"),
+			"bomber_spawn": load("res://sfx/bomber_spawn.ogg"),
 			"bomber_ignite": load("res://sfx/bomber_ignite.wav"),
 			"bomber_explode": load("res://sfx/explode.wav"),
 			"wall_break": load("res://sfx/wall_break.wav"),

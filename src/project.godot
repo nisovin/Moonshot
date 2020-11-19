@@ -176,7 +176,7 @@ limits/tcp/connect_timeout_seconds=10
 [rendering]
 
 quality/2d/use_pixel_snap=true
-quality/2d/use_transform_snap=true
 environment/default_clear_color=Color( 0, 0, 0, 1 )
 environment/default_environment="res://default_env.tres"
+quality/2d/use_transform_snap=true
 quality/2d/use_nvidia_rect_flicker_workaround.flickerfix=true

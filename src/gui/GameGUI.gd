@@ -50,10 +50,10 @@ onready var control_tooltips = [
 		"description": "The enemy has cursed you with fatigue. Your movement speed and energy regeneration are reduced."
 	},
 	{
-		"control": $Statuses/Swiftness,
+		"control": $Statuses/Confusion,
 		"corner": "TL",
-		"name": "Hurry Up!",
-		"description": "The enemy has been energized, greatly increasing their movement speed."
+		"name": "Curse of Confusion",
+		"description": "The enemy has cursed you with confusion. Your movement directions are mixed up."
 	},
 	{
 		"control": $Statuses/FocusKeep,
@@ -84,6 +84,7 @@ onready var overlay = $Overlay
 onready var player_list = $Overlay/Container/PlayerListContainer/PlayerList
 onready var map_container = $Overlay/Container/MapContainer
 onready var map = $Overlay/Container/MapContainer/Map
+onready var healthbar_anim = $PlayerBars/Health/AnimationPlayer
 
 var chatting = false
 var showing_tooltip = null
@@ -217,9 +218,26 @@ func update_ui():
 	$Statuses/Rage.visible = Game.level.is_effect_active(Game.Effects.RAGE)
 	$Statuses/Fatigue.visible = Game.level.is_effect_active(Game.Effects.FATIGUE)
 	$Statuses/FocusKeep.visible = Game.level.is_effect_active(Game.Effects.FOCUS_KEEP)
-
-	$PlayerBars/Health.value = float(Game.player.health) / cls.MAX_HEALTH * 100
+	
+	var pct = float(Game.player.health) / cls.MAX_HEALTH * 100
+	$PlayerBars/Health.value = pct
 	$PlayerBars/Health/Label.text = str(ceil(Game.player.health))
+	if pct < 50:
+		if not healthbar_anim.is_playing():
+			healthbar_anim.play("health_warning")
+		var s = 0.5
+		if pct < 10:
+			s = 3
+		elif pct < 20:
+			s = 2
+		if pct < 35:
+			s = 1
+		if s != healthbar_anim.playback_speed:
+			healthbar_anim.playback_speed = s
+	else:
+		if healthbar_anim.is_playing():
+			healthbar_anim.stop()
+	
 	$PlayerBars/Energy.value = cls.energy
 	$PlayerBars/Energy/Label.text = str(floor(cls.energy))
 	$Exhaustion.value = Game.player.exhaustion

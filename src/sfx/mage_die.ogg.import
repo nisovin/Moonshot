@@ -1,0 +1,15 @@
+[remap]
+
+importer="ogg_vorbis"
+type="AudioStreamOGGVorbis"
+path="res://.import/mage_die.ogg-b856f233c2e3cd623bf19ec910b154d4.oggstr"
+
+[deps]
+
+source_file="res://sfx/mage_die.ogg"
+dest_files=[ "res://.import/mage_die.ogg-b856f233c2e3cd623bf19ec910b154d4.oggstr" ]
+
+[params]
+
+loop=false
+loop_offset=0

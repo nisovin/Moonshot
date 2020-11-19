@@ -30,6 +30,7 @@ func _ready():
 		a.connect("finished", self, "_on_sound_finished", [a])
 
 func start_music():
+	if Game.is_server(): return
 	$MusicMain.stream = R.Sounds.music_main
 	$MusicDanger.stream = R.Sounds.music_danger
 	$MusicEpic.stream = R.Sounds.music_epic
@@ -82,7 +83,6 @@ func play_at_position(position, sound_name, bus = SFX, min_volume = 0.0, volume 
 		vol = min_volume
 	else:
 		vol = clamp((dist - POSITIONAL_DROP_START) / (POSITIONAL_DROP_END - POSITIONAL_DROP_START), min_volume, 1.0)
-	print(vol)
 	if vol > 0:
 		play(sound_name, bus, vol * volume, 0)
 	
@@ -112,3 +112,8 @@ func footsteps(type = null):
 
 func _on_sound_finished(s):
 	channels_avail.append(s)
+
+func _on_MusicMain_finished():
+	$MusicMain.play(0)
+	$MusicDanger.play(0)
+	$MusicEpic.play(0)
