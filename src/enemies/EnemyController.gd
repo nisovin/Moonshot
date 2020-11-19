@@ -229,8 +229,8 @@ func calculate_path_to_target():
 					next_point = target_position
 				else:
 					next_point = path_to_target[0]
-		owner.get_node("Line2D").points = path_to_target
-		owner.get_node("Line2D").set_as_toplevel(true)
+		#owner.get_node("Line2D").points = path_to_target
+		#owner.get_node("Line2D").set_as_toplevel(true)
 	target_direction = owner.position.direction_to(next_point)
 
 func calculate_desired_velocity():

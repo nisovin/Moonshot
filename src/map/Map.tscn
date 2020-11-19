@@ -232,131 +232,157 @@ health = 400
 position = Vector2( 608, 512 )
 max_health = 250
 health = 250
+section = "shrine"
 
 [node name="ShrineWall2" parent="Objects/Walls" instance=ExtResource( 5 )]
 position = Vector2( 448, 752 )
 max_health = 250
 health = 250
+section = "shrine"
 
 [node name="ShrineWall3" parent="Objects/Walls" instance=ExtResource( 5 )]
 position = Vector2( 368, 720 )
 max_health = 250
 health = 250
+section = "shrine"
 
 [node name="ShrineWall4" parent="Objects/Walls" instance=ExtResource( 5 )]
 position = Vector2( 368, 560 )
 max_health = 250
 health = 250
+section = "shrine"
 
 [node name="ShrineWall5" parent="Objects/Walls" instance=ExtResource( 5 )]
 position = Vector2( 688, 560 )
 max_health = 250
 health = 250
+section = "shrine"
 
 [node name="ShrineWall6" parent="Objects/Walls" instance=ExtResource( 5 )]
 position = Vector2( 448, 512 )
 max_health = 250
 health = 250
+section = "shrine"
 
 [node name="ShrineWall7" parent="Objects/Walls" instance=ExtResource( 5 )]
 position = Vector2( 528, 512 )
 max_health = 250
 health = 250
+section = "shrine"
 
 [node name="ShrineWall8" parent="Objects/Walls" instance=ExtResource( 5 )]
 position = Vector2( 688, 720 )
 max_health = 250
 health = 250
+section = "shrine"
 
 [node name="ShrineWall9" parent="Objects/Walls" instance=ExtResource( 5 )]
 position = Vector2( 608, 752 )
 max_health = 250
 health = 250
+section = "shrine"
 
 [node name="ShrineWall10" parent="Objects/Walls" instance=ExtResource( 5 )]
 position = Vector2( 528, 752 )
 max_health = 250
 health = 250
+section = "shrine"
 
 [node name="KeepWall1" parent="Objects/Walls" instance=ExtResource( 5 )]
 position = Vector2( 528, 1072 )
 max_health = 250
 health = 250
+section = "keep"
 
 [node name="KeepWall2" parent="Objects/Walls" instance=ExtResource( 5 )]
 position = Vector2( 768, 1120 )
 max_health = 250
 health = 250
+section = "keep"
 
 [node name="KeepWall7" parent="Objects/Walls" instance=ExtResource( 5 )]
 position = Vector2( 288, 1120 )
 max_health = 250
 health = 250
+section = "keep"
 
 [node name="KeepWall8" parent="Objects/Walls" instance=ExtResource( 5 )]
 position = Vector2( 208, 1184 )
 max_health = 250
 health = 250
+section = "keep"
 
 [node name="KeepWall9" parent="Objects/Walls" instance=ExtResource( 5 )]
 position = Vector2( 848, 1184 )
 max_health = 250
 health = 250
+section = "keep"
 
 [node name="KeepWall3" parent="Objects/Walls" instance=ExtResource( 5 )]
 position = Vector2( 368, 1120 )
 max_health = 250
 health = 250
+section = "keep"
 
 [node name="KeepWall4" parent="Objects/Walls" instance=ExtResource( 5 )]
 position = Vector2( 688, 1120 )
 max_health = 250
 health = 250
+section = "keep"
 
 [node name="KeepWall5" parent="Objects/Walls" instance=ExtResource( 5 )]
 position = Vector2( 448, 1072 )
 max_health = 250
 health = 250
+section = "keep"
 
 [node name="KeepWall6" parent="Objects/Walls" instance=ExtResource( 5 )]
 position = Vector2( 608, 1072 )
 max_health = 250
 health = 250
+section = "keep"
 
 [node name="FinalWall1" parent="Objects/Walls" instance=ExtResource( 5 )]
 position = Vector2( 528, 1328 )
 max_health = 250
 health = 250
+section = "final"
 
 [node name="FinalWall2" parent="Objects/Walls" instance=ExtResource( 5 )]
 position = Vector2( 608, 1328 )
 max_health = 250
 health = 250
+section = "final"
 
 [node name="FinalWall3" parent="Objects/Walls" instance=ExtResource( 5 )]
 position = Vector2( 448, 1328 )
 max_health = 250
 health = 250
+section = "final"
 
 [node name="FinalWall4" parent="Objects/Walls" instance=ExtResource( 5 )]
 position = Vector2( 368, 1376 )
 max_health = 250
 health = 250
+section = "final"
 
 [node name="FinalWall5" parent="Objects/Walls" instance=ExtResource( 5 )]
 position = Vector2( 688, 1376 )
 max_health = 250
 health = 250
+section = "final"
 
 [node name="FinalWall6" parent="Objects/Walls" instance=ExtResource( 5 )]
 position = Vector2( 768, 1408 )
 max_health = 250
 health = 250
+section = "final"
 
 [node name="FinalWall7" parent="Objects/Walls" instance=ExtResource( 5 )]
 position = Vector2( 288, 1408 )
 max_health = 250
 health = 250
+section = "final"
 
 [node name="Decorations" type="YSort" parent="Objects"]
 __meta__ = {

@@ -247,6 +247,9 @@ func resume_movement():
 	state = PlayerState.NORMAL
 	sprite.play("idle_" + facing)
 
+func toggle_confusion(on):
+	$Camera2D.zoom = Vector2(-1, -1) if on else Vector2(1, 1)
+
 func set_facing(v, set_anim = false):
 	facing_dir = v
 	if abs(v.x) >= abs(v.y):

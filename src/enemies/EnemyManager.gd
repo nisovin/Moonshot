@@ -120,10 +120,16 @@ func _process(delta): # TEST ME
 		for w in wall_list:
 			w.targeted_by_count = 0
 			if w.status == 0:
-				wall_down_percents[w.section][0] += 1
+				wall_down_percents[w.section][0] += 1.0 / wall_down_percents[w.section][1]
 		for e in owner.enemies_node.get_children():
 			if e.controller.target != null && "targeted_by_count" in e.controller.target:
 				e.controller.target.targeted_by_count += 1
+	
+	var target_wall_list = []
+	for w in wall_list:
+		if wall_down_percents[w.section][0] < 0.6:
+			target_wall_list.append(w)
+		
 	
 	# check cost to shrine
 	#var path_to_shrine = owner.get_nav_path(owner.firewall.position, owner.current_shrine.position, false, true)
@@ -142,7 +148,7 @@ func _process(delta): # TEST ME
 				next_ai = 0
 				ai_tick_count = 0
 				if not check_start_loop(): return
-			owner.enemies_node.get_child(next_ai).controller.ai_tick(player_list, wall_list)
+			owner.enemies_node.get_child(next_ai).controller.ai_tick(player_list, target_wall_list)
 			next_ai += 1
 			done += 1
 		if next_ai == enemy_count:

@@ -53,7 +53,7 @@ onready var control_tooltips = [
 		"control": $Statuses/Confusion,
 		"corner": "TL",
 		"name": "Curse of Confusion",
-		"description": "The enemy has cursed you with confusion. Your movement directions are mixed up."
+		"description": "The enemy has cursed you with confusion. The world has turned upside-down."
 	},
 	{
 		"control": $Statuses/FocusKeep,
@@ -217,6 +217,7 @@ func update_ui():
 	$Statuses/ShrineDeath.visible = Game.level.is_effect_active(Game.Effects.SHRINEDEATH)
 	$Statuses/Rage.visible = Game.level.is_effect_active(Game.Effects.RAGE)
 	$Statuses/Fatigue.visible = Game.level.is_effect_active(Game.Effects.FATIGUE)
+	$Statuses/Confusion.visible = Game.level.is_effect_active(Game.Effects.CONFUSION)
 	$Statuses/FocusKeep.visible = Game.level.is_effect_active(Game.Effects.FOCUS_KEEP)
 	
 	var pct = float(Game.player.health) / cls.MAX_HEALTH * 100

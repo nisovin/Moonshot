@@ -284,9 +284,14 @@ remotesync func start_effect(effect):
 		active_effects.append(effect)
 		if effect == Game.Effects.FATIGUE:
 			Audio.play("effect_fatigue", Audio.MAP)
+		if effect == Game.Effects.CONFUSION and Game.player != null:
+			Game.player.toggle_confusion(true)
+			print("hi")
 		
 remotesync func end_effect(effect):
 	active_effects.erase(effect)
+	if effect == Game.Effects.CONFUSION and Game.player != null:
+		Game.player.toggle_confusion(false)
 
 func is_effect_active(effect):
 	return effect in active_effects
