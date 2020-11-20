@@ -3,12 +3,12 @@ extends Node2D
 enum GameState { PREGAME, STAGE1, BETWEEN, STAGE2, GAMEOVER }
 
 const EVENTS = {
-	"rage": 1,
-	"fatigue": 1,
-	"focuskeep": 1,
+	"rage": 2,
+	"fatigue": 2,
+	"focuskeep": 2,
 	"bombers": 1,
-	"siege": 1,
-	"elites": 1
+	"siege": 2,
+	"elites": 2
 }
 
 var chat_history = []
@@ -66,7 +66,7 @@ remotesync func start_game():
 	shrine1.active = true
 	if Game.is_host():
 		enemy_manager.start_server()
-	add_system_message("The enemy forces have arrived!")
+	add_system_message("The enemy forces have arrived from the north!")
 	Audio.start_music()
 
 func get_game_status():
@@ -160,7 +160,7 @@ func game_tick():
 			var players = players_node.get_child_count()
 			if players >= Game.PLAYERS_TO_START:
 				countdown = 15
-				rpc("add_system_message", "The enemy forces will arrive in 15 seconds!")
+				rpc("add_system_message", "The enemy forces will arrive from the north in 15 seconds!")
 	elif state == GameState.STAGE1 or state == GameState.STAGE2:
 		if next_event > 0:
 			next_event -= 1
@@ -286,7 +286,6 @@ remotesync func start_effect(effect):
 			Audio.play("effect_fatigue", Audio.MAP)
 		if effect == Game.Effects.CONFUSION and Game.player != null:
 			Game.player.toggle_confusion(true)
-			print("hi")
 		
 remotesync func end_effect(effect):
 	active_effects.erase(effect)

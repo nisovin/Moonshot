@@ -5,7 +5,7 @@ enum WarriorState { NORMAL, SWINGING_SWORD, AIMING_RUSH, RUSHING }
 const SERIALIZE_FIELDS = [ "state", "ultimate_duration" ]
 
 const MAX_HEALTH = 150
-const HEALTH_REGEN = 1
+const HEALTH_REGEN = 2
 const ENERGY_REGEN = 10
 const ENERGY_EXHAUSTION_MULT = 0.7
 const NORMAL_ARMOR = 0.25

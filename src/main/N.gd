@@ -75,3 +75,10 @@ func get_overlapping_hitboxes(area: Area2D, group = ""):
 			bodies.append(r.collider.owner)
 	return bodies
 	
+func rpc_local(obj: Object, func_name: String, params: Array = []):
+	if get_tree().has_network_peer():
+		params.push_front(func_name)
+		obj.callv("rpc", params)
+	else:
+		obj.callv(func_name, params)
+

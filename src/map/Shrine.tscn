@@ -1,10 +1,11 @@
-[gd_scene load_steps=15 format=2]
+[gd_scene load_steps=16 format=2]
 
 [ext_resource path="res://map/shrine.png" type="Texture" id=1]
 [ext_resource path="res://map/shrine_moon.png" type="Texture" id=2]
 [ext_resource path="res://map/Shrine.gd" type="Script" id=3]
 [ext_resource path="res://map/shrine_ground.png" type="Texture" id=4]
 [ext_resource path="res://misc/Circle.gd" type="Script" id=5]
+[ext_resource path="res://map/shrine_sun.png" type="Texture" id=6]
 
 [sub_resource type="Shader" id=1]
 code = "shader_type canvas_item;
@@ -89,7 +90,6 @@ script = ExtResource( 3 )
 texture = ExtResource( 4 )
 
 [node name="Pool" type="Sprite" parent="."]
-modulate = Color( 1.5, 1.5, 1.25, 1 )
 material = SubResource( 2 )
 texture = ExtResource( 1 )
 
@@ -97,6 +97,12 @@ texture = ExtResource( 1 )
 modulate = Color( 1, 1, 1, 0 )
 z_index = -1
 texture = ExtResource( 2 )
+
+[node name="Sun" type="Sprite" parent="."]
+visible = false
+modulate = Color( 2, 2, 2, 1 )
+z_index = -1
+texture = ExtResource( 6 )
 
 [node name="HealthDisplay" type="Node2D" parent="."]
 

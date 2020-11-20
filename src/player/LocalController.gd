@@ -125,7 +125,9 @@ func _unhandled_input(event):
 		owner.player_class.movement_release()
 		
 func _apply_movement():
-	if get_tree().has_network_peer() and not owner.dead:
-		owner.rpc("set_movement", move_h, move_v, owner.position)
-	else:
-		owner.set_movement(move_h, move_v, owner.position)
+	if not owner.dead:
+		N.rpc_local(owner, "set_movement", [move_h, move_v, owner.position])
+#	if get_tree().has_network_peer() and not owner.dead:
+#		owner.rpc("set_movement", move_h, move_v, owner.position)
+#	else:
+#		owner.set_movement(move_h, move_v, owner.position)

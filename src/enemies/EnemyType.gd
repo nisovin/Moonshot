@@ -84,6 +84,7 @@ func calculate_target_priority(target, distance_sq):
 		return 0
 
 func attack(entity, melee):
+	#print("attack ", name, self, entity, melee)
 	return entity.apply_damage(modify_damage(attack_melee, entity) if melee else modify_damage(attack_damage, entity))
 
 func modify_damage(dam, target):

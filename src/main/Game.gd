@@ -30,6 +30,9 @@ onready var centered_message = $CanvasLayer/CenteredMessage/Label
 onready var multiplayer_controller = $MultiplayerController
 
 func _ready():
+	var is_casting = false
+	is_casting = "hello"
+	
 	centered_message.visible = false
 	player_name_regex.compile("[^A-Za-z0-9_ ]")
 	chat_regex.compile("[^A-Za-z0-9_\\-()!.?@#$%&*+=:;'\" ]")
@@ -141,11 +144,21 @@ func start_solo():
 	level = R.Level.instance()
 	add_child(level)
 	
-	multiplayer_controller.queue_free()
+	var menu = R.JoinGameMenu.instance()
+	add_child(menu)
+	menu.connect("option_selected", self, "_on_solo_join")
+	
+	#level.add_new_player({"class_id": Game.PlayerClass.WARRIOR, "id": get_tree().get_network_unique_id(), "player_name": "Player"})
 
-	level.add_new_player({"class_id": Game.PlayerClass.WARRIOR, "id": get_tree().get_network_unique_id(), "player_name": "Player"})
+	#level.start_server()
 
-	level.start_server()
+func _on_solo_join(option, player_name):
+	if option == -1:
+		leave_game()
+	else:
+		level.add_new_player({"class_id": option, "id": "1", "player_name": player_name})
+		level.start_server()
+	
 
 func show_centered_message(text):
 	centered_message.text = text

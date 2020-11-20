@@ -112,7 +112,7 @@ func _physics_process(delta):
 func apply_damage(dam, direct = false, energy_damage = 0):
 	if not direct:
 		dam *= 1 - player_class.get_armor()
-		if last_hit > OS.get_ticks_msec() - 400:
+		if last_hit > OS.get_ticks_msec() - 250:
 			if dam < last_hit_amount:
 				return false
 			else:

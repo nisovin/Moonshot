@@ -1,8 +1,20 @@
-[gd_scene load_steps=7 format=2]
+[gd_scene load_steps=12 format=2]
 
 [ext_resource path="res://gui/JoinGameMenu.gd" type="Script" id=1]
 [ext_resource path="res://misc/border_filled.png" type="Texture" id=2]
 [ext_resource path="res://gui/alphbeta.ttf" type="DynamicFontData" id=3]
+[ext_resource path="res://gui/alagard.ttf" type="DynamicFontData" id=4]
+[ext_resource path="res://gui/Minimal5x7.ttf" type="DynamicFontData" id=5]
+
+[sub_resource type="StyleBoxFlat" id=6]
+content_margin_left = 5.0
+content_margin_right = 5.0
+content_margin_top = 5.0
+content_margin_bottom = 5.0
+bg_color = Color( 0, 0, 0, 0.764706 )
+
+[sub_resource type="DynamicFont" id=4]
+font_data = ExtResource( 4 )
 
 [sub_resource type="StyleBoxEmpty" id=1]
 
@@ -15,6 +27,9 @@ content_margin_bottom = 8.0
 [sub_resource type="DynamicFont" id=3]
 font_data = ExtResource( 3 )
 
+[sub_resource type="DynamicFont" id=5]
+font_data = ExtResource( 5 )
+
 [node name="JoinGameMenu" type="CanvasLayer"]
 script = ExtResource( 1 )
 
@@ -25,14 +40,40 @@ __meta__ = {
 "_edit_use_anchors_": false
 }
 
-[node name="VBoxContainer" type="VBoxContainer" parent="CenterContainer"]
-margin_left = 245.0
-margin_top = 107.0
-margin_right = 395.0
-margin_bottom = 252.0
+[node name="PanelContainer" type="PanelContainer" parent="CenterContainer"]
+margin_left = 101.0
+margin_top = 59.0
+margin_right = 475.0
+margin_bottom = 264.0
+custom_styles/panel = SubResource( 6 )
 
-[node name="NameField" type="LineEdit" parent="CenterContainer/VBoxContainer"]
-margin_right = 150.0
+[node name="VBoxContainer" type="VBoxContainer" parent="CenterContainer/PanelContainer"]
+margin_left = 5.0
+margin_top = 5.0
+margin_right = 369.0
+margin_bottom = 200.0
+
+[node name="Label" type="Label" parent="CenterContainer/PanelContainer/VBoxContainer"]
+margin_right = 364.0
+margin_bottom = 15.0
+custom_fonts/font = SubResource( 4 )
+text = "Choose your name and class"
+align = 1
+
+[node name="Control2" type="Control" parent="CenterContainer/PanelContainer/VBoxContainer"]
+margin_top = 19.0
+margin_right = 364.0
+margin_bottom = 29.0
+rect_min_size = Vector2( 0, 10 )
+
+[node name="CenterContainer" type="CenterContainer" parent="CenterContainer/PanelContainer/VBoxContainer"]
+margin_top = 33.0
+margin_right = 364.0
+margin_bottom = 64.0
+
+[node name="NameField" type="LineEdit" parent="CenterContainer/PanelContainer/VBoxContainer/CenterContainer"]
+margin_left = 107.0
+margin_right = 257.0
 margin_bottom = 31.0
 rect_min_size = Vector2( 150, 0 )
 custom_styles/focus = SubResource( 1 )
@@ -44,7 +85,7 @@ placeholder_alpha = 0.5
 caret_blink = true
 caret_blink_speed = 0.5
 
-[node name="NinePatchRect" type="NinePatchRect" parent="CenterContainer/VBoxContainer/NameField"]
+[node name="NinePatchRect" type="NinePatchRect" parent="CenterContainer/PanelContainer/VBoxContainer/CenterContainer/NameField"]
 show_behind_parent = true
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -57,15 +98,44 @@ __meta__ = {
 "_edit_use_anchors_": false
 }
 
-[node name="Warrior" type="Button" parent="CenterContainer/VBoxContainer"]
-margin_top = 35.0
-margin_right = 150.0
-margin_bottom = 56.0
+[node name="Control4" type="Control" parent="CenterContainer/PanelContainer/VBoxContainer"]
+margin_top = 68.0
+margin_right = 364.0
+margin_bottom = 78.0
+rect_min_size = Vector2( 0, 10 )
+
+[node name="HBoxContainer" type="HBoxContainer" parent="CenterContainer/PanelContainer/VBoxContainer"]
+margin_top = 82.0
+margin_right = 364.0
+margin_bottom = 156.0
+
+[node name="VBoxContainer" type="VBoxContainer" parent="CenterContainer/PanelContainer/VBoxContainer/HBoxContainer"]
+margin_right = 180.0
+margin_bottom = 74.0
+
+[node name="Label" type="Label" parent="CenterContainer/PanelContainer/VBoxContainer/HBoxContainer/VBoxContainer"]
+margin_right = 180.0
+margin_bottom = 49.0
+rect_min_size = Vector2( 180, 0 )
+custom_fonts/font = SubResource( 5 )
+text = "Warriors are the front-line for the elven army. They wield a moonblade, and can use lunar energy to charge into battle and stun their foes."
+autowrap = true
+
+[node name="CenterContainer" type="CenterContainer" parent="CenterContainer/PanelContainer/VBoxContainer/HBoxContainer/VBoxContainer"]
+margin_top = 53.0
+margin_right = 180.0
+margin_bottom = 74.0
+
+[node name="Warrior" type="Button" parent="CenterContainer/PanelContainer/VBoxContainer/HBoxContainer/VBoxContainer/CenterContainer"]
+margin_left = 27.0
+margin_right = 152.0
+margin_bottom = 21.0
+rect_min_size = Vector2( 125, 0 )
 custom_fonts/font = SubResource( 3 )
-text = "Join as Warrior"
+text = "Be a Warrior"
 flat = true
 
-[node name="NinePatchRect2" type="NinePatchRect" parent="CenterContainer/VBoxContainer/Warrior"]
+[node name="NinePatchRect2" type="NinePatchRect" parent="CenterContainer/PanelContainer/VBoxContainer/HBoxContainer/VBoxContainer/CenterContainer/Warrior"]
 show_behind_parent = true
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -78,15 +148,34 @@ __meta__ = {
 "_edit_use_anchors_": false
 }
 
-[node name="Archer" type="Button" parent="CenterContainer/VBoxContainer"]
-margin_top = 60.0
-margin_right = 150.0
-margin_bottom = 81.0
+[node name="VBoxContainer2" type="VBoxContainer" parent="CenterContainer/PanelContainer/VBoxContainer/HBoxContainer"]
+margin_left = 184.0
+margin_right = 364.0
+margin_bottom = 74.0
+
+[node name="Label2" type="Label" parent="CenterContainer/PanelContainer/VBoxContainer/HBoxContainer/VBoxContainer2"]
+margin_right = 180.0
+margin_bottom = 49.0
+rect_min_size = Vector2( 180, 0 )
+custom_fonts/font = SubResource( 5 )
+text = "Archers deal incredible damage from afar. They wield a lunar longbow, and can use lunar energy to call down volleys of moon arrows."
+autowrap = true
+
+[node name="CenterContainer" type="CenterContainer" parent="CenterContainer/PanelContainer/VBoxContainer/HBoxContainer/VBoxContainer2"]
+margin_top = 53.0
+margin_right = 180.0
+margin_bottom = 74.0
+
+[node name="Archer" type="Button" parent="CenterContainer/PanelContainer/VBoxContainer/HBoxContainer/VBoxContainer2/CenterContainer"]
+margin_left = 27.0
+margin_right = 152.0
+margin_bottom = 21.0
+rect_min_size = Vector2( 125, 0 )
 custom_fonts/font = SubResource( 3 )
-text = "Join as Archer"
+text = "Be an Archer"
 flat = true
 
-[node name="NinePatchRect3" type="NinePatchRect" parent="CenterContainer/VBoxContainer/Archer"]
+[node name="NinePatchRect3" type="NinePatchRect" parent="CenterContainer/PanelContainer/VBoxContainer/HBoxContainer/VBoxContainer2/CenterContainer/Archer"]
 show_behind_parent = true
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -99,16 +188,21 @@ __meta__ = {
 "_edit_use_anchors_": false
 }
 
-[node name="Priest" type="Button" parent="CenterContainer/VBoxContainer"]
-margin_top = 85.0
-margin_right = 150.0
-margin_bottom = 106.0
+[node name="VBoxContainer3" type="VBoxContainer" parent="CenterContainer/PanelContainer/VBoxContainer/HBoxContainer"]
+visible = false
+margin_left = 225.0
+margin_right = 339.0
+margin_bottom = 21.0
+
+[node name="Priest" type="Button" parent="CenterContainer/PanelContainer/VBoxContainer/HBoxContainer/VBoxContainer3"]
+margin_right = 114.0
+margin_bottom = 21.0
 custom_fonts/font = SubResource( 3 )
 disabled = true
 text = "Join as Priest"
 flat = true
 
-[node name="NinePatchRect4" type="NinePatchRect" parent="CenterContainer/VBoxContainer/Priest"]
+[node name="NinePatchRect4" type="NinePatchRect" parent="CenterContainer/PanelContainer/VBoxContainer/HBoxContainer/VBoxContainer3/Priest"]
 show_behind_parent = true
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -121,21 +215,27 @@ __meta__ = {
 "_edit_use_anchors_": false
 }
 
-[node name="Control" type="Control" parent="CenterContainer/VBoxContainer"]
-margin_top = 110.0
-margin_right = 150.0
-margin_bottom = 120.0
+[node name="Control" type="Control" parent="CenterContainer/PanelContainer/VBoxContainer"]
+margin_top = 160.0
+margin_right = 364.0
+margin_bottom = 170.0
 rect_min_size = Vector2( 0, 10 )
 
-[node name="Disconnect" type="Button" parent="CenterContainer/VBoxContainer"]
-margin_top = 124.0
-margin_right = 150.0
-margin_bottom = 145.0
+[node name="CenterContainer2" type="CenterContainer" parent="CenterContainer/PanelContainer/VBoxContainer"]
+margin_top = 174.0
+margin_right = 364.0
+margin_bottom = 195.0
+
+[node name="Disconnect" type="Button" parent="CenterContainer/PanelContainer/VBoxContainer/CenterContainer2"]
+margin_left = 122.0
+margin_right = 242.0
+margin_bottom = 21.0
+rect_min_size = Vector2( 120, 0 )
 custom_fonts/font = SubResource( 3 )
 text = "Disconnect"
 flat = true
 
-[node name="NinePatchRect5" type="NinePatchRect" parent="CenterContainer/VBoxContainer/Disconnect"]
+[node name="NinePatchRect5" type="NinePatchRect" parent="CenterContainer/PanelContainer/VBoxContainer/CenterContainer2/Disconnect"]
 show_behind_parent = true
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -147,8 +247,8 @@ patch_margin_bottom = 6
 __meta__ = {
 "_edit_use_anchors_": false
 }
-[connection signal="text_changed" from="CenterContainer/VBoxContainer/NameField" to="." method="_on_NameField_text_changed"]
-[connection signal="pressed" from="CenterContainer/VBoxContainer/Warrior" to="." method="_on_Warrior_pressed"]
-[connection signal="pressed" from="CenterContainer/VBoxContainer/Archer" to="." method="_on_Archer_pressed"]
-[connection signal="pressed" from="CenterContainer/VBoxContainer/Priest" to="." method="_on_Priest_pressed"]
-[connection signal="pressed" from="CenterContainer/VBoxContainer/Disconnect" to="." method="_on_Disconnect_pressed"]
+[connection signal="text_changed" from="CenterContainer/PanelContainer/VBoxContainer/CenterContainer/NameField" to="." method="_on_NameField_text_changed"]
+[connection signal="pressed" from="CenterContainer/PanelContainer/VBoxContainer/HBoxContainer/VBoxContainer/CenterContainer/Warrior" to="." method="_on_Warrior_pressed"]
+[connection signal="pressed" from="CenterContainer/PanelContainer/VBoxContainer/HBoxContainer/VBoxContainer2/CenterContainer/Archer" to="." method="_on_Archer_pressed"]
+[connection signal="pressed" from="CenterContainer/PanelContainer/VBoxContainer/HBoxContainer/VBoxContainer3/Priest" to="." method="_on_Priest_pressed"]
+[connection signal="pressed" from="CenterContainer/PanelContainer/VBoxContainer/CenterContainer2/Disconnect" to="." method="_on_Disconnect_pressed"]

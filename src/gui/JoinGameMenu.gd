@@ -2,7 +2,7 @@ extends CanvasLayer
 
 signal option_selected
 
-onready var name_field = $CenterContainer/VBoxContainer/NameField
+onready var name_field = $CenterContainer/PanelContainer/VBoxContainer/CenterContainer/NameField
 
 func _ready():
 	name_field.text = Game.saved_player_name

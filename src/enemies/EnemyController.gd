@@ -40,7 +40,7 @@ func init(type_id):
 			assert(false)
 			owner.queue_free()
 			return
-	type.name = "EnemyClass"
+	#type.name = "EnemyClass"
 	owner.add_child(type)
 	type.init(owner)
 
@@ -180,9 +180,7 @@ func find_target(players, walls):
 				if target != null:
 					remove_target(target)
 				target = best_target
-				var err = target.connect("became_untargetable", self, "remove_target")
-				if err != OK:
-					print("connect error ", err, ": t=", target, " e=", self)
+				target.connect("became_untargetable", self, "remove_target")
 				target.targeted_by_count += 1
 
 func calculate_path_to_target():

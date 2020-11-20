@@ -39,7 +39,8 @@ func _ready():
 func set_time(time):
 	if health > 0:
 		if time == "dusk":
-			$Tween.interpolate_property($Pool, "modulate", $Pool.modulate, Color.white, 20)
+			#$Tween.interpolate_property($Pool, "modulate", $Pool.modulate, Color.white, 20)
+			$Tween.interpolate_property($Sun, "modulate", $Sun.modulate, Color.transparent, 20)
 			$Tween.interpolate_property($Moon, "modulate", $Moon.modulate, Color.white, 20)
 			$Tween.start()
 		elif time == "midnight":
@@ -47,17 +48,16 @@ func set_time(time):
 		elif time == "latenight":
 			$MidnightParticles.emitting = false
 		elif time == "dawn":
-			$Tween.interpolate_property($Pool, "modulate", $Pool.modulate, Color(1.5, 1.5, 1), 20)
+			#$Tween.interpolate_property($Pool, "modulate", $Pool.modulate, Color(1.2, 1.2, 1), 20)
+			$Tween.interpolate_property($Sun, "modulate", $Sun.modulate, Color.white, 20)
 			$Tween.interpolate_property($Moon, "modulate", $Moon.modulate, Color.transparent, 20)
 			$Tween.start()
 
 func apply_damage(dam):
 	if not active or dead: return
-	print(dam, " ", health)
 	health -= dam
 	heal_max -= dam / 2.0
 	var stones = ceil(float(health) / max_health * $HealthDisplay.get_child_count())
-	print(stones, " ", health_stones)
 	if stones != health_stones:
 		rpc("update_health_display", stones)
 	if health <= 0:
@@ -67,12 +67,10 @@ func apply_damage(dam):
 		emit_signal("destroyed")
 
 remotesync func update_health_display(stones):
-	print("stones", stones)
 	health_stones = stones
 	for i in $HealthDisplay.get_child_count():
 		var s = $HealthDisplay.get_child(i)
 		s.modulate = Color.aqua if i < health_stones else Color.black
-		print(s.color)
 
 remotesync func die():
 	print("Shrine died")
@@ -89,9 +87,12 @@ func _physics_process(delta):
 		var dist = vector.length()
 		if dist < 350:
 			$Moon.visible = true
+			#$Sun.visible = true
 			$Moon.position = vector / 4
+			#$Sun.position = vector / 4
 			return
 	$Moon.visible = false
+	#$Sun.visible = false
 
 func _on_Timer_timeout():
 	if not dead and Game.is_host():
@@ -109,4 +110,4 @@ func _on_Timer_timeout():
 				enemy.hit({"damage": 100})
 		if enemies.size() == 0:
 			for p in heal_area.get_overlapping_bodies():
-				p.apply_healing(2)
+				p.apply_healing(3)
