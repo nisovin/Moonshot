@@ -11,6 +11,9 @@ var volume_others = 1.0
 var volume_enemies = 1.0
 var volume_map = 1.0
 
+var gameplay_fct_self = true
+var gameplay_fct_enemies = true
+
 func _ready():
 	$Panel.hide()
 	if IGNORE_SETTINGS_FILE: return
@@ -75,6 +78,8 @@ func load_settings():
 					InputMap.action_add_event(action_name, event)
 				else:
 					print("INVALID ACTION!")
+	
+	Audio.update_bus_volumes()
 	
 func save_settings():
 	var config = ConfigFile.new()

@@ -95,7 +95,7 @@ remotesync func show_hit(h):
 		healthbar.value = health / max_health
 	if not visual_anim.is_playing():
 		visual_anim.play("hurt")
-	if Game.is_client() and last_hit > OS.get_ticks_msec() - 500:
+	if Game.is_client() and last_hit > OS.get_ticks_msec() - 500 and Settings.gameplay_fct_enemies:
 		N.fct(self, dam, Color.magenta)
 	if Game.is_solo():
 		Audio.play("enemy_hit", Audio.ENEMIES, 0.4)

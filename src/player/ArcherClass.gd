@@ -18,14 +18,14 @@ const SHOOT_SIDE_KNOCKBACK_STR = 150
 const SHOOT_KNOCKBACK_DUR = 0.1
 const SHOOT_CENTER_DAMAGE = 40
 const SHOOT_SIDE_DAMAGE = 8
-const SHOOT_COST = 5
+const SHOOT_COST = 6
 const SHOOT_COOLDOWN = 0.5
 
 const VOLLEY_RADIUS = 80
 const VOLLEY_DAMAGE_DELAY = 0.3
 const VOLLEY_DAMAGE = 25
 const VOLLEY_STUN_DUR = 0
-const VOLLEY_COST = 15
+const VOLLEY_COST = 20
 const VOLLEY_COOLDOWN = 8.0
 
 const SHADOW_DURATION_MIN = 2
@@ -322,7 +322,8 @@ func _physics_process(delta):
 		shoot_aim_time += delta
 		var dir = owner.get_action_direction(arrow_spawn)
 		arrow_spawn.rotation = dir.angle()
-		owner.set_facing(dir, true)
+		owner.set_facing(dir, false)
+		owner.sprite.play("aim_" + owner.facing)
 		var scale = 0.2 + min(shoot_aim_time / SHOOT_AIM_TIME * 1.6, 1.6)
 		for m in arrow_spawn.get_children():
 			m.scale.x = scale

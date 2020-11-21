@@ -96,7 +96,7 @@ func _physics_process(delta):
 		var before = position
 		var speed_mult = 1.0
 		if Game.level.is_effect_active(Game.Effects.FATIGUE):
-			speed_mult *= 0.75
+			speed_mult *= 0.6
 		if Game.level.is_effect_active(Game.Effects.SHRINEDEATH):
 			speed_mult *= 1.5
 		sprite.speed_scale = speed_mult
@@ -137,10 +137,12 @@ remotesync func damage(new_health, energy_damage = 0):
 	if new_health >= health: return
 	var damage = health - new_health
 	if is_network_master():
-		N.fct(self, round(damage), Color.red)
+		if Settings.gameplay_fct_self:
+			N.fct(self, round(damage), Color.red)
 		if energy_damage > 0:
 			player_class.energy = clamp(player_class.energy - energy_damage, 0, 100)
-			N.fct(self, round(energy_damage), Color.yellow)
+			#if Settings.gameplay_fct_self:
+			#	N.fct(self, round(energy_damage), Color.yellow)
 		update_health_music()
 		Audio.play("hit", Audio.PLAYER)
 	health = new_health
@@ -178,7 +180,8 @@ func apply_healing(amt):
 remotesync func heal(new_health):
 	if new_health > health and is_network_master():
 		var amt = new_health - health
-		N.fct(self, amt, Color.green)
+		if Settings.gameplay_fct_self:
+			N.fct(self, amt, Color.green)
 	health = new_health
 	healthbar.value = health / player_class.MAX_HEALTH * 100
 	if is_network_master():

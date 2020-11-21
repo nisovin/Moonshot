@@ -143,7 +143,7 @@ func _on_shrine1_destroyed():
 func _on_shrine2_destroyed():
 	rpc("add_system_message", "The moonstone has been destroyed. The bastion has been lost.")
 	state = GameState.GAMEOVER
-	yield(get_tree().create_timer(30), "timeout")
+	yield(get_tree().create_timer(10), "timeout")
 	if Game.is_solo():
 		Game.leave_game()
 	elif Game.is_server():
@@ -176,7 +176,7 @@ func game_tick():
 	elif state == GameState.BETWEEN:
 		for p in players_node.get_children():
 			if not p.dead:
-				p.increase_exhaustion(-1)
+				p.increase_exhaustion(-2)
 			
 	
 	if spawning_paused_for > 0:
@@ -233,7 +233,7 @@ func _on_HealTick_timeout():
 			if not p.dead and p.health < p.player_class.MAX_HEALTH and not in_combat and p.last_heal_tick < OS.get_ticks_msec() - 1000:
 				var heal = p.player_class.HEALTH_REGEN
 				if is_effect_active(Game.Effects.SHRINEDEATH):
-					heal *= 4
+					heal *= 5
 				elif p.exhaustion > 50:
 					var e = p.exhaustion - 50
 					heal *= (50 - e * 0.75) / 50.0

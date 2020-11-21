@@ -30,9 +30,6 @@ onready var centered_message = $CanvasLayer/CenteredMessage/Label
 onready var multiplayer_controller = $MultiplayerController
 
 func _ready():
-	var is_casting = false
-	is_casting = "hello"
-	
 	centered_message.visible = false
 	player_name_regex.compile("[^A-Za-z0-9_ ]")
 	chat_regex.compile("[^A-Za-z0-9_\\-()!.?@#$%&*+=:;'\" ]")

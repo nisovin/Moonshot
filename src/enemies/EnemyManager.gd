@@ -14,7 +14,7 @@ const ENEMY_POWER = {
 enum Directive { NONE, FOCUS_PLAYERS, FOCUS_KEEP, SWIFTNESS, ENRAGE }
 
 var max_enemies = 90
-var per_player_power_limit = 3
+var per_player_power_limit = 2
 var per_player_wave_size = 0.5
 var next_enemy_id = 1
 
@@ -187,7 +187,7 @@ func _on_SpawnTimer_timeout():
 	var spawn_point = null
 	
 	# get current enemy counts and power
-	var max_enemy_power = clamp(player_count * per_player_power_limit, 6, 200)
+	var max_enemy_power = 4 + clamp(player_count * per_player_power_limit, 1, 200)
 	var count = 0
 	var power = 0
 	for e in owner.enemies_node.get_children():
@@ -196,7 +196,7 @@ func _on_SpawnTimer_timeout():
 			power += ENEMY_POWER[e.type_id]
 			
 	# spawn enemies
-	var wave_size = clamp(int(ceil(per_player_wave_size * player_count)), 3, 20)
+	var wave_size = 3 + clamp(int(ceil(per_player_wave_size * player_count)), 0, 20)
 	for x in wave_size:
 		if count < max_enemies and power < max_enemy_power:
 			if spawn_point == null or x % 4 == 0:
@@ -207,12 +207,12 @@ func _on_SpawnTimer_timeout():
 			options[Game.EnemyClass.GRUNT] = 100 if not need_bigger_enemies else 50
 			options[Game.EnemyClass.MAGE] = 15
 			if sped_up > 1:
-				options[Game.EnemyClass.ELITE] = 10 if not need_bigger_enemies else 50
+				options[Game.EnemyClass.ELITE] = 20 if not need_bigger_enemies else 50
 				options[Game.EnemyClass.PHOENIX] = 4 if not need_bigger_enemies else 10
 				options[Game.EnemyClass.SIEGE] = 4 if not need_bigger_enemies else 15
 			if sped_up > 5:
-				options[Game.EnemyClass.BOMBER] = 4
-				options[Game.EnemyClass.SIEGE] = 8 if not need_bigger_enemies else 25
+				options[Game.EnemyClass.BOMBER] = 5
+				options[Game.EnemyClass.SIEGE] = 10 if not need_bigger_enemies else 25
 			var type_id = N.rand_weighted(options)
 			spawn({"id": next_enemy_id, "type_id": type_id, "position": loc})
 			next_enemy_id += 1

@@ -29,6 +29,15 @@ func _ready():
 		channels_avail.append(a)
 		a.connect("finished", self, "_on_sound_finished", [a])
 
+func update_bus_volumes():
+	AudioServer.set_bus_volume_db(AudioServer.get_bus_index("Master"), linear2db(Settings.volume_master))
+	AudioServer.set_bus_volume_db(AudioServer.get_bus_index("Music"), linear2db(Settings.volume_music))
+	AudioServer.set_bus_volume_db(AudioServer.get_bus_index("SFX"), linear2db(Settings.volume_sfx))
+	AudioServer.set_bus_volume_db(AudioServer.get_bus_index("Self"), linear2db(Settings.volume_player))
+	AudioServer.set_bus_volume_db(AudioServer.get_bus_index("Others"), linear2db(Settings.volume_others))
+	AudioServer.set_bus_volume_db(AudioServer.get_bus_index("Enemies"), linear2db(Settings.volume_enemies))
+	AudioServer.set_bus_volume_db(AudioServer.get_bus_index("Map"), linear2db(Settings.volume_map))
+
 func start_music():
 	if Game.is_server(): return
 	$MusicMain.stream = R.Sounds.music_main

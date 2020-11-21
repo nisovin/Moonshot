@@ -1,6 +1,10 @@
-[gd_scene load_steps=2 format=2]
+[gd_scene load_steps=4 format=2]
 
 [ext_resource path="res://main/Settings.gd" type="Script" id=1]
+[ext_resource path="res://gui/Minimal5x7.ttf" type="DynamicFontData" id=2]
+
+[sub_resource type="DynamicFont" id=1]
+font_data = ExtResource( 2 )
 
 [node name="Settings" type="Node"]
 script = ExtResource( 1 )
@@ -15,3 +19,79 @@ margin_bottom = -20.0
 __meta__ = {
 "_edit_use_anchors_": false
 }
+
+[node name="VBoxContainer" type="VBoxContainer" parent="Panel"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="HBoxContainer" type="HBoxContainer" parent="Panel/VBoxContainer"]
+margin_right = 536.0
+margin_bottom = 260.0
+size_flags_vertical = 3
+
+[node name="VBoxContainer" type="VBoxContainer" parent="Panel/VBoxContainer/HBoxContainer"]
+margin_right = 229.0
+margin_bottom = 260.0
+
+[node name="Label" type="Label" parent="Panel/VBoxContainer/HBoxContainer/VBoxContainer"]
+margin_right = 229.0
+margin_bottom = 14.0
+
+[node name="Master" type="HBoxContainer" parent="Panel/VBoxContainer/HBoxContainer/VBoxContainer"]
+margin_top = 18.0
+margin_right = 229.0
+margin_bottom = 34.0
+
+[node name="Label" type="Label" parent="Panel/VBoxContainer/HBoxContainer/VBoxContainer/Master"]
+margin_top = 3.0
+margin_right = 75.0
+margin_bottom = 13.0
+rect_min_size = Vector2( 75, 0 )
+custom_fonts/font = SubResource( 1 )
+text = "Main"
+align = 2
+
+[node name="VolumeMasterSlider" type="HSlider" parent="Panel/VBoxContainer/HBoxContainer/VBoxContainer/Master"]
+margin_left = 79.0
+margin_right = 229.0
+margin_bottom = 16.0
+rect_min_size = Vector2( 150, 0 )
+
+[node name="Music" type="HBoxContainer" parent="Panel/VBoxContainer/HBoxContainer/VBoxContainer"]
+margin_top = 38.0
+margin_right = 229.0
+margin_bottom = 54.0
+
+[node name="Label" type="Label" parent="Panel/VBoxContainer/HBoxContainer/VBoxContainer/Music"]
+margin_top = 3.0
+margin_right = 75.0
+margin_bottom = 13.0
+rect_min_size = Vector2( 75, 0 )
+custom_fonts/font = SubResource( 1 )
+text = "Music"
+align = 2
+
+[node name="VolumeMusicSlider" type="HSlider" parent="Panel/VBoxContainer/HBoxContainer/VBoxContainer/Music"]
+margin_left = 79.0
+margin_right = 229.0
+margin_bottom = 16.0
+rect_min_size = Vector2( 150, 0 )
+
+[node name="HBoxContainer2" type="HBoxContainer" parent="Panel/VBoxContainer"]
+margin_top = 264.0
+margin_right = 536.0
+margin_bottom = 284.0
+alignment = 1
+
+[node name="Button" type="Button" parent="Panel/VBoxContainer/HBoxContainer2"]
+margin_left = 254.0
+margin_right = 266.0
+margin_bottom = 20.0
+
+[node name="Button2" type="Button" parent="Panel/VBoxContainer/HBoxContainer2"]
+margin_left = 270.0
+margin_right = 282.0
+margin_bottom = 20.0

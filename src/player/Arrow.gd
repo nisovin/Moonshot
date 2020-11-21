@@ -12,9 +12,12 @@ func init(pos, vel, m):
 	rotation = vel.angle()
 	mini = m
 	if mini:
-		$Sprite.scale = Vector2(0.5, 0.5)
+		$SpriteBig.queue_free()
+		$CollisionShapeBig.queue_free()
 		modulate = Color(1, 1, 1, 0.75)
-		$CollisionShape2D.shape.radius = 4
+	else:
+		$SpriteSmall.queue_free()
+		$CollisionShapeSmall.queue_free()
 
 func _physics_process(delta):
 	position += velocity * delta
