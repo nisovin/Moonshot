@@ -1,10 +1,10 @@
 [gd_scene load_steps=8 format=2]
 
-[ext_resource path="res://main/Level.gd" type="Script" id=1]
+[ext_resource path="res://map/Map.tscn" type="PackedScene" id=1]
 [ext_resource path="res://misc/white_square.png" type="Texture" id=2]
-[ext_resource path="res://map/Map.tscn" type="PackedScene" id=3]
-[ext_resource path="res://gui/GameGUI.tscn" type="PackedScene" id=4]
+[ext_resource path="res://gui/GameGUI.tscn" type="PackedScene" id=3]
 [ext_resource path="res://enemies/EnemyManager.gd" type="Script" id=5]
+[ext_resource path="res://main/Level.gd" type="Script" id=6]
 
 [sub_resource type="Environment" id=1]
 background_mode = 4
@@ -112,7 +112,7 @@ tracks/5/keys = {
 }
 
 [node name="Level" type="Node2D"]
-script = ExtResource( 1 )
+script = ExtResource( 6 )
 
 [node name="PlayerSpawn" type="Node2D" parent="."]
 position = Vector2( 463, 287.5 )
@@ -120,7 +120,7 @@ position = Vector2( 463, 287.5 )
 [node name="StartCam" type="Camera2D" parent="PlayerSpawn"]
 current = true
 
-[node name="Map" parent="." instance=ExtResource( 3 )]
+[node name="Map" parent="." instance=ExtResource( 1 )]
 
 [node name="DayNightCycle" type="Node2D" parent="."]
 
@@ -159,7 +159,7 @@ script = ExtResource( 5 )
 
 [node name="SpawnTimer" type="Timer" parent="EnemyManager"]
 
-[node name="GUI" parent="." instance=ExtResource( 4 )]
+[node name="GUI" parent="." instance=ExtResource( 3 )]
 
 [node name="Tween" type="Tween" parent="."]
 [connection signal="timeout" from="GameTick" to="." method="game_tick"]

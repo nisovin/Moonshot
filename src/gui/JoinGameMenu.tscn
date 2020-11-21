@@ -6,28 +6,30 @@
 [ext_resource path="res://gui/alagard.ttf" type="DynamicFontData" id=4]
 [ext_resource path="res://gui/Minimal5x7.ttf" type="DynamicFontData" id=5]
 
-[sub_resource type="StyleBoxFlat" id=6]
+[sub_resource type="StyleBoxFlat" id=1]
 content_margin_left = 5.0
 content_margin_right = 5.0
 content_margin_top = 5.0
 content_margin_bottom = 5.0
 bg_color = Color( 0, 0, 0, 0.764706 )
 
-[sub_resource type="DynamicFont" id=4]
+[sub_resource type="DynamicFont" id=2]
 font_data = ExtResource( 4 )
 
-[sub_resource type="StyleBoxEmpty" id=1]
+[sub_resource type="StyleBoxEmpty" id=3]
 
-[sub_resource type="StyleBoxEmpty" id=2]
+[sub_resource type="StyleBoxEmpty" id=4]
 content_margin_left = 8.0
 content_margin_right = 8.0
 content_margin_top = 8.0
 content_margin_bottom = 8.0
 
-[sub_resource type="DynamicFont" id=3]
+[sub_resource type="DynamicFont" id=5]
+outline_size = 1
+outline_color = Color( 0, 0, 0, 1 )
 font_data = ExtResource( 3 )
 
-[sub_resource type="DynamicFont" id=5]
+[sub_resource type="DynamicFont" id=6]
 font_data = ExtResource( 5 )
 
 [node name="JoinGameMenu" type="CanvasLayer"]
@@ -45,7 +47,7 @@ margin_left = 101.0
 margin_top = 59.0
 margin_right = 475.0
 margin_bottom = 264.0
-custom_styles/panel = SubResource( 6 )
+custom_styles/panel = SubResource( 1 )
 
 [node name="VBoxContainer" type="VBoxContainer" parent="CenterContainer/PanelContainer"]
 margin_left = 5.0
@@ -56,7 +58,7 @@ margin_bottom = 200.0
 [node name="Label" type="Label" parent="CenterContainer/PanelContainer/VBoxContainer"]
 margin_right = 364.0
 margin_bottom = 15.0
-custom_fonts/font = SubResource( 4 )
+custom_fonts/font = SubResource( 2 )
 text = "Choose your name and class"
 align = 1
 
@@ -76,9 +78,9 @@ margin_left = 107.0
 margin_right = 257.0
 margin_bottom = 31.0
 rect_min_size = Vector2( 150, 0 )
-custom_styles/focus = SubResource( 1 )
-custom_styles/normal = SubResource( 2 )
-custom_fonts/font = SubResource( 3 )
+custom_styles/focus = SubResource( 3 )
+custom_styles/normal = SubResource( 4 )
+custom_fonts/font = SubResource( 5 )
 max_length = 12
 placeholder_text = "Name"
 placeholder_alpha = 0.5
@@ -117,7 +119,7 @@ margin_bottom = 74.0
 margin_right = 180.0
 margin_bottom = 49.0
 rect_min_size = Vector2( 180, 0 )
-custom_fonts/font = SubResource( 5 )
+custom_fonts/font = SubResource( 6 )
 text = "Warriors are the front-line for the elven army. They wield a moonblade, and can use lunar energy to charge into battle and stun their foes."
 autowrap = true
 
@@ -131,7 +133,7 @@ margin_left = 27.0
 margin_right = 152.0
 margin_bottom = 21.0
 rect_min_size = Vector2( 125, 0 )
-custom_fonts/font = SubResource( 3 )
+custom_fonts/font = SubResource( 5 )
 text = "Be a Warrior"
 flat = true
 
@@ -157,7 +159,7 @@ margin_bottom = 74.0
 margin_right = 180.0
 margin_bottom = 49.0
 rect_min_size = Vector2( 180, 0 )
-custom_fonts/font = SubResource( 5 )
+custom_fonts/font = SubResource( 6 )
 text = "Archers deal incredible damage from afar. They wield a lunar longbow, and can use lunar energy to call down volleys of moon arrows."
 autowrap = true
 
@@ -171,7 +173,7 @@ margin_left = 27.0
 margin_right = 152.0
 margin_bottom = 21.0
 rect_min_size = Vector2( 125, 0 )
-custom_fonts/font = SubResource( 3 )
+custom_fonts/font = SubResource( 5 )
 text = "Be an Archer"
 flat = true
 
@@ -197,7 +199,7 @@ margin_bottom = 21.0
 [node name="Priest" type="Button" parent="CenterContainer/PanelContainer/VBoxContainer/HBoxContainer/VBoxContainer3"]
 margin_right = 114.0
 margin_bottom = 21.0
-custom_fonts/font = SubResource( 3 )
+custom_fonts/font = SubResource( 5 )
 disabled = true
 text = "Join as Priest"
 flat = true
@@ -231,7 +233,7 @@ margin_left = 122.0
 margin_right = 242.0
 margin_bottom = 21.0
 rect_min_size = Vector2( 120, 0 )
-custom_fonts/font = SubResource( 3 )
+custom_fonts/font = SubResource( 5 )
 text = "Disconnect"
 flat = true
 

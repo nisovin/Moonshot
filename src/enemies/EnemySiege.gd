@@ -14,7 +14,7 @@ func init_sub(node):
 	target_lost_range = 500
 	target_players_weight = 0
 	target_keep_weight = 10
-	target_shrine_weight = 1
+	target_shrine_weight = 5
 
 	attack_melee = 0
 	attack_damage = 100

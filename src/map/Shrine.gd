@@ -43,7 +43,7 @@ func set_time(time):
 			$Tween.interpolate_property($Sun, "modulate", $Sun.modulate, Color.transparent, 20)
 			$Tween.interpolate_property($Moon, "modulate", $Moon.modulate, Color.white, 20)
 			$Tween.start()
-		elif time == "midnight":
+		elif time == "midnight" and not dead:
 			$MidnightParticles.emitting = true
 		elif time == "latenight":
 			$MidnightParticles.emitting = false

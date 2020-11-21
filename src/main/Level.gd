@@ -133,7 +133,7 @@ func _on_shrine1_destroyed():
 		if w.status > 0 and w.position.y < shrine1.position.y + 10 * 16:
 			w.apply_damage(5000)
 	if firewall.position.y < shrine1.position.y:
-		rpc("move_firewall", shrine1.position.y - firewall.position.y + 64)
+		rpc("move_firewall", shrine1.position.y + 64)
 	yield(get_tree().create_timer(30), "timeout")
 	rpc("end_effect", Game.Effects.SHRINEDEATH)
 	state = GameState.STAGE2
@@ -251,13 +251,13 @@ func _on_FirewallTick_timeout():
 	if Game.is_host() and players_node.get_child_count() > 0 and (time_of_day == "dawn" or time_of_day == "day" or time_of_day == "midday" or time_of_day == "afternoon"):
 		var amt = 16
 		if state == GameState.STAGE1 and firewall.position.y > shrine1.position.y - 128:
-			amt = 0
+			return
+		elif state == GameState.STAGE2 and firewall.position.y > shrine2.position.y - 128:
+			return
+		elif state == GameState.BETWEEN:
+			return
 		elif state == GameState.STAGE2 and firewall.position.y < shrine1.position.y:
 			amt = shrine1.position.y - firewall.position.y
-		elif state == GameState.STAGE2 and firewall.position.y > shrine2.position.y - 128:
-			amt = 0
-		elif state == GameState.BETWEEN:
-			amt = 0
 		if amt > 0:
 			rpc("move_firewall", firewall.position.y + amt)
 			for w in walls_node.get_children():

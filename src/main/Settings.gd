@@ -21,7 +21,10 @@ func _ready():
 	if file.file_exists(SETTINGS_PATH):
 		load_settings()
 	save_settings()
-	
+
+func show_settings():
+	$Panel.open()
+
 func load_settings():
 	var config = ConfigFile.new()
 	config.load(SETTINGS_PATH)

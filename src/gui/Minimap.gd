@@ -12,6 +12,12 @@ func _draw():
 	# draw bg
 	draw_rect(Rect2(Vector2.ZERO, rect_size), Color(0, 0, 0, 0.75))
 	
+	# draw shrines
+	for s in get_tree().get_nodes_in_group("shrines"):
+		var rel = get_relative_position(s.position)
+		var c = Color.cyan if not s.dead else Color.darkred
+		draw_circle(rel, 3, c)
+	
 	# draw enemies
 	var big_ones = []
 	for e in get_tree().get_nodes_in_group("enemies"):
@@ -37,12 +43,6 @@ func _draw():
 		if p != Game.player and not p.dead:
 			var rel = get_relative_position(p.position)
 			draw_rect(Rect2(rel, Vector2.ONE), Color.lightcyan)
-			
-	# draw shrines
-	for s in get_tree().get_nodes_in_group("shrines"):
-		var rel = get_relative_position(s.position)
-		var c = Color.cyan if not s.dead else Color.darkred
-		draw_circle(rel, 3, c)
 			
 	# draw myself
 	draw_rect(Rect2(rect_size / 2, Vector2.ONE), Color.yellow)

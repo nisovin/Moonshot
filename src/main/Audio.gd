@@ -4,6 +4,8 @@ const SFX_CHANNELS = 30
 const POSITIONAL_DROP_START = 300
 const POSITIONAL_DROP_END = 600
 
+const MASTER = "Master"
+const MUSIC = "Music"
 const SFX = "SFX"
 const PLAYER = "Self"
 const OTHERS = "Others"
@@ -37,6 +39,9 @@ func update_bus_volumes():
 	AudioServer.set_bus_volume_db(AudioServer.get_bus_index("Others"), linear2db(Settings.volume_others))
 	AudioServer.set_bus_volume_db(AudioServer.get_bus_index("Enemies"), linear2db(Settings.volume_enemies))
 	AudioServer.set_bus_volume_db(AudioServer.get_bus_index("Map"), linear2db(Settings.volume_map))
+
+func update_bus_volume(bus, volume):
+	AudioServer.set_bus_volume_db(AudioServer.get_bus_index(bus), linear2db(volume))
 
 func start_music():
 	if Game.is_server(): return

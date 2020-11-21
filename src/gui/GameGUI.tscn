@@ -1,4 +1,4 @@
-[gd_scene load_steps=31 format=2]
+[gd_scene load_steps=33 format=2]
 
 [ext_resource path="res://gui/Minimap.gd" type="Script" id=1]
 [ext_resource path="res://gui/GameGUI.gd" type="Script" id=2]
@@ -21,6 +21,7 @@
 [ext_resource path="res://gui/alagard.ttf" type="DynamicFontData" id=19]
 [ext_resource path="res://gui/icons/status_fatigue.png" type="Texture" id=20]
 [ext_resource path="res://gui/icons/status_confusion.png" type="Texture" id=21]
+[ext_resource path="res://misc/border_filled.png" type="Texture" id=22]
 
 [sub_resource type="DynamicFont" id=1]
 outline_size = 1
@@ -71,6 +72,11 @@ font_data = ExtResource( 19 )
 [sub_resource type="DynamicFont" id=9]
 extra_spacing_top = 4
 extra_spacing_bottom = 4
+font_data = ExtResource( 3 )
+
+[sub_resource type="DynamicFont" id=10]
+outline_size = 1
+outline_color = Color( 0, 0, 0, 1 )
 font_data = ExtResource( 3 )
 
 [node name="GUI" type="CanvasLayer"]
@@ -568,29 +574,102 @@ __meta__ = {
 }
 
 [node name="VBoxContainer" type="VBoxContainer" parent="Menu/CenterContainer"]
-margin_left = 246.0
-margin_top = 128.0
-margin_right = 330.0
-margin_bottom = 196.0
+margin_left = 245.0
+margin_top = 109.0
+margin_right = 331.0
+margin_bottom = 214.0
 
 [node name="Resume" type="Button" parent="Menu/CenterContainer/VBoxContainer"]
-margin_right = 84.0
-margin_bottom = 20.0
+margin_right = 86.0
+margin_bottom = 21.0
+custom_fonts/font = SubResource( 10 )
 text = "Resume"
+flat = true
+
+[node name="NinePatchRect2" type="NinePatchRect" parent="Menu/CenterContainer/VBoxContainer/Resume"]
+show_behind_parent = true
+anchor_right = 1.0
+anchor_bottom = 1.0
+texture = ExtResource( 22 )
+patch_margin_left = 6
+patch_margin_top = 6
+patch_margin_right = 6
+patch_margin_bottom = 6
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Settings" type="Button" parent="Menu/CenterContainer/VBoxContainer"]
+margin_top = 25.0
+margin_right = 86.0
+margin_bottom = 46.0
+custom_fonts/font = SubResource( 10 )
+text = "Settings"
+flat = true
+
+[node name="NinePatchRect2" type="NinePatchRect" parent="Menu/CenterContainer/VBoxContainer/Settings"]
+show_behind_parent = true
+anchor_right = 1.0
+anchor_bottom = 1.0
+texture = ExtResource( 22 )
+patch_margin_left = 6
+patch_margin_top = 6
+patch_margin_right = 6
+patch_margin_bottom = 6
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Control" type="Control" parent="Menu/CenterContainer/VBoxContainer"]
+margin_top = 50.0
+margin_right = 86.0
+margin_bottom = 55.0
+rect_min_size = Vector2( 0, 5 )
 
 [node name="Disconnect" type="Button" parent="Menu/CenterContainer/VBoxContainer"]
-margin_top = 24.0
-margin_right = 84.0
-margin_bottom = 44.0
+margin_top = 59.0
+margin_right = 86.0
+margin_bottom = 80.0
+custom_fonts/font = SubResource( 10 )
 text = "Disconnect"
+flat = true
+
+[node name="NinePatchRect3" type="NinePatchRect" parent="Menu/CenterContainer/VBoxContainer/Disconnect"]
+show_behind_parent = true
+anchor_right = 1.0
+anchor_bottom = 1.0
+texture = ExtResource( 22 )
+patch_margin_left = 6
+patch_margin_top = 6
+patch_margin_right = 6
+patch_margin_bottom = 6
+__meta__ = {
+"_edit_use_anchors_": false
+}
 
 [node name="Quit" type="Button" parent="Menu/CenterContainer/VBoxContainer"]
-margin_top = 48.0
-margin_right = 84.0
-margin_bottom = 68.0
+margin_top = 84.0
+margin_right = 86.0
+margin_bottom = 105.0
+custom_fonts/font = SubResource( 10 )
 text = "Quit"
+flat = true
+
+[node name="NinePatchRect4" type="NinePatchRect" parent="Menu/CenterContainer/VBoxContainer/Quit"]
+show_behind_parent = true
+anchor_right = 1.0
+anchor_bottom = 1.0
+texture = ExtResource( 22 )
+patch_margin_left = 6
+patch_margin_top = 6
+patch_margin_right = 6
+patch_margin_bottom = 6
+__meta__ = {
+"_edit_use_anchors_": false
+}
 [connection signal="text_entered" from="Chat/ChatLine" to="." method="_on_ChatLine_text_entered"]
 [connection signal="pressed" from="Respawn/CenterContainer/VBoxContainer/HBoxContainer/RespawnButton" to="." method="_on_RespawnButton_pressed"]
 [connection signal="pressed" from="Menu/CenterContainer/VBoxContainer/Resume" to="." method="_on_Resume_pressed"]
+[connection signal="pressed" from="Menu/CenterContainer/VBoxContainer/Settings" to="." method="_on_Settings_pressed"]
 [connection signal="pressed" from="Menu/CenterContainer/VBoxContainer/Disconnect" to="." method="_on_Disconnect_pressed"]
 [connection signal="pressed" from="Menu/CenterContainer/VBoxContainer/Quit" to="." method="_on_Quit_pressed"]

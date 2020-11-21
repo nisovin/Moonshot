@@ -17,13 +17,6 @@ func _on_Multiplayer_pressed():
 	Game.show_centered_message("Finding servers...")
 	join = true
 	get_servers()
-	
-func _on_Fullscreen_pressed():
-	$Click.play()
-	OS.window_fullscreen = not OS.window_fullscreen
-
-func _on_Quit_pressed():
-	get_tree().quit()
 
 func get_servers():
 	$HTTPRequest.request("https://nisovin.com/gamejams/get_servers.php")
@@ -70,13 +63,35 @@ func _on_HTTPRequest_request_completed(result, response_code, headers, body: Poo
 				$ServerList.show()
 
 func _on_join_pressed(server):
+	$Click.play()
 	Game.start_client(server.ip, int(server.port))
 	queue_free()
 
-
 func _on_CancelButton_pressed():
+	$Click.play()
 	$ServerList.hide()
 	$Menu.show()
 
 func _on_button_over():
 	$Rollover.play()
+
+func _on_Fullscreen_pressed():
+	$Click.play()
+	OS.window_fullscreen = not OS.window_fullscreen
+
+func _on_Settings_pressed():
+	$Click.play()
+	Settings.show_settings()
+
+func _on_Credits_pressed():
+	$Click.play()
+	$Credits.show()
+
+func _on_CloseCredits_pressed():
+	$Click.play()
+	$Credits.hide()
+
+func _on_Quit_pressed():
+	$Click.play()
+	get_tree().quit()
+

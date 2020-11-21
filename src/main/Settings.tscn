@@ -1,12 +1,38 @@
-[gd_scene load_steps=4 format=2]
+[gd_scene load_steps=11 format=2]
 
 [ext_resource path="res://main/Settings.gd" type="Script" id=1]
 [ext_resource path="res://gui/Minimal5x7.ttf" type="DynamicFontData" id=2]
+[ext_resource path="res://main/SettingsPanel.gd" type="Script" id=3]
+[ext_resource path="res://gui/alphbeta.ttf" type="DynamicFontData" id=4]
+[ext_resource path="res://misc/border_filled.png" type="Texture" id=5]
+
+[sub_resource type="StyleBoxFlat" id=2]
+content_margin_left = 5.0
+content_margin_right = 5.0
+content_margin_top = 5.0
+content_margin_bottom = 5.0
+bg_color = Color( 0, 0, 0, 0.933333 )
+corner_radius_top_left = 5
+corner_radius_top_right = 5
+corner_radius_bottom_right = 5
+corner_radius_bottom_left = 5
+
+[sub_resource type="DynamicFont" id=3]
+font_data = ExtResource( 4 )
 
 [sub_resource type="DynamicFont" id=1]
 font_data = ExtResource( 2 )
 
-[node name="Settings" type="Node"]
+[sub_resource type="DynamicFont" id=5]
+font_data = ExtResource( 2 )
+
+[sub_resource type="DynamicFont" id=4]
+outline_size = 1
+outline_color = Color( 0, 0, 0, 1 )
+font_data = ExtResource( 4 )
+
+[node name="Settings" type="CanvasLayer"]
+layer = 2
 script = ExtResource( 1 )
 
 [node name="Panel" type="Panel" parent="."]
@@ -16,36 +42,55 @@ margin_left = 20.0
 margin_top = 20.0
 margin_right = -20.0
 margin_bottom = -20.0
+custom_styles/panel = SubResource( 2 )
+script = ExtResource( 3 )
 __meta__ = {
 "_edit_use_anchors_": false
 }
 
-[node name="VBoxContainer" type="VBoxContainer" parent="Panel"]
+[node name="MarginContainer" type="MarginContainer" parent="Panel"]
 anchor_right = 1.0
 anchor_bottom = 1.0
+custom_constants/margin_right = 10
+custom_constants/margin_top = 10
+custom_constants/margin_left = 10
+custom_constants/margin_bottom = 10
 __meta__ = {
 "_edit_use_anchors_": false
 }
 
-[node name="HBoxContainer" type="HBoxContainer" parent="Panel/VBoxContainer"]
-margin_right = 536.0
-margin_bottom = 260.0
+[node name="VBoxContainer" type="VBoxContainer" parent="Panel/MarginContainer"]
+margin_left = 10.0
+margin_top = 10.0
+margin_right = 526.0
+margin_bottom = 274.0
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="HBoxContainer" type="HBoxContainer" parent="Panel/MarginContainer/VBoxContainer"]
+margin_right = 516.0
+margin_bottom = 239.0
 size_flags_vertical = 3
 
-[node name="VBoxContainer" type="VBoxContainer" parent="Panel/VBoxContainer/HBoxContainer"]
-margin_right = 229.0
-margin_bottom = 260.0
+[node name="VBoxContainer" type="VBoxContainer" parent="Panel/MarginContainer/VBoxContainer/HBoxContainer"]
+margin_right = 256.0
+margin_bottom = 239.0
+size_flags_horizontal = 3
 
-[node name="Label" type="Label" parent="Panel/VBoxContainer/HBoxContainer/VBoxContainer"]
-margin_right = 229.0
-margin_bottom = 14.0
+[node name="Label" type="Label" parent="Panel/MarginContainer/VBoxContainer/HBoxContainer/VBoxContainer"]
+margin_right = 256.0
+margin_bottom = 15.0
+custom_fonts/font = SubResource( 3 )
+text = "Volume"
+align = 1
 
-[node name="Master" type="HBoxContainer" parent="Panel/VBoxContainer/HBoxContainer/VBoxContainer"]
-margin_top = 18.0
-margin_right = 229.0
-margin_bottom = 34.0
+[node name="Master" type="HBoxContainer" parent="Panel/MarginContainer/VBoxContainer/HBoxContainer/VBoxContainer"]
+margin_top = 19.0
+margin_right = 256.0
+margin_bottom = 35.0
 
-[node name="Label" type="Label" parent="Panel/VBoxContainer/HBoxContainer/VBoxContainer/Master"]
+[node name="Label" type="Label" parent="Panel/MarginContainer/VBoxContainer/HBoxContainer/VBoxContainer/Master"]
 margin_top = 3.0
 margin_right = 75.0
 margin_bottom = 13.0
@@ -54,18 +99,20 @@ custom_fonts/font = SubResource( 1 )
 text = "Main"
 align = 2
 
-[node name="VolumeMasterSlider" type="HSlider" parent="Panel/VBoxContainer/HBoxContainer/VBoxContainer/Master"]
+[node name="VolumeMasterSlider" type="HSlider" parent="Panel/MarginContainer/VBoxContainer/HBoxContainer/VBoxContainer/Master"]
 margin_left = 79.0
 margin_right = 229.0
 margin_bottom = 16.0
 rect_min_size = Vector2( 150, 0 )
+max_value = 1.0
+step = 0.01
 
-[node name="Music" type="HBoxContainer" parent="Panel/VBoxContainer/HBoxContainer/VBoxContainer"]
-margin_top = 38.0
-margin_right = 229.0
-margin_bottom = 54.0
+[node name="Music" type="HBoxContainer" parent="Panel/MarginContainer/VBoxContainer/HBoxContainer/VBoxContainer"]
+margin_top = 39.0
+margin_right = 256.0
+margin_bottom = 55.0
 
-[node name="Label" type="Label" parent="Panel/VBoxContainer/HBoxContainer/VBoxContainer/Music"]
+[node name="Label" type="Label" parent="Panel/MarginContainer/VBoxContainer/HBoxContainer/VBoxContainer/Music"]
 margin_top = 3.0
 margin_right = 75.0
 margin_bottom = 13.0
@@ -74,24 +121,183 @@ custom_fonts/font = SubResource( 1 )
 text = "Music"
 align = 2
 
-[node name="VolumeMusicSlider" type="HSlider" parent="Panel/VBoxContainer/HBoxContainer/VBoxContainer/Music"]
+[node name="VolumeMusicSlider" type="HSlider" parent="Panel/MarginContainer/VBoxContainer/HBoxContainer/VBoxContainer/Music"]
 margin_left = 79.0
 margin_right = 229.0
 margin_bottom = 16.0
 rect_min_size = Vector2( 150, 0 )
+max_value = 1.0
+step = 0.01
 
-[node name="HBoxContainer2" type="HBoxContainer" parent="Panel/VBoxContainer"]
-margin_top = 264.0
-margin_right = 536.0
-margin_bottom = 284.0
+[node name="SFX" type="HBoxContainer" parent="Panel/MarginContainer/VBoxContainer/HBoxContainer/VBoxContainer"]
+margin_top = 59.0
+margin_right = 256.0
+margin_bottom = 75.0
+
+[node name="Label" type="Label" parent="Panel/MarginContainer/VBoxContainer/HBoxContainer/VBoxContainer/SFX"]
+margin_top = 3.0
+margin_right = 75.0
+margin_bottom = 13.0
+rect_min_size = Vector2( 75, 0 )
+custom_fonts/font = SubResource( 1 )
+text = "Sounds"
+align = 2
+
+[node name="VolumeSFXSlider" type="HSlider" parent="Panel/MarginContainer/VBoxContainer/HBoxContainer/VBoxContainer/SFX"]
+margin_left = 79.0
+margin_right = 229.0
+margin_bottom = 16.0
+rect_min_size = Vector2( 150, 0 )
+max_value = 1.0
+step = 0.01
+
+[node name="Player" type="HBoxContainer" parent="Panel/MarginContainer/VBoxContainer/HBoxContainer/VBoxContainer"]
+margin_top = 79.0
+margin_right = 256.0
+margin_bottom = 95.0
+
+[node name="Label" type="Label" parent="Panel/MarginContainer/VBoxContainer/HBoxContainer/VBoxContainer/Player"]
+margin_top = 3.0
+margin_right = 75.0
+margin_bottom = 13.0
+rect_min_size = Vector2( 75, 0 )
+custom_fonts/font = SubResource( 1 )
+text = "Player"
+align = 2
+
+[node name="VolumePlayerSlider" type="HSlider" parent="Panel/MarginContainer/VBoxContainer/HBoxContainer/VBoxContainer/Player"]
+margin_left = 79.0
+margin_right = 229.0
+margin_bottom = 16.0
+rect_min_size = Vector2( 150, 0 )
+max_value = 1.0
+step = 0.01
+
+[node name="Enemies" type="HBoxContainer" parent="Panel/MarginContainer/VBoxContainer/HBoxContainer/VBoxContainer"]
+margin_top = 99.0
+margin_right = 256.0
+margin_bottom = 115.0
+
+[node name="Label" type="Label" parent="Panel/MarginContainer/VBoxContainer/HBoxContainer/VBoxContainer/Enemies"]
+margin_top = 3.0
+margin_right = 75.0
+margin_bottom = 13.0
+rect_min_size = Vector2( 75, 0 )
+custom_fonts/font = SubResource( 1 )
+text = "Enemies"
+align = 2
+
+[node name="VolumeEnemiesSlider" type="HSlider" parent="Panel/MarginContainer/VBoxContainer/HBoxContainer/VBoxContainer/Enemies"]
+margin_left = 79.0
+margin_right = 229.0
+margin_bottom = 16.0
+rect_min_size = Vector2( 150, 0 )
+max_value = 1.0
+step = 0.01
+
+[node name="Map" type="HBoxContainer" parent="Panel/MarginContainer/VBoxContainer/HBoxContainer/VBoxContainer"]
+margin_top = 119.0
+margin_right = 256.0
+margin_bottom = 135.0
+
+[node name="Label" type="Label" parent="Panel/MarginContainer/VBoxContainer/HBoxContainer/VBoxContainer/Map"]
+margin_top = 3.0
+margin_right = 75.0
+margin_bottom = 13.0
+rect_min_size = Vector2( 75, 0 )
+custom_fonts/font = SubResource( 1 )
+text = "Map"
+align = 2
+
+[node name="VolumeMapSlider" type="HSlider" parent="Panel/MarginContainer/VBoxContainer/HBoxContainer/VBoxContainer/Map"]
+margin_left = 79.0
+margin_right = 229.0
+margin_bottom = 16.0
+rect_min_size = Vector2( 150, 0 )
+max_value = 1.0
+step = 0.01
+
+[node name="VBoxContainer2" type="VBoxContainer" parent="Panel/MarginContainer/VBoxContainer/HBoxContainer"]
+margin_left = 260.0
+margin_right = 516.0
+margin_bottom = 239.0
+size_flags_horizontal = 3
+
+[node name="Label" type="Label" parent="Panel/MarginContainer/VBoxContainer/HBoxContainer/VBoxContainer2"]
+margin_right = 256.0
+margin_bottom = 15.0
+custom_fonts/font = SubResource( 3 )
+text = "Display"
+align = 1
+
+[node name="FCTPlayer" type="CheckBox" parent="Panel/MarginContainer/VBoxContainer/HBoxContainer/VBoxContainer2"]
+margin_top = 19.0
+margin_right = 256.0
+margin_bottom = 43.0
+custom_fonts/font = SubResource( 5 )
+text = "Floating combat text - Player"
+
+[node name="FCTEnemies" type="CheckBox" parent="Panel/MarginContainer/VBoxContainer/HBoxContainer/VBoxContainer2"]
+margin_top = 47.0
+margin_right = 256.0
+margin_bottom = 71.0
+custom_fonts/font = SubResource( 5 )
+text = "Floating combat text - Enemies"
+
+[node name="HBoxContainer2" type="HBoxContainer" parent="Panel/MarginContainer/VBoxContainer"]
+margin_top = 243.0
+margin_right = 516.0
+margin_bottom = 264.0
 alignment = 1
 
-[node name="Button" type="Button" parent="Panel/VBoxContainer/HBoxContainer2"]
-margin_left = 254.0
-margin_right = 266.0
-margin_bottom = 20.0
+[node name="Save" type="Button" parent="Panel/MarginContainer/VBoxContainer/HBoxContainer2"]
+margin_left = 181.0
+margin_right = 256.0
+margin_bottom = 21.0
+rect_min_size = Vector2( 75, 0 )
+custom_fonts/font = SubResource( 4 )
+text = "Save"
+flat = true
 
-[node name="Button2" type="Button" parent="Panel/VBoxContainer/HBoxContainer2"]
-margin_left = 270.0
-margin_right = 282.0
-margin_bottom = 20.0
+[node name="NinePatchRect" type="NinePatchRect" parent="Panel/MarginContainer/VBoxContainer/HBoxContainer2/Save"]
+show_behind_parent = true
+anchor_right = 1.0
+anchor_bottom = 1.0
+texture = ExtResource( 5 )
+patch_margin_left = 6
+patch_margin_top = 6
+patch_margin_right = 6
+patch_margin_bottom = 6
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Cancel" type="Button" parent="Panel/MarginContainer/VBoxContainer/HBoxContainer2"]
+margin_left = 260.0
+margin_right = 335.0
+margin_bottom = 21.0
+rect_min_size = Vector2( 75, 0 )
+custom_fonts/font = SubResource( 4 )
+text = "Cancel"
+flat = true
+
+[node name="NinePatchRect" type="NinePatchRect" parent="Panel/MarginContainer/VBoxContainer/HBoxContainer2/Cancel"]
+show_behind_parent = true
+anchor_right = 1.0
+anchor_bottom = 1.0
+texture = ExtResource( 5 )
+patch_margin_left = 6
+patch_margin_top = 6
+patch_margin_right = 6
+patch_margin_bottom = 6
+__meta__ = {
+"_edit_use_anchors_": false
+}
+[connection signal="value_changed" from="Panel/MarginContainer/VBoxContainer/HBoxContainer/VBoxContainer/Master/VolumeMasterSlider" to="Panel" method="_on_VolumeMasterSlider_value_changed"]
+[connection signal="value_changed" from="Panel/MarginContainer/VBoxContainer/HBoxContainer/VBoxContainer/Music/VolumeMusicSlider" to="Panel" method="_on_VolumeMusicSlider_value_changed"]
+[connection signal="value_changed" from="Panel/MarginContainer/VBoxContainer/HBoxContainer/VBoxContainer/SFX/VolumeSFXSlider" to="Panel" method="_on_VolumeSFXSlider_value_changed"]
+[connection signal="value_changed" from="Panel/MarginContainer/VBoxContainer/HBoxContainer/VBoxContainer/Player/VolumePlayerSlider" to="Panel" method="_on_VolumePlayerSlider_value_changed"]
+[connection signal="value_changed" from="Panel/MarginContainer/VBoxContainer/HBoxContainer/VBoxContainer/Enemies/VolumeEnemiesSlider" to="Panel" method="_on_VolumeEnemiesSlider_value_changed"]
+[connection signal="value_changed" from="Panel/MarginContainer/VBoxContainer/HBoxContainer/VBoxContainer/Map/VolumeMapSlider" to="Panel" method="_on_VolumeMapSlider_value_changed"]
+[connection signal="pressed" from="Panel/MarginContainer/VBoxContainer/HBoxContainer2/Save" to="Panel" method="_on_Save_pressed"]
+[connection signal="pressed" from="Panel/MarginContainer/VBoxContainer/HBoxContainer2/Cancel" to="Panel" method="_on_Cancel_pressed"]

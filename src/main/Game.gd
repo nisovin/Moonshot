@@ -116,6 +116,8 @@ func start_client(ip, port):
 func restart_client():
 	level.name = "OldLevel"
 	level.queue_free()
+	yield(get_tree(), "idle_frame")
+	yield(get_tree(), "idle_frame")
 	level = R.Level.instance()
 	add_child(level)
 	level.visible = false

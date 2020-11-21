@@ -237,6 +237,7 @@ func update_ui():
 			healthbar_anim.playback_speed = s
 	else:
 		if healthbar_anim.is_playing():
+			healthbar_anim.seek(0)
 			healthbar_anim.stop()
 	
 	$PlayerBars/Energy.value = cls.energy
@@ -308,12 +309,16 @@ func _on_Resume_pressed():
 	Game.lock_player_input = false
 	$Menu.hide()
 
+func _on_Settings_pressed():
+	Settings.show_settings()
+	
 func _on_Disconnect_pressed():
 	Game.lock_player_input = false
 	Game.leave_game()
 
 func _on_Quit_pressed():
 	get_tree().quit()
+
 
 
 

@@ -1,4 +1,4 @@
-[gd_scene load_steps=18 format=2]
+[gd_scene load_steps=24 format=2]
 
 [ext_resource path="res://main/MainMenu.gd" type="Script" id=1]
 [ext_resource path="res://misc/bg3.png" type="Texture" id=2]
@@ -9,6 +9,7 @@
 [ext_resource path="res://music/oppressive_gloom.ogg" type="AudioStream" id=7]
 [ext_resource path="res://sfx/rollover6.ogg" type="AudioStream" id=8]
 [ext_resource path="res://sfx/click3.ogg" type="AudioStream" id=9]
+[ext_resource path="res://gui/Minimal5x7.ttf" type="DynamicFontData" id=10]
 
 [sub_resource type="DynamicFont" id=1]
 size = 32
@@ -46,6 +47,25 @@ font_data = ExtResource( 4 )
 font_data = ExtResource( 4 )
 
 [sub_resource type="DynamicFont" id=8]
+font_data = ExtResource( 4 )
+
+[sub_resource type="StyleBoxFlat" id=10]
+content_margin_left = 5.0
+content_margin_right = 5.0
+content_margin_top = 5.0
+content_margin_bottom = 5.0
+bg_color = Color( 0, 0, 0, 0.905882 )
+
+[sub_resource type="DynamicFont" id=9]
+font_data = ExtResource( 3 )
+
+[sub_resource type="DynamicFont" id=11]
+font_data = ExtResource( 4 )
+
+[sub_resource type="DynamicFont" id=12]
+font_data = ExtResource( 10 )
+
+[sub_resource type="DynamicFont" id=13]
 font_data = ExtResource( 4 )
 
 [node name="MainMenu" type="Control"]
@@ -90,14 +110,20 @@ __meta__ = {
 
 [node name="VBoxContainer" type="VBoxContainer" parent="Menu"]
 margin_left = 188.0
-margin_top = 92.0
+margin_top = 59.0
 margin_right = 388.0
-margin_bottom = 231.0
+margin_bottom = 265.0
 custom_constants/separation = 5
 
-[node name="Singleplayer" type="Button" parent="Menu/VBoxContainer"]
+[node name="Control2" type="Control" parent="Menu/VBoxContainer"]
 margin_right = 200.0
-margin_bottom = 21.0
+margin_bottom = 15.0
+rect_min_size = Vector2( 0, 15 )
+
+[node name="Singleplayer" type="Button" parent="Menu/VBoxContainer"]
+margin_top = 20.0
+margin_right = 200.0
+margin_bottom = 41.0
 custom_fonts/font = SubResource( 2 )
 text = "Singleplayer"
 flat = true
@@ -116,9 +142,9 @@ __meta__ = {
 }
 
 [node name="Multiplayer" type="Button" parent="Menu/VBoxContainer"]
-margin_top = 26.0
+margin_top = 46.0
 margin_right = 200.0
-margin_bottom = 47.0
+margin_bottom = 67.0
 custom_fonts/font = SubResource( 2 )
 text = "Multiplayer"
 flat = true
@@ -137,24 +163,24 @@ __meta__ = {
 }
 
 [node name="MPStatus" type="Label" parent="Menu/VBoxContainer"]
-margin_top = 52.0
+margin_top = 72.0
 margin_right = 200.0
-margin_bottom = 67.0
+margin_bottom = 87.0
 rect_min_size = Vector2( 200, 0 )
 custom_fonts/font = SubResource( 3 )
 text = "Checking..."
 align = 1
 
 [node name="Control" type="Control" parent="Menu/VBoxContainer"]
-margin_top = 72.0
-margin_right = 200.0
-margin_bottom = 87.0
-rect_min_size = Vector2( 0, 15 )
-
-[node name="Fullscreen" type="Button" parent="Menu/VBoxContainer"]
 margin_top = 92.0
 margin_right = 200.0
-margin_bottom = 113.0
+margin_bottom = 102.0
+rect_min_size = Vector2( 0, 10 )
+
+[node name="Fullscreen" type="Button" parent="Menu/VBoxContainer"]
+margin_top = 107.0
+margin_right = 200.0
+margin_bottom = 128.0
 custom_fonts/font = SubResource( 2 )
 text = "Fullscreen (F11)"
 flat = true
@@ -172,10 +198,52 @@ __meta__ = {
 "_edit_use_anchors_": false
 }
 
-[node name="Quit" type="Button" parent="Menu/VBoxContainer"]
-margin_top = 118.0
+[node name="Settings" type="Button" parent="Menu/VBoxContainer"]
+margin_top = 133.0
 margin_right = 200.0
-margin_bottom = 139.0
+margin_bottom = 154.0
+custom_fonts/font = SubResource( 2 )
+text = "Settings"
+flat = true
+
+[node name="NinePatchRect3" type="NinePatchRect" parent="Menu/VBoxContainer/Settings"]
+show_behind_parent = true
+anchor_right = 1.0
+anchor_bottom = 1.0
+texture = ExtResource( 6 )
+patch_margin_left = 6
+patch_margin_top = 6
+patch_margin_right = 6
+patch_margin_bottom = 6
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Credits" type="Button" parent="Menu/VBoxContainer"]
+margin_top = 159.0
+margin_right = 200.0
+margin_bottom = 180.0
+custom_fonts/font = SubResource( 2 )
+text = "Credits"
+flat = true
+
+[node name="NinePatchRect3" type="NinePatchRect" parent="Menu/VBoxContainer/Credits"]
+show_behind_parent = true
+anchor_right = 1.0
+anchor_bottom = 1.0
+texture = ExtResource( 6 )
+patch_margin_left = 6
+patch_margin_top = 6
+patch_margin_right = 6
+patch_margin_bottom = 6
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Quit" type="Button" parent="Menu/VBoxContainer"]
+margin_top = 185.0
+margin_right = 200.0
+margin_bottom = 206.0
 custom_fonts/font = SubResource( 2 )
 text = "Quit"
 flat = true
@@ -333,26 +401,99 @@ __meta__ = {
 "_edit_use_anchors_": false
 }
 
+[node name="Credits" type="CenterContainer" parent="."]
+visible = false
+anchor_right = 1.0
+anchor_bottom = 1.0
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="PanelContainer" type="PanelContainer" parent="Credits"]
+margin_left = 283.0
+margin_top = 157.0
+margin_right = 293.0
+margin_bottom = 167.0
+custom_styles/panel = SubResource( 10 )
+
+[node name="VBoxContainer" type="VBoxContainer" parent="Credits/PanelContainer"]
+margin_left = 5.0
+margin_top = 5.0
+margin_right = 405.0
+margin_bottom = 278.0
+
+[node name="Label" type="Label" parent="Credits/PanelContainer/VBoxContainer"]
+margin_right = 400.0
+margin_bottom = 15.0
+custom_fonts/font = SubResource( 9 )
+text = "Credits"
+align = 1
+
+[node name="RichTextLabel" type="RichTextLabel" parent="Credits/PanelContainer/VBoxContainer"]
+margin_top = 19.0
+margin_right = 400.0
+margin_bottom = 249.0
+rect_min_size = Vector2( 400, 230 )
+custom_fonts/bold_font = SubResource( 11 )
+custom_fonts/normal_font = SubResource( 12 )
+bbcode_enabled = true
+bbcode_text = "Gotta put this in here still..."
+text = "Gotta put this in here still..."
+
+[node name="CenterContainer" type="CenterContainer" parent="Credits/PanelContainer/VBoxContainer"]
+margin_top = 253.0
+margin_right = 400.0
+margin_bottom = 273.0
+
+[node name="CloseCredits" type="Button" parent="Credits/PanelContainer/VBoxContainer/CenterContainer"]
+margin_left = 176.0
+margin_right = 223.0
+margin_bottom = 20.0
+custom_fonts/font = SubResource( 13 )
+text = "Close"
+flat = true
+
+[node name="NinePatchRect5" type="NinePatchRect" parent="Credits/PanelContainer/VBoxContainer/CenterContainer/CloseCredits"]
+show_behind_parent = true
+anchor_right = 1.0
+anchor_bottom = 1.0
+texture = ExtResource( 6 )
+patch_margin_left = 6
+patch_margin_top = 6
+patch_margin_right = 6
+patch_margin_bottom = 6
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
 [node name="HTTPRequest" type="HTTPRequest" parent="."]
 
 [node name="Music" type="AudioStreamPlayer" parent="."]
 stream = ExtResource( 7 )
 volume_db = -20.0
 autoplay = true
+bus = "Music"
 
 [node name="Rollover" type="AudioStreamPlayer" parent="."]
 stream = ExtResource( 8 )
+volume_db = -11.801
+bus = "SFX"
 
 [node name="Click" type="AudioStreamPlayer" parent="."]
 stream = ExtResource( 9 )
-
+bus = "SFX"
 [connection signal="mouse_entered" from="Menu/VBoxContainer/Singleplayer" to="." method="_on_button_over"]
 [connection signal="pressed" from="Menu/VBoxContainer/Singleplayer" to="." method="_on_Singleplayer_pressed"]
 [connection signal="mouse_entered" from="Menu/VBoxContainer/Multiplayer" to="." method="_on_button_over"]
 [connection signal="pressed" from="Menu/VBoxContainer/Multiplayer" to="." method="_on_Multiplayer_pressed"]
 [connection signal="mouse_entered" from="Menu/VBoxContainer/Fullscreen" to="." method="_on_button_over"]
 [connection signal="pressed" from="Menu/VBoxContainer/Fullscreen" to="." method="_on_Fullscreen_pressed"]
+[connection signal="mouse_entered" from="Menu/VBoxContainer/Settings" to="." method="_on_button_over"]
+[connection signal="pressed" from="Menu/VBoxContainer/Settings" to="." method="_on_Settings_pressed"]
+[connection signal="mouse_entered" from="Menu/VBoxContainer/Credits" to="." method="_on_button_over"]
+[connection signal="pressed" from="Menu/VBoxContainer/Credits" to="." method="_on_Credits_pressed"]
 [connection signal="mouse_entered" from="Menu/VBoxContainer/Quit" to="." method="_on_button_over"]
 [connection signal="pressed" from="Menu/VBoxContainer/Quit" to="." method="_on_Quit_pressed"]
 [connection signal="pressed" from="ServerList/PanelContainer/VBox/HBoxContainer/CancelButton" to="." method="_on_CancelButton_pressed"]
+[connection signal="pressed" from="Credits/PanelContainer/VBoxContainer/CenterContainer/CloseCredits" to="." method="_on_CloseCredits_pressed"]
 [connection signal="request_completed" from="HTTPRequest" to="." method="_on_HTTPRequest_request_completed"]
