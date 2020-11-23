@@ -70,6 +70,7 @@ var energy = 25
 
 var shoot_aim_time = 0
 var shoot_cd = 0
+var last_aim_dir = ""
 
 var volley_cd = 0
 
@@ -149,6 +150,7 @@ func attack1_release():
 remotesync func shoot_aim(pos):
 	state = ArcherState.AIMING_ARROW
 	shoot_aim_time = 0
+	last_aim_dir = ""
 	owner.position = pos
 	owner.pause_movement()
 	if is_network_master():
@@ -317,13 +319,18 @@ func ultimate_hit(enemy, vel):
 	else:
 		enemy.local_hit(null)
 
+remotesync func aim_anim(dir):
+	owner.sprite.play("aim_" + dir)
+
 func _physics_process(delta):
 	if state == ArcherState.AIMING_ARROW and is_network_master():
 		shoot_aim_time += delta
 		var dir = owner.get_action_direction(arrow_spawn)
 		arrow_spawn.rotation = dir.angle()
 		owner.set_facing(dir, false)
-		owner.sprite.play("aim_" + owner.facing)
+		if last_aim_dir != owner.facing:
+			last_aim_dir = owner.facing
+			rpc("aim_anim", owner.facing)
 		var scale = 0.2 + min(shoot_aim_time / SHOOT_AIM_TIME * 1.6, 1.6)
 		for m in arrow_spawn.get_children():
 			m.scale.x = scale

@@ -87,7 +87,7 @@ func play(sound_name, bus = SFX, volume = 1.0, avoid_overlap = 10):
 		last_played[sound_name] = OS.get_ticks_msec()
 	return channel
 
-func play_at_position(position, sound_name, bus = SFX, min_volume = 0.0, volume = 1.0):
+func play_at_position(position, sound_name, bus = SFX, min_volume = 0.0, volume = 1.0, avoid_overlap = 0):
 	if Game.is_server() or Game.player == null: return
 	var dist = Game.player.position.distance_to(position)
 	var vol = 0
@@ -98,7 +98,7 @@ func play_at_position(position, sound_name, bus = SFX, min_volume = 0.0, volume 
 	else:
 		vol = clamp((dist - POSITIONAL_DROP_START) / (POSITIONAL_DROP_END - POSITIONAL_DROP_START), min_volume, 1.0)
 	if vol > 0:
-		play(sound_name, bus, vol * volume, 0)
+		play(sound_name, bus, vol * volume, avoid_overlap)
 	
 
 func loop(sound_name, bus = SFX, volume = 1.0):

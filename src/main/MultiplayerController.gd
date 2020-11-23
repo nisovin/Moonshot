@@ -219,11 +219,11 @@ func kick(player_name):
 
 func save_ban_files():
 	var file = File.new()
-	file.open("banned_ips.txt", File.WRITE)
+	file.open("../banned_ips.txt", File.WRITE)
 	for ip in banned_ips:
 		file.store_line(ip)
 	file.close()
-	file.open("banned_uuids.txt", File.WRITE)
+	file.open("../banned_uuids.txt", File.WRITE)
 	for uuid in banned_uuids:
 		file.store_line(uuid)
 	file.close()

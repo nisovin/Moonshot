@@ -22,10 +22,7 @@ func _physics_process(delta):
 	distance_traveled += vel_len * delta
 	$AnimatedSprite.position.y = sin(distance_traveled / distance_total * PI) * -max_height
 	if distance_total - distance_traveled < 5:
-		var bodies = N.get_overlapping_bodies($Area2D)
-		var areas = N.get_overlapping_hitboxes($Area2D, "shrines")
-		for a in areas:
-			bodies.append(a)
+		var bodies = N.get_overlapping_bodies_and_areas($Area2D)
 		emit_signal("impact", bodies)
 		Audio.play_at_position(position, "siege_impact", Audio.ENEMIES)
 		queue_free()

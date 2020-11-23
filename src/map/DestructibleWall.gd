@@ -90,7 +90,7 @@ remotesync func update_status(new_status):
 		stop_repair()
 		$Particles2D.emitting = true
 		if new_status == 0:
-			Audio.play_at_position(position, "wall_destroyed", Audio.MAP, 0.5)
+			Audio.play_at_position(position, "wall_destroyed", Audio.MAP, 0.5, 5)
 		else:
 			Audio.play_at_position(position, "wall_break", Audio.MAP, 0.3)
 	status = new_status

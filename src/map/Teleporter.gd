@@ -5,6 +5,8 @@ export (Vector2) var target = Vector2.UP * 64 setget set_target
 
 onready var label = $Z/Label
 
+var cooldown_until = 0
+
 func _ready():
 	$Sprite.rotation = target.angle()
 	$Sprite/Particles2D.lifetime = target.length() / 32
@@ -21,9 +23,10 @@ func set_target(val):
 		update()
 
 func interact(body):
-	if overlaps_body(body):
+	if overlaps_body(body) and cooldown_until < OS.get_ticks_msec():
 		body.teleport(position + target)
 		Audio.play("teleport", Audio.MAP)
+		cooldown_until = OS.get_ticks_msec() + 3000
 
 func _on_Teleporter_body_entered(body):
 	if body.is_network_master():

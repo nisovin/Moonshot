@@ -20,21 +20,21 @@ func _ready():
 	heal_max = max_health
 	health_stones = $HealthDisplay.get_child_count()
 	
-	var noise = OpenSimplexNoise.new()
-	
-	noise.seed = N.rng.randi()
-	noise.period = 1
-	$Sprite.texture = ImageTexture.new()
-	$Sprite.texture.create_from_image(noise.get_seamless_image(64), 0)
-	
-	noise.seed = N.rng.randi()
-	noise.lacunarity = 6.0
-	noise.period = 1
-	$Sprite2.texture = ImageTexture.new()
-	$Sprite2.texture.create_from_image(noise.get_seamless_image(64), 0)
-	
-	$Pool.material.set_shader_param("color_offset", $Sprite.texture)
-	$Pool.material.set_shader_param("time_offset", $Sprite2.texture)
+#	var noise = OpenSimplexNoise.new()
+#
+#	noise.seed = N.rng.randi()
+#	noise.period = 1
+#	$Sprite.texture = ImageTexture.new()
+#	$Sprite.texture.create_from_image(noise.get_seamless_image(64), 0)
+#
+#	noise.seed = N.rng.randi()
+#	noise.lacunarity = 6.0
+#	noise.period = 1
+#	$Sprite2.texture = ImageTexture.new()
+#	$Sprite2.texture.create_from_image(noise.get_seamless_image(64), 0)
+#
+#	$Pool.material.set_shader_param("color_offset", $Sprite.texture)
+#	$Pool.material.set_shader_param("time_offset", $Sprite2.texture)
 
 func set_time(time):
 	if health > 0:
@@ -70,7 +70,7 @@ remotesync func update_health_display(stones):
 	health_stones = stones
 	for i in $HealthDisplay.get_child_count():
 		var s = $HealthDisplay.get_child(i)
-		s.modulate = Color.aqua if i < health_stones else Color.black
+		s.modulate = Color.aqua if i < health_stones else Color.darkcyan
 
 remotesync func die():
 	print("Shrine died")

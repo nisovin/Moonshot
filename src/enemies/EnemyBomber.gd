@@ -5,6 +5,9 @@ const BLAST_TIME = 1.5
 var enemy_node
 var exploded = false
 
+var attack_damage_to_walls = 750
+var attack_damage_to_shrines = 200
+
 func init_sub(node):
 	enemy_node = node
 	max_health = 500
@@ -39,10 +42,13 @@ func attack(entity, melee):
 	enemy_node.controller.stun_duration = 500
 	rpc("show_blast")
 	yield(get_tree().create_timer(BLAST_TIME), "timeout")
-	var targets = N.get_overlapping_bodies($TargetBox)
+	if enemy_node.dead: return
+	var targets = N.get_overlapping_bodies_and_areas($TargetBox)
 	for target in targets:
 		if target.is_in_group("walls"):
-			target.apply_damage(attack_damage * 10)
+			target.apply_damage(attack_damage_to_walls)
+		elif target.is_in_group("shrines"):
+			target.apply_damage(attack_damage_to_shrines)
 		elif target.is_in_group("players"):
 			target.apply_damage(modify_damage(attack_damage, target))
 	enemy_node.rpc("die")
@@ -54,4 +60,5 @@ remotesync func show_blast():
 	$Tween.start()
 	Audio.play_at_position(enemy_node.position, "bomber_ignite", Audio.ENEMIES)
 	yield(get_tree().create_timer(BLAST_TIME), "timeout")
+	if enemy_node.dead: return
 	Audio.play("bomber_explode", Audio.ENEMIES)

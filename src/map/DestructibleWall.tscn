@@ -148,7 +148,6 @@ nine_patch_stretch = true
 __meta__ = {
 "_edit_use_anchors_": false
 }
-
 [connection signal="body_entered" from="BehindDetector" to="." method="_on_BehindDetector_body_entered"]
 [connection signal="body_exited" from="BehindDetector" to="." method="_on_BehindDetector_body_exited"]
 [connection signal="body_entered" from="RepairDetector" to="." method="_on_RepairDetector_body_entered"]
