@@ -162,6 +162,7 @@ remotesync func damage(new_health, energy_damage = 0):
 			emit_signal("became_untargetable", self)
 			Game.level.dead_players[int(name)] = get_data()
 		if Game.is_server():
+			yield(get_tree().create_timer(1), "timeout")
 			delete()
 		else:
 			visual_anim.play("die")

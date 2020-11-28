@@ -12,3 +12,4 @@ export_presets.cfg
 data_*/
 src/godot.exe
 src/server.txt
+server/bad_words.txt

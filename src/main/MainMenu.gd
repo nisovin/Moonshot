@@ -3,6 +3,7 @@ extends Control
 var join = false
 
 func _ready():
+	$VersionLabel.text = "Version: " + Game.VERSION
 	$ServerList.hide()
 	get_servers()
 

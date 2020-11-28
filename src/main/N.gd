@@ -17,6 +17,18 @@ func fct(obj, text, color, crit = false):
 	obj.add_child(t)
 	t.init(text, color, crit)
 
+func bitmask_get(bitmask: int, bit: int) -> bool:
+	return bitmask & (1 << bit) != 0
+
+func bitmask_set(bitmask: int, bit: int, value: bool) -> int:
+	if value:
+		return bitmask | (1 << bit)
+	else:
+		return bitmask & ~(1 << bit)
+		
+func bitmask_toggle(bitmask: int, bit: int) -> int:
+	return bitmask ^ (1 << bit)
+
 # *** RANDOM *** #
 
 func rand_int(from, to):

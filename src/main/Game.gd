@@ -4,8 +4,9 @@ signal input_method_changed
 signal entered_level
 
 const MAX_PLAYERS = 100
-const PLAYERS_TO_START = 1
-const VERSION = 1
+const PLAYERS_TO_START = 5
+const START_COUNTDOWN = 30
+const VERSION = "0.1.2"
 const TILE_SIZE = 16
 
 enum MPMode { NONE, SOLO, CLIENT, SERVER, HOST, REMOTE }

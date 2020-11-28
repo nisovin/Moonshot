@@ -1,4 +1,4 @@
-[gd_scene load_steps=33 format=2]
+[gd_scene load_steps=34 format=2]
 
 [ext_resource path="res://gui/Minimap.gd" type="Script" id=1]
 [ext_resource path="res://gui/GameGUI.gd" type="Script" id=2]
@@ -44,6 +44,12 @@ tracks/0/keys = {
 "update": 0,
 "values": [ Color( 0.5, 0, 0, 1 ), Color( 1, 0, 0, 1 ), Color( 0.5, 0, 0, 1 ) ]
 }
+
+[sub_resource type="DynamicFont" id=11]
+size = 32
+outline_size = 2
+outline_color = Color( 0, 0, 0, 1 )
+font_data = ExtResource( 19 )
 
 [sub_resource type="StyleBoxFlat" id=3]
 bg_color = Color( 0, 0, 0, 0.670588 )
@@ -339,6 +345,22 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 custom_fonts/font = SubResource( 1 )
 text = "0"
+align = 1
+valign = 1
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="GameOver" type="Label" parent="."]
+visible = false
+anchor_top = 0.5
+anchor_right = 1.0
+anchor_bottom = 0.5
+margin_top = -7.0
+margin_bottom = 7.0
+custom_fonts/font = SubResource( 11 )
+custom_colors/font_color = Color( 0.490196, 0, 0.827451, 1 )
+text = "The Bastion Has Fallen"
 align = 1
 valign = 1
 __meta__ = {

@@ -167,6 +167,7 @@ overlay={
 
 [logging]
 
+file_logging/enable_file_logging=true
 file_logging/enable_file_logging.pc=false
 file_logging/log_path="user://logs/moonshot.log"
 file_logging/enable_file_logging.server=true

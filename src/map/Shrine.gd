@@ -3,6 +3,7 @@ extends Area2D
 signal became_untargetable
 signal destroyed
 
+export (NodePath) var doodad = null
 export (int) var max_health = 500
 var health
 var heal_max
@@ -80,6 +81,11 @@ remotesync func die():
 	$Tween.interpolate_property($Particles, "modulate", Color.white, Color.red, 10)
 	$Tween.start()
 	$MidnightParticles.emitting = false
+	$DeathParticles.emitting = true
+	if doodad:
+		var doodad_node = get_node(doodad)
+		if doodad_node:
+			doodad_node.die()
 
 func _physics_process(delta):
 	if Game.player != null:

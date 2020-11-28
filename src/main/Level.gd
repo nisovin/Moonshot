@@ -133,7 +133,7 @@ func _on_shrine1_destroyed():
 		if w.status > 0 and w.position.y < shrine1.position.y + 10 * 16:
 			w.apply_damage(5000)
 	if firewall.position.y < shrine1.position.y:
-		rpc("move_firewall", shrine1.position.y + 64)
+		rpc("move_firewall", shrine1.position.y + 64, true)
 	yield(get_tree().create_timer(30), "timeout")
 	rpc("end_effect", Game.Effects.SHRINEDEATH)
 	state = GameState.STAGE2
@@ -158,9 +158,9 @@ func game_tick():
 				countdown = 0
 		else:
 			var players = players_node.get_child_count()
-			if players >= Game.PLAYERS_TO_START:
-				countdown = 15
-				rpc("add_system_message", "The enemy forces will arrive from the north in 15 seconds!")
+			if players >= Game.PLAYERS_TO_START or Game.is_solo():
+				countdown = Game.START_COUNTDOWN
+				rpc("add_system_message", "The enemy forces will arrive from the north in " + str(Game.START_COUNTDOWN) + " seconds!")
 	elif state == GameState.STAGE1 or state == GameState.STAGE2:
 		if next_event > 0:
 			next_event -= 1
@@ -264,9 +264,9 @@ func _on_FirewallTick_timeout():
 				if w.status > 0 and w.position.y < firewall.position.y:
 					w.apply_damage(200)
 
-remotesync func move_firewall(y):
+remotesync func move_firewall(y, slow = false):
 	$Tween.remove(firewall, "position.y")
-	$Tween.interpolate_property(firewall, "position:y", firewall.position.y, y, $FirewallTick.wait_time * .9)
+	$Tween.interpolate_property(firewall, "position:y", firewall.position.y, y, $FirewallTick.wait_time * .9 if not slow else 30)
 	$Tween.start()
 
 func pause_spawning(time):

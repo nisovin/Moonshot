@@ -14,7 +14,7 @@ var name_to_id = {}
 var id_to_uuid = {}
 var saved_players = {}
 
-var max_players = 20
+var max_players = 15
 var dc_error = null
 
 func init_server():

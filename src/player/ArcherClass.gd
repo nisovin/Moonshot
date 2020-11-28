@@ -256,7 +256,8 @@ remotesync func start_shadow(pos):
 	shadow_started = OS.get_ticks_msec()
 	owner.position = pos
 	owner.current_speed = owner.NORMAL_SPEED * SHADOW_SPEED_MULT
-	owner.collision.disabled = true
+	owner.collision_mask = Game.Layer.WALLS
+	owner.collision_layer = 0
 	owner.targetable = false
 	owner.untarget()
 	shadow_tween.stop_all()
@@ -271,7 +272,8 @@ remotesync func stop_shadow(pos):
 	shadow_lingering = false
 	owner.position = pos
 	owner.current_speed = owner.NORMAL_SPEED
-	owner.collision.disabled = false
+	owner.collision_mask = Game.Layer.WALLS | Game.Layer.ENEMIES
+	owner.collision_layer = Game.Layer.PLAYERS
 	owner.targetable = true
 	shadow_tween.stop_all()
 	shadow_tween.interpolate_property(owner.sprite, "modulate", SHADOW_MODULATE, Color.white, 0.2)

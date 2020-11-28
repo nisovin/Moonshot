@@ -12,6 +12,13 @@ func _draw():
 	# draw bg
 	draw_rect(Rect2(Vector2.ZERO, rect_size), Color(0, 0, 0, 0.75))
 	
+	# draw firewall
+	var firewall = get_tree().get_nodes_in_group("firewall")
+	if firewall and firewall.size() > 0:
+		var rel = get_relative_position(firewall[0].position)
+		rel.x = 0
+		draw_rect(Rect2(rel, Vector2(rect_size.x, 1)), Color(0.25, 0.15, 0))
+	
 	# draw shrines
 	for s in get_tree().get_nodes_in_group("shrines"):
 		var rel = get_relative_position(s.position)

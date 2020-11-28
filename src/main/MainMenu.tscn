@@ -1,4 +1,4 @@
-[gd_scene load_steps=24 format=2]
+[gd_scene load_steps=25 format=2]
 
 [ext_resource path="res://main/MainMenu.gd" type="Script" id=1]
 [ext_resource path="res://misc/bg3.png" type="Texture" id=2]
@@ -17,16 +17,19 @@ extra_spacing_char = 1
 font_data = ExtResource( 3 )
 
 [sub_resource type="DynamicFont" id=2]
+font_data = ExtResource( 10 )
+
+[sub_resource type="DynamicFont" id=3]
 outline_size = 1
 outline_color = Color( 0, 0.121569, 0.25098, 1 )
 font_data = ExtResource( 4 )
 
-[sub_resource type="DynamicFont" id=3]
+[sub_resource type="DynamicFont" id=4]
 outline_size = 1
 outline_color = Color( 0, 0, 0, 1 )
 font_data = ExtResource( 4 )
 
-[sub_resource type="StyleBoxFlat" id=4]
+[sub_resource type="StyleBoxFlat" id=5]
 content_margin_left = 5.0
 content_margin_right = 5.0
 content_margin_top = 5.0
@@ -37,16 +40,16 @@ corner_radius_top_right = 5
 corner_radius_bottom_right = 5
 corner_radius_bottom_left = 5
 
-[sub_resource type="DynamicFont" id=5]
-font_data = ExtResource( 3 )
-
 [sub_resource type="DynamicFont" id=6]
-font_data = ExtResource( 4 )
+font_data = ExtResource( 3 )
 
 [sub_resource type="DynamicFont" id=7]
 font_data = ExtResource( 4 )
 
 [sub_resource type="DynamicFont" id=8]
+font_data = ExtResource( 4 )
+
+[sub_resource type="DynamicFont" id=9]
 font_data = ExtResource( 4 )
 
 [sub_resource type="StyleBoxFlat" id=10]
@@ -56,16 +59,16 @@ content_margin_top = 5.0
 content_margin_bottom = 5.0
 bg_color = Color( 0, 0, 0, 0.905882 )
 
-[sub_resource type="DynamicFont" id=9]
+[sub_resource type="DynamicFont" id=11]
 font_data = ExtResource( 3 )
 
-[sub_resource type="DynamicFont" id=11]
+[sub_resource type="DynamicFont" id=12]
 font_data = ExtResource( 4 )
 
-[sub_resource type="DynamicFont" id=12]
+[sub_resource type="DynamicFont" id=13]
 font_data = ExtResource( 10 )
 
-[sub_resource type="DynamicFont" id=13]
+[sub_resource type="DynamicFont" id=14]
 font_data = ExtResource( 4 )
 
 [node name="MainMenu" type="Control"]
@@ -101,6 +104,20 @@ __meta__ = {
 "_edit_use_anchors_": false
 }
 
+[node name="VersionLabel" type="Label" parent="."]
+anchor_left = 1.0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+margin_left = -160.0
+margin_top = -25.0
+margin_right = -4.0
+margin_bottom = -5.0
+custom_fonts/font = SubResource( 2 )
+text = "Version: ?"
+align = 2
+valign = 2
+
 [node name="Menu" type="CenterContainer" parent="."]
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -124,7 +141,7 @@ rect_min_size = Vector2( 0, 15 )
 margin_top = 20.0
 margin_right = 200.0
 margin_bottom = 41.0
-custom_fonts/font = SubResource( 2 )
+custom_fonts/font = SubResource( 3 )
 text = "Singleplayer"
 flat = true
 
@@ -145,7 +162,7 @@ __meta__ = {
 margin_top = 46.0
 margin_right = 200.0
 margin_bottom = 67.0
-custom_fonts/font = SubResource( 2 )
+custom_fonts/font = SubResource( 3 )
 text = "Multiplayer"
 flat = true
 
@@ -167,7 +184,7 @@ margin_top = 72.0
 margin_right = 200.0
 margin_bottom = 87.0
 rect_min_size = Vector2( 200, 0 )
-custom_fonts/font = SubResource( 3 )
+custom_fonts/font = SubResource( 4 )
 text = "Checking..."
 align = 1
 
@@ -181,7 +198,7 @@ rect_min_size = Vector2( 0, 10 )
 margin_top = 107.0
 margin_right = 200.0
 margin_bottom = 128.0
-custom_fonts/font = SubResource( 2 )
+custom_fonts/font = SubResource( 3 )
 text = "Fullscreen (F11)"
 flat = true
 
@@ -202,7 +219,7 @@ __meta__ = {
 margin_top = 133.0
 margin_right = 200.0
 margin_bottom = 154.0
-custom_fonts/font = SubResource( 2 )
+custom_fonts/font = SubResource( 3 )
 text = "Settings"
 flat = true
 
@@ -223,7 +240,7 @@ __meta__ = {
 margin_top = 159.0
 margin_right = 200.0
 margin_bottom = 180.0
-custom_fonts/font = SubResource( 2 )
+custom_fonts/font = SubResource( 3 )
 text = "Credits"
 flat = true
 
@@ -244,7 +261,7 @@ __meta__ = {
 margin_top = 185.0
 margin_right = 200.0
 margin_bottom = 206.0
-custom_fonts/font = SubResource( 2 )
+custom_fonts/font = SubResource( 3 )
 text = "Quit"
 flat = true
 
@@ -274,7 +291,7 @@ margin_left = 283.0
 margin_top = 157.0
 margin_right = 293.0
 margin_bottom = 167.0
-custom_styles/panel = SubResource( 4 )
+custom_styles/panel = SubResource( 5 )
 
 [node name="VBox" type="VBoxContainer" parent="ServerList/PanelContainer"]
 margin_left = 5.0
@@ -289,7 +306,7 @@ __meta__ = {
 [node name="Label" type="Label" parent="ServerList/PanelContainer/VBox"]
 margin_right = 427.0
 margin_bottom = 15.0
-custom_fonts/font = SubResource( 5 )
+custom_fonts/font = SubResource( 6 )
 text = "Server List"
 align = 1
 
@@ -316,7 +333,7 @@ margin_top = 3.0
 margin_right = 100.0
 margin_bottom = 18.0
 rect_min_size = Vector2( 100, 0 )
-custom_fonts/font = SubResource( 6 )
+custom_fonts/font = SubResource( 7 )
 text = "Name"
 
 [node name="Status" type="Label" parent="ServerList/PanelContainer/VBox/List/Entry"]
@@ -325,7 +342,7 @@ margin_top = 3.0
 margin_right = 304.0
 margin_bottom = 18.0
 rect_min_size = Vector2( 200, 0 )
-custom_fonts/font = SubResource( 6 )
+custom_fonts/font = SubResource( 7 )
 text = "Status"
 
 [node name="Players" type="Label" parent="ServerList/PanelContainer/VBox/List/Entry"]
@@ -334,14 +351,14 @@ margin_top = 3.0
 margin_right = 383.0
 margin_bottom = 18.0
 rect_min_size = Vector2( 75, 0 )
-custom_fonts/font = SubResource( 6 )
+custom_fonts/font = SubResource( 7 )
 text = "Players"
 
 [node name="Join" type="Button" parent="ServerList/PanelContainer/VBox/List/Entry"]
 margin_left = 387.0
 margin_right = 427.0
 margin_bottom = 21.0
-custom_fonts/font = SubResource( 7 )
+custom_fonts/font = SubResource( 8 )
 text = "Play"
 flat = true
 
@@ -384,7 +401,7 @@ alignment = 1
 margin_left = 185.0
 margin_right = 241.0
 margin_bottom = 21.0
-custom_fonts/font = SubResource( 8 )
+custom_fonts/font = SubResource( 9 )
 text = "Cancel"
 flat = true
 
@@ -425,7 +442,7 @@ margin_bottom = 278.0
 [node name="Label" type="Label" parent="Credits/PanelContainer/VBoxContainer"]
 margin_right = 400.0
 margin_bottom = 15.0
-custom_fonts/font = SubResource( 9 )
+custom_fonts/font = SubResource( 11 )
 text = "Credits"
 align = 1
 
@@ -434,8 +451,8 @@ margin_top = 19.0
 margin_right = 400.0
 margin_bottom = 249.0
 rect_min_size = Vector2( 400, 230 )
-custom_fonts/bold_font = SubResource( 11 )
-custom_fonts/normal_font = SubResource( 12 )
+custom_fonts/bold_font = SubResource( 12 )
+custom_fonts/normal_font = SubResource( 13 )
 bbcode_enabled = true
 bbcode_text = "Gotta put this in here still..."
 text = "Gotta put this in here still..."
@@ -447,9 +464,9 @@ margin_bottom = 273.0
 
 [node name="CloseCredits" type="Button" parent="Credits/PanelContainer/VBoxContainer/CenterContainer"]
 margin_left = 176.0
-margin_right = 223.0
-margin_bottom = 20.0
-custom_fonts/font = SubResource( 13 )
+margin_right = 224.0
+margin_bottom = 21.0
+custom_fonts/font = SubResource( 14 )
 text = "Close"
 flat = true
 
