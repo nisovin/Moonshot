@@ -197,6 +197,12 @@ func _on_entered_level():
 func show_respawn():
 	$Respawn.show()
 
+func show_game_over():
+	$GameOver.modulate = Color.transparent
+	$GameOver.show()
+	$GameOver/Tween.interpolate_property($GameOver, "modulate", Color.transparent, Color(1, 1, 1, 0.75), 6, Tween.TRANS_QUAD, Tween.EASE_IN)
+	$GameOver/Tween.start()
+
 func _on_RespawnButton_pressed():
 	$Respawn.hide()
 	Game.level.rpc("respawn")

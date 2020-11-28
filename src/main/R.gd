@@ -86,7 +86,8 @@ func load_resources(is_server):
 			"bomber_ignite": load("res://sfx/bomber_ignite.wav"),
 			"bomber_explode": load("res://sfx/explode.wav"),
 			"wall_break": load("res://sfx/wall_break.wav"),
-			"wall_destroyed": load("res://sfx/wall_destroyed.wav")
+			"wall_destroyed": load("res://sfx/wall_destroyed.wav"),
+			"gem_break": load("res://sfx/gem_break.ogg")
 		}
 		
 		Icons = {

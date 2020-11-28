@@ -143,6 +143,7 @@ func _on_shrine1_destroyed():
 func _on_shrine2_destroyed():
 	rpc("add_system_message", "The moonstone has been destroyed. The bastion has been lost.")
 	state = GameState.GAMEOVER
+	gui.show_game_over()
 	yield(get_tree().create_timer(10), "timeout")
 	if Game.is_solo():
 		Game.leave_game()

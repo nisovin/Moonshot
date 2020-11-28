@@ -72,6 +72,7 @@ remotesync func update_health_display(stones):
 	for i in $HealthDisplay.get_child_count():
 		var s = $HealthDisplay.get_child(i)
 		s.modulate = Color.aqua if i < health_stones else Color.darkcyan
+	Audio.play("gem_break", Audio.MAP)
 
 remotesync func die():
 	print("Shrine died")

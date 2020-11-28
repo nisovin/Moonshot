@@ -122,52 +122,52 @@ texture = ExtResource( 6 )
 
 [node name="Sprite" type="Sprite" parent="HealthDisplay"]
 modulate = Color( 0, 1, 1, 1 )
-position = Vector2( 0.561226, 16.416 )
+position = Vector2( 0.894936, 8.07326 )
 texture = ExtResource( 8 )
 
 [node name="Sprite2" type="Sprite" parent="HealthDisplay"]
 modulate = Color( 0, 1, 1, 1 )
-position = Vector2( 0.280609, 70.2942 )
+position = Vector2( 0.614319, 61.9515 )
 texture = ExtResource( 8 )
 
 [node name="Sprite3" type="Sprite" parent="HealthDisplay"]
 modulate = Color( 0, 1, 1, 1 )
-position = Vector2( 33.3932, 0.84185 )
+position = Vector2( 33.7269, -7.50089 )
 texture = ExtResource( 8 )
 
 [node name="Sprite4" type="Sprite" parent="HealthDisplay"]
 modulate = Color( 0, 1, 1, 1 )
-position = Vector2( -31.1483, 0.701546 )
+position = Vector2( -30.8146, -7.6412 )
 texture = ExtResource( 8 )
 
 [node name="Sprite5" type="Sprite" parent="HealthDisplay"]
 modulate = Color( 0, 1, 1, 1 )
-position = Vector2( 45.6, 51.2123 )
+position = Vector2( 45.9337, 42.8696 )
 texture = ExtResource( 8 )
 
 [node name="Sprite6" type="Sprite" parent="HealthDisplay"]
 modulate = Color( 0, 1, 1, 1 )
-position = Vector2( -42.7939, 52.7557 )
+position = Vector2( -42.4602, 44.413 )
 texture = ExtResource( 8 )
 
 [node name="Sprite7" type="Sprite" parent="HealthDisplay"]
 modulate = Color( 0, 1, 1, 1 )
-position = Vector2( 62.5772, 14.4517 )
+position = Vector2( 62.9109, 6.10896 )
 texture = ExtResource( 8 )
 
 [node name="Sprite8" type="Sprite" parent="HealthDisplay"]
 modulate = Color( 0, 1, 1, 1 )
-position = Vector2( -61.0339, 15.9951 )
+position = Vector2( -60.7002, 7.65236 )
 texture = ExtResource( 8 )
 
 [node name="Sprite9" type="Sprite" parent="HealthDisplay"]
 modulate = Color( 0, 1, 1, 1 )
-position = Vector2( 44.3372, -35.2172 )
+position = Vector2( 44.6709, -43.5599 )
 texture = ExtResource( 8 )
 
 [node name="Sprite10" type="Sprite" parent="HealthDisplay"]
 modulate = Color( 0, 1, 1, 1 )
-position = Vector2( -43.3551, -35.2172 )
+position = Vector2( -43.0214, -43.5599 )
 texture = ExtResource( 8 )
 
 [node name="Particles" type="Particles2D" parent="."]

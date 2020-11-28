@@ -163,15 +163,17 @@ remotesync func shoot_fire(pos, dir):
 	owner.position = pos
 	energy -= SHOOT_COST
 	shoot_cd = SHOOT_COOLDOWN
-	var vel = dir * SHOOT_ARROW_SPEED
-	vel = vel.rotated(-SHOOT_ARROW_SPREAD / 2)
-	for i in SHOOT_ARROW_COUNT:
-		var arrow = R.CrescentArrow.instance()
-		Game.level.projectiles_node.add_child(arrow)
-		arrow.init(arrow_spawn.global_position, vel, i != SHOOT_ARROW_COUNT / 2)
-		vel = vel.rotated(SHOOT_ARROW_SPREAD / (SHOOT_ARROW_COUNT - 1))
-		arrow.connect("hit", self, "shoot_hit")
-		shoot_end()
+	var col = N.raycast(self, owner.position, owner.position + dir * 16, Game.Layer.WALLS)
+	if not col:
+		var vel = dir * SHOOT_ARROW_SPEED
+		vel = vel.rotated(-SHOOT_ARROW_SPREAD / 2)
+		for i in SHOOT_ARROW_COUNT:
+			var arrow = R.CrescentArrow.instance()
+			Game.level.projectiles_node.add_child(arrow)
+			arrow.init(arrow_spawn.global_position, vel, i != SHOOT_ARROW_COUNT / 2)
+			vel = vel.rotated(SHOOT_ARROW_SPREAD / (SHOOT_ARROW_COUNT - 1))
+			arrow.connect("hit", self, "shoot_hit")
+	shoot_end()
 	Audio.play("archer_attack1_fire", Audio.PLAYER, 1.0 if is_network_master() else 0.25)
 
 func shoot_hit(enemy, vel, mini):

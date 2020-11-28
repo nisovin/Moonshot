@@ -198,17 +198,19 @@ remotesync func attack1(pos, dir):
 	attack1tween.start()
 	attack1particles.emitting = true
 	Audio.play("warrior_attack1_swing", Audio.PLAYER, 0.6 if is_network_master() else 0.2)
-	
+
 	# hit enemies
 	var dam = calculate_damage(ATTACK_DAMAGE)
 	for enemy in N.get_overlapping_hitboxes(attack1area, "enemies"):
 		if owner.position.direction_to(enemy.position).dot(attack_move_dir) > ATTACK_DOT_ARC:
-			var knockback = owner.position.direction_to(enemy.position) * ATTACK_KNOCKBACK_STR
-			if enemy.is_network_master():
-				owner.last_combat = OS.get_ticks_msec()
-				enemy.hit({"damage": dam, "knockback": knockback, "knockback_dur": ATTACK_KNOCKBACK_DUR, "stun": ATTACK_STUN_DUR})
-			elif is_network_master():
-				enemy.local_hit(knockback, ATTACK_KNOCKBACK_DUR)
+			var col = N.raycast(self, owner.position, enemy.position, Game.Layer.WALLS)
+			if not col:
+				var knockback = owner.position.direction_to(enemy.position) * ATTACK_KNOCKBACK_STR
+				if enemy.is_network_master():
+					owner.last_combat = OS.get_ticks_msec()
+					enemy.hit({"damage": dam, "knockback": knockback, "knockback_dur": ATTACK_KNOCKBACK_DUR, "stun": ATTACK_STUN_DUR})
+				elif is_network_master():
+					enemy.local_hit(knockback, ATTACK_KNOCKBACK_DUR)
 		
 	# end anim
 	yield(get_tree().create_timer(ATTACK_SWING_TIME), "timeout")

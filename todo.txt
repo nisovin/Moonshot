@@ -2,3 +2,6 @@ Fix missing walking animation while aiming archer ultimate
 Fix closing settings with escape
 Enemies sometimes shoot through walls
 Warrior can hit enemies through walls
+Shrine under attack warning
+Shrine gem break sound
+Game over screen
