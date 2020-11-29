@@ -1,7 +1,10 @@
 Fix missing walking animation while aiming archer ultimate
 Fix closing settings with escape
 Enemies sometimes shoot through walls
-Warrior can hit enemies through walls
+Warrior can hit enemies through walls X
 Shrine under attack warning
-Shrine gem break sound
-Game over screen
+Shrine gem break sound X
+Game over screen X
+Reduce golem stun time
+Fix warrior charge arrow
+bomber explosion animation

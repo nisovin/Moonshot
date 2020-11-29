@@ -44,10 +44,12 @@ shape = SubResource( 1 )
 
 [node name="Sprite" type="Sprite" parent="."]
 position = Vector2( -48, 0 )
+z_index = 1
 texture = ExtResource( 2 )
 
 [node name="Particles2D" type="Particles2D" parent="."]
 position = Vector2( -20, 0 )
+z_index = 1
 amount = 300
 lifetime = 3.0
 visibility_rect = Rect2( -500, -500, 1000, 1000 )

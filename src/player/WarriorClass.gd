@@ -4,25 +4,24 @@ enum WarriorState { NORMAL, SWINGING_SWORD, AIMING_RUSH, RUSHING }
 
 const SERIALIZE_FIELDS = [ "state", "ultimate_duration" ]
 
-const MAX_HEALTH = 150
+const MAX_HEALTH = 200
 const HEALTH_REGEN = 2
 const ENERGY_REGEN = 10
 const ENERGY_EXHAUSTION_MULT = 0.7
-const NORMAL_ARMOR = 0.25
+const NORMAL_ARMOR = 0.5
 
 const ATTACK_SWING_TIME = 0.25
 const ATTACK_SWING_ANGLE = PI * 0.8
 const ATTACK_DOT_ARC = cos(ATTACK_SWING_ANGLE / 2)
 const ATTACK_MOVE_SPEED = 25
-const ATTACK_DAMAGE = 10
+const ATTACK_DAMAGE = 15
 const ATTACK_KNOCKBACK_STR = 300
 const ATTACK_KNOCKBACK_DUR = 0.1
 const ATTACK_STUN_DUR = 0.5
 const ATTACK_COST = 5
 const ATTACK_COOLDOWN = 0.4
 
-const AOE_DAMAGE_CLOSE = 40
-const AOE_DAMAGE_FAR = 25
+const AOE_DAMAGE = 30
 const AOE_CLOSE_RADIUS = 40
 const AOE_STUN_DUR = 2.0
 const AOE_COST = 15
@@ -37,19 +36,19 @@ const RUSH_DAMAGE = 10
 const RUSH_KNOCKBACK_STR = 300
 const RUSH_KNOCKBACK_DUR = 0.1
 const RUSH_STUN_DUR = 0.3
-const RUSH_COST = 50
+const RUSH_COST = 45
 const RUSH_COOLDOWN = 1.0
 
 const ULTIMATE_ATTACK_MULT = 3
-const ULTIMATE_ARMOR = 0.5
+const ULTIMATE_ARMOR = 0.75
 const ULTIMATE_ENERGY_MULT = 2
-const ULTIMATE_CD_MULT = 2.0
+const ULTIMATE_CD_MULT = 2.5
 const ULTIMATE_DURATION = 15
-const ULTIMATE_KILL_EXTEND = 1
+const ULTIMATE_KILL_EXTEND = 1.5
 const ULTIMATE_MAX_DURATION = 30
 const ULTIMATE_MODULATE = Color(0.6, 0.9, 1)
 const ULTIMATE_SCALE = 1.4
-const ULTIMATE_COOLDOWN = 120.0
+const ULTIMATE_COOLDOWN = 100.0
 const ULTIMATE_CD_REDUCE_KILL = 0.4
 const ULTIMATE_CD_REDUCE_KILL_BLOW = 1.0
 
@@ -61,7 +60,7 @@ const ABILITIES = [
 	},
 	{
 		"name": "Umbral Wave",
-		"description": "Thrust your moonblade into the ground, sending a shockwave around you that deals damage and stuns enemies for " + str(AOE_STUN_DUR) + " seconds.",
+		"description": "Thrust your moonblade into the ground, sending a shockwave around you that deals " + str(AOE_DAMAGE) + " damage and stuns enemies for " + str(AOE_STUN_DUR) + " seconds.",
 		"cost": str(AOE_COST) + " energy",
 		"cooldown": str(AOE_COOLDOWN) + " seconds"
 	},
@@ -141,12 +140,14 @@ func get_armor():
 
 func got_kill(enemy, killing_blow):
 	if killing_blow:
-		ultimate_cd -= ULTIMATE_CD_REDUCE_KILL_BLOW
+		if ultimate_duration <= 0:
+			ultimate_cd -= ULTIMATE_CD_REDUCE_KILL_BLOW
 		if ultimate_duration > 0 and ultimate_total_duration < ULTIMATE_MAX_DURATION:
 			ultimate_duration += ULTIMATE_KILL_EXTEND
 			ultimate_total_duration += ULTIMATE_KILL_EXTEND
 	else:
-		ultimate_cd -= ULTIMATE_CD_REDUCE_KILL
+		if ultimate_duration <= 0:
+			ultimate_cd -= ULTIMATE_CD_REDUCE_KILL
 
 func calculate_damage(dam):
 	if ultimate_duration > 0:
@@ -210,7 +211,7 @@ remotesync func attack1(pos, dir):
 					owner.last_combat = OS.get_ticks_msec()
 					enemy.hit({"damage": dam, "knockback": knockback, "knockback_dur": ATTACK_KNOCKBACK_DUR, "stun": ATTACK_STUN_DUR})
 				elif is_network_master():
-					enemy.local_hit(knockback, ATTACK_KNOCKBACK_DUR)
+					enemy.local_hit(owner, knockback, ATTACK_KNOCKBACK_DUR)
 		
 	# end anim
 	yield(get_tree().create_timer(ATTACK_SWING_TIME), "timeout")
@@ -244,12 +245,12 @@ remotesync func attack2(pos):
 	# hit enemies
 	for enemy in N.get_overlapping_bodies(attack2area, "enemies"):
 		if enemy.is_network_master():
-			var dist = enemy.position.distance_squared_to(owner.position)
-			var dam = calculate_damage(AOE_DAMAGE_CLOSE if dist < AOE_CLOSE_RADIUS * AOE_CLOSE_RADIUS else AOE_DAMAGE_FAR)
+			#var dist = enemy.position.distance_squared_to(owner.position)
+			var dam = calculate_damage(AOE_DAMAGE)
 			owner.last_combat = OS.get_ticks_msec()
 			enemy.hit({"damage": dam, "stun": AOE_STUN_DUR, "stun_break": false})
 		else:
-			enemy.local_hit(Vector2.ZERO, AOE_STUN_DUR)
+			enemy.local_hit(owner, Vector2.ZERO, AOE_STUN_DUR)
 
 # CHARGE
 
@@ -317,7 +318,7 @@ remotesync func end_rush(end_pos, collided):
 			owner.last_combat = OS.get_ticks_msec()
 			enemy.hit({"damage": dam, "knockback": knockback, "knockback_dur": RUSH_KNOCKBACK_DUR, "stun": RUSH_STUN_DUR})
 		elif is_network_master():
-			enemy.local_hit(knockback, RUSH_KNOCKBACK_DUR)
+			enemy.local_hit(owner, knockback, RUSH_KNOCKBACK_DUR)
 				
 
 # ULTIMATE
@@ -353,14 +354,14 @@ func _process(delta):
 func _physics_process(delta):
 	if attack_cd > 0:
 		attack_cd -= delta
-		if attack_cd <= 0 and state == WarriorState.NORMAL and (attack_queued or Input.is_action_pressed("attack1")):
+		if attack_cd <= 0 and state == WarriorState.NORMAL and (attack_queued or Input.is_action_pressed("attack1")) and is_network_master():
 			attack1_press()
 			
 	var regen = ENERGY_REGEN
 	if Game.level.is_effect_active(Game.Effects.MIDNIGHT) or Game.level.is_effect_active(Game.Effects.SHRINEDEATH):
 		regen *= 2
 	if Game.level.is_effect_active(Game.Effects.FATIGUE):
-		regen *= 0.5
+		regen *= 0.25
 	regen *= ((100 - owner.exhaustion * ENERGY_EXHAUSTION_MULT) / 100.0)
 	if ultimate_duration > 0:
 		ultimate_duration -= delta

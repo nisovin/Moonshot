@@ -117,4 +117,4 @@ func _on_Timer_timeout():
 				enemy.hit({"damage": 100})
 		if enemies.size() == 0:
 			for p in heal_area.get_overlapping_bodies():
-				p.apply_healing(3)
+				p.apply_healing(5)

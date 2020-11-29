@@ -3,6 +3,9 @@ extends EnemyType
 const FIREBALL_SPEED = 100
 
 func init_sub(node):
+	minimap_color = Color.orange
+	minimap_big = true
+	
 	max_health = 150
 	movement_speed = 30
 	height = 50

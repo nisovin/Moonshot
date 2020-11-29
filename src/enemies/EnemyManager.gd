@@ -13,7 +13,7 @@ const ENEMY_POWER = {
 
 enum Directive { NONE, FOCUS_PLAYERS, FOCUS_KEEP, SWIFTNESS, ENRAGE }
 
-var max_enemies = 90
+var max_enemies = 80
 var per_player_power_limit = 2
 var per_player_wave_size = 0.5
 var next_enemy_id = 1
@@ -27,6 +27,7 @@ var last_loop_time = 0
 var wall_list = []
 var wall_down_percents = {}
 var sped_up = 0
+var last_tick = 0
 
 func _ready():
 	set_process(false)
@@ -73,6 +74,12 @@ remotesync func spawn_enemy(data):
 #	frames_since_physics += 1
 
 func _process(delta): # TEST ME
+	
+	# check lag
+	var tick_time = OS.get_ticks_msec() - last_tick
+	if tick_time > (1000.0/15.0):
+		print("lag?", tick_time)
+	last_tick = OS.get_ticks_msec()
 	
 	# TODO: auto-kill enemies when it gets laggy
 	
@@ -127,7 +134,7 @@ func _process(delta): # TEST ME
 	
 	var target_wall_list = []
 	for w in wall_list:
-		if wall_down_percents[w.section][0] < 0.6:
+		if wall_down_percents[w.section][0] < 0.5:
 			target_wall_list.append(w)
 		
 	
@@ -202,17 +209,17 @@ func _on_SpawnTimer_timeout():
 			if spawn_point == null or x % 4 == 0:
 				spawn_point = N.rand_array(spawn_points)
 			var loc = spawn_point.global_position + Vector2(N.rand_float(0, 16), N.rand_float(0, 16))
-			var need_bigger_enemies = float(count) / max_enemies > 0.7 and power < max_enemy_power - 10
+			var need_bigger_enemies = float(count) / max_enemies > 0.5 and power < max_enemy_power - 10
 			var options = {}
 			options[Game.EnemyClass.GRUNT] = 100 if not need_bigger_enemies else 50
 			options[Game.EnemyClass.MAGE] = 15
 			if sped_up > 1:
 				options[Game.EnemyClass.ELITE] = 20 if not need_bigger_enemies else 50
 				options[Game.EnemyClass.PHOENIX] = 4 if not need_bigger_enemies else 10
-				options[Game.EnemyClass.SIEGE] = 4 if not need_bigger_enemies else 15
+				options[Game.EnemyClass.SIEGE] = 4 if not need_bigger_enemies else 20
 			if sped_up > 5:
-				options[Game.EnemyClass.BOMBER] = 5
-				options[Game.EnemyClass.SIEGE] = 10 if not need_bigger_enemies else 25
+				options[Game.EnemyClass.BOMBER] = 4
+				options[Game.EnemyClass.SIEGE] = 10 if not need_bigger_enemies else 30
 			var type_id = N.rand_weighted(options)
 			spawn({"id": next_enemy_id, "type_id": type_id, "position": loc})
 			next_enemy_id += 1

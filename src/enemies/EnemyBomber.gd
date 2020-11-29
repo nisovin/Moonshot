@@ -1,6 +1,6 @@
 extends EnemyType
 
-const BLAST_TIME = 1.5
+const BLAST_TIME = 1.25
 
 var enemy_node
 var exploded = false
@@ -10,8 +10,12 @@ var attack_damage_to_shrines = 200
 
 func init_sub(node):
 	enemy_node = node
+	
+	minimap_color = Color.magenta
+	minimap_big = true
+	
 	max_health = 500
-	movement_speed = 15
+	movement_speed = 20
 	height = 50
 	avoid_players = false
 	immune_to_knockback = true
@@ -24,7 +28,7 @@ func init_sub(node):
 	target_shrine_weight = 1
 
 	attack_melee = 10
-	attack_damage = 75
+	attack_damage = 100
 	attack_range = 32
 	attack_range_min = 0
 	attack_range_max = 32

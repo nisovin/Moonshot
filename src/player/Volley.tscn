@@ -4,7 +4,6 @@
 [ext_resource path="res://player/Volley.gd" type="Script" id=2]
 [ext_resource path="res://misc/Circle.gd" type="Script" id=3]
 
-
 [sub_resource type="Gradient" id=1]
 offsets = PoolRealArray( 0, 0.311005, 1 )
 colors = PoolColorArray( 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1 )
@@ -36,8 +35,9 @@ script = ExtResource( 2 )
 
 [node name="Particles2D" type="Particles2D" parent="."]
 position = Vector2( 0, -150 )
+z_index = 1
 emitting = false
-amount = 20
+amount = 25
 lifetime = 0.5
 one_shot = true
 explosiveness = 0.4

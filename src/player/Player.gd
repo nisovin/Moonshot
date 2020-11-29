@@ -63,6 +63,7 @@ func load_data(data):
 		$Visual/Sprite/Warrior.queue_free()
 	player_class.load_data(data.class_data if data.has("class_data") else null)
 	health = player_class.MAX_HEALTH
+	healthbar.value = float(health) / player_class.MAX_HEALTH * 100
 		
 	if name == str(get_tree().get_network_unique_id()):
 		camera = $Camera2D
@@ -184,7 +185,7 @@ remotesync func heal(new_health):
 		if Settings.gameplay_fct_self:
 			N.fct(self, amt, Color.green)
 	health = new_health
-	healthbar.value = health / player_class.MAX_HEALTH * 100
+	healthbar.value = float(health) / player_class.MAX_HEALTH * 100
 	if is_network_master():
 		update_health_music()
 

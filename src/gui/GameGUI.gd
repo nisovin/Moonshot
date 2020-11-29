@@ -5,7 +5,7 @@ onready var control_tooltips = [
 		"control": $PlayerBars/Health,
 		"corner": "BC",
 		"name": "Health",
-		"description": "If this reaches 0, you die. Regenerates slowly after being out of combat for 5 seconds."
+		"description": "If this reaches 0, you die. Regenerates slowly after being out of combat for 5 seconds, and at the shrine."
 	},
 	{
 		"control": $PlayerBars/Energy,

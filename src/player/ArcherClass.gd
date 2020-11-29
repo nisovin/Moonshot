@@ -183,7 +183,7 @@ func shoot_hit(enemy, vel, mini):
 		owner.last_combat = OS.get_ticks_msec()
 		enemy.hit({"damage": dam, "knockback": vel.normalized() * knockback, "knockback_dur": SHOOT_KNOCKBACK_DUR})
 	else:
-		enemy.local_hit(vel.normalized() * knockback, SHOOT_KNOCKBACK_DUR)
+		enemy.local_hit(owner, vel.normalized() * knockback, SHOOT_KNOCKBACK_DUR)
 
 remotesync func shoot_end():
 	state = ArcherState.NORMAL
@@ -195,6 +195,7 @@ func attack2_press():
 		return
 	if state == ArcherState.AIMING_ARROW:
 		state = ArcherState.NORMAL
+		owner.resume_movement()
 		arrow_spawn.visible = false
 		return
 	if state != ArcherState.NORMAL: return
@@ -233,7 +234,7 @@ remotesync func volley(pos):
 			if enemy.is_network_master():
 				enemy.hit({"damage": dam, "stun": VOLLEY_STUN_DUR})
 			else:
-				enemy.local_hit()
+				enemy.local_hit(owner)
 	
 	
 func movement_press():
@@ -321,7 +322,7 @@ func ultimate_hit(enemy, vel):
 	if enemy.is_network_master():
 		enemy.hit({"damage": calculate_damage(ULTIMATE_DAMAGE)})
 	else:
-		enemy.local_hit(null)
+		enemy.local_hit(owner, null)
 
 remotesync func aim_anim(dir):
 	owner.sprite.play("aim_" + dir)
@@ -354,7 +355,7 @@ func _physics_process(delta):
 			volley_target.position.y = clamp(volley_target.position.y, -144, 144)
 	if shoot_cd > 0:
 		shoot_cd -= delta
-		if shoot_cd <= 0 and state == ArcherState.NORMAL and Input.is_action_pressed("attack1"):
+		if shoot_cd <= 0 and energy >= SHOOT_COST and state == ArcherState.NORMAL and Input.is_action_pressed("attack1") and is_network_master():
 			rpc("shoot_aim", owner.position)
 	if volley_cd > 0: volley_cd -= delta
 	if shadow_cd > 0 and state != ArcherState.SHADOWED: shadow_cd -= delta
@@ -369,7 +370,7 @@ func _physics_process(delta):
 		if Game.level.is_effect_active(Game.Effects.MIDNIGHT) or Game.level.is_effect_active(Game.Effects.SHRINEDEATH):
 			regen *= 2
 		if Game.level.is_effect_active(Game.Effects.FATIGUE):
-			regen *= 0.5
+			regen *= 0.25
 		regen *= (100 - owner.exhaustion * ENERGY_EXHAUSTION_MULT) / 100.0
 		energy = min(energy + regen * delta, 100)
 

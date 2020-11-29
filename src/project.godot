@@ -20,7 +20,7 @@ _global_script_class_icons={
 
 [application]
 
-config/name="Moonshot"
+config/name="Defense of Novalunis"
 run/main_scene="res://bootstrap/Bootstrap.tscn"
 config/use_custom_user_dir=true
 config/custom_user_dir_name="DefenseOfNovalunis"

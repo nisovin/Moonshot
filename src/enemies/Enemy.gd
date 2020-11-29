@@ -12,6 +12,8 @@ var health: float = 50
 var max_health: float = 50
 var immune_to_knockback = false
 var immune_to_stun = false
+var minimap_color = Color.red
+var minimap_big = false
 var death_sound = null
 var last_hit = 0
 var dead = false
@@ -45,6 +47,8 @@ func load_data(data):
 	health = max_health
 	immune_to_knockback = controller.type.immune_to_knockback
 	immune_to_stun = controller.type.immune_to_stun
+	minimap_color = controller.type.minimap_color
+	minimap_big = controller.type.minimap_big
 	death_sound = controller.type.death_sound
 	if not is_network_master():
 		controller.queue_free()
@@ -100,9 +104,10 @@ remotesync func show_hit(h):
 	if Game.is_solo():
 		Audio.play("enemy_hit", Audio.ENEMIES, 0.4)
 
-func local_hit(vel = null, dur = 0):
+func local_hit(player, vel = null, dur = 0):
 	if dead: return
-	last_hit = OS.get_ticks_msec()
+	if player == Game.player:
+		last_hit = OS.get_ticks_msec()
 	if vel != null:
 		if (vel == Vector2.ZERO and not immune_to_stun) or (vel != Vector2.ZERO and not immune_to_knockback):
 			set_movement(vel, position, dur)
@@ -153,7 +158,7 @@ remotesync func die():
 	if dead: return
 	dead = true
 	if not Game.is_server():
-		if Game.player != null and last_hit > OS.get_ticks_msec() - 10000:
+		if Game.player != null and last_hit > 0 and last_hit > OS.get_ticks_msec() - 10000:
 			Game.player.got_kill(self, last_hit > OS.get_ticks_msec() - 250)
 		healthbar.visible = false
 		stun_particles.visible = false

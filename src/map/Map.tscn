@@ -14,25 +14,25 @@
 [ext_resource path="res://map/tileset_paths.tres" type="TileSet" id=13]
 [ext_resource path="res://map/tileset_walls.tres" type="TileSet" id=14]
 
-[sub_resource type="RectangleShape2D" id=2]
+[sub_resource type="RectangleShape2D" id=1]
 extents = Vector2( 70.9875, 16.6222 )
 
-[sub_resource type="RectangleShape2D" id=3]
+[sub_resource type="RectangleShape2D" id=2]
 extents = Vector2( 95.4014, 26.8475 )
 
-[sub_resource type="RectangleShape2D" id=4]
+[sub_resource type="RectangleShape2D" id=3]
 extents = Vector2( 18.9929, 134.92 )
 
-[sub_resource type="RectangleShape2D" id=5]
+[sub_resource type="RectangleShape2D" id=4]
 extents = Vector2( 64.5334, 10 )
 
-[sub_resource type="RectangleShape2D" id=6]
+[sub_resource type="RectangleShape2D" id=5]
 extents = Vector2( 65.0947, 10 )
 
-[sub_resource type="RectangleShape2D" id=7]
+[sub_resource type="RectangleShape2D" id=6]
 extents = Vector2( 10, 462.95 )
 
-[sub_resource type="RectangleShape2D" id=8]
+[sub_resource type="RectangleShape2D" id=7]
 extents = Vector2( 618.002, 130.8 )
 
 [node name="Map" type="Node2D"]
@@ -74,6 +74,7 @@ doodad = NodePath("../../../Objects/Decorations/Shrine1Doodad")
 [node name="Shrine2" parent="Ground/Shrines" instance=ExtResource( 3 )]
 position = Vector2( 528, 1488 )
 doodad = NodePath("../../../Objects/Decorations/Shrine2Doodad")
+max_health = 1500
 
 [node name="GroundEffects" type="Node2D" parent="Ground"]
 __meta__ = {
@@ -188,127 +189,127 @@ __meta__ = {
 
 [node name="ForwardWall1" parent="Objects/Walls" instance=ExtResource( 5 )]
 position = Vector2( 528, 288 )
-max_health = 400
-health = 400
+max_health = 250
+health = 250
 
 [node name="ForwardWall2" parent="Objects/Walls" instance=ExtResource( 5 )]
 position = Vector2( 608, 288 )
-max_health = 400
-health = 400
+max_health = 250
+health = 250
 
 [node name="ForwardWall3" parent="Objects/Walls" instance=ExtResource( 5 )]
 position = Vector2( 48, 416 )
-max_health = 400
-health = 400
+max_health = 250
+health = 250
 
 [node name="ForwardWall4" parent="Objects/Walls" instance=ExtResource( 5 )]
 position = Vector2( 128, 416 )
-max_health = 400
-health = 400
+max_health = 250
+health = 250
 
 [node name="ForwardWall5" parent="Objects/Walls" instance=ExtResource( 5 )]
 position = Vector2( 208, 384 )
-max_health = 400
-health = 400
+max_health = 250
+health = 250
 
 [node name="ForwardWall6" parent="Objects/Walls" instance=ExtResource( 5 )]
 position = Vector2( 288, 384 )
-max_health = 400
-health = 400
+max_health = 250
+health = 250
 
 [node name="ForwardWall7" parent="Objects/Walls" instance=ExtResource( 5 )]
 position = Vector2( 368, 288 )
-max_health = 400
-health = 400
+max_health = 250
+health = 250
 
 [node name="ForwardWall8" parent="Objects/Walls" instance=ExtResource( 5 )]
 position = Vector2( 448, 288 )
-max_health = 400
-health = 400
+max_health = 250
+health = 250
 
 [node name="ForwardWall9" parent="Objects/Walls" instance=ExtResource( 5 )]
 position = Vector2( 688, 288 )
-max_health = 400
-health = 400
+max_health = 250
+health = 250
 
 [node name="ForwardWall10" parent="Objects/Walls" instance=ExtResource( 5 )]
 position = Vector2( 1008, 416 )
-max_health = 400
-health = 400
+max_health = 250
+health = 250
 
 [node name="ForwardWall11" parent="Objects/Walls" instance=ExtResource( 5 )]
 position = Vector2( 928, 416 )
-max_health = 400
-health = 400
+max_health = 250
+health = 250
 
 [node name="ForwardWall12" parent="Objects/Walls" instance=ExtResource( 5 )]
 position = Vector2( 848, 384 )
-max_health = 400
-health = 400
+max_health = 250
+health = 250
 
 [node name="ForwardWall13" parent="Objects/Walls" instance=ExtResource( 5 )]
 position = Vector2( 768, 384 )
-max_health = 400
-health = 400
+max_health = 250
+health = 250
 
 [node name="ShrineWall1" parent="Objects/Walls" instance=ExtResource( 5 )]
 position = Vector2( 608, 512 )
-max_health = 250
-health = 250
+max_health = 350
+health = 350
 section = "shrine"
 
 [node name="ShrineWall2" parent="Objects/Walls" instance=ExtResource( 5 )]
 position = Vector2( 448, 752 )
-max_health = 250
-health = 250
+max_health = 350
+health = 350
 section = "shrine"
 
 [node name="ShrineWall3" parent="Objects/Walls" instance=ExtResource( 5 )]
 position = Vector2( 368, 720 )
-max_health = 250
-health = 250
+max_health = 350
+health = 350
 section = "shrine"
 
 [node name="ShrineWall4" parent="Objects/Walls" instance=ExtResource( 5 )]
 position = Vector2( 368, 560 )
-max_health = 250
-health = 250
+max_health = 350
+health = 350
 section = "shrine"
 
 [node name="ShrineWall5" parent="Objects/Walls" instance=ExtResource( 5 )]
 position = Vector2( 688, 560 )
-max_health = 250
-health = 250
+max_health = 350
+health = 350
 section = "shrine"
 
 [node name="ShrineWall6" parent="Objects/Walls" instance=ExtResource( 5 )]
 position = Vector2( 448, 512 )
-max_health = 250
-health = 250
+max_health = 350
+health = 350
 section = "shrine"
 
 [node name="ShrineWall7" parent="Objects/Walls" instance=ExtResource( 5 )]
 position = Vector2( 528, 512 )
-max_health = 250
-health = 250
+max_health = 350
+health = 350
 section = "shrine"
 
 [node name="ShrineWall8" parent="Objects/Walls" instance=ExtResource( 5 )]
 position = Vector2( 688, 720 )
-max_health = 250
-health = 250
+max_health = 350
+health = 350
 section = "shrine"
 
 [node name="ShrineWall9" parent="Objects/Walls" instance=ExtResource( 5 )]
 position = Vector2( 608, 752 )
-max_health = 250
-health = 250
+max_health = 350
+health = 350
 section = "shrine"
 
 [node name="ShrineWall10" parent="Objects/Walls" instance=ExtResource( 5 )]
 position = Vector2( 528, 752 )
-max_health = 250
-health = 250
+max_health = 350
+health = 350
 section = "shrine"
 
 [node name="KeepWall1" parent="Objects/Walls" instance=ExtResource( 5 )]
@@ -367,44 +368,44 @@ section = "keep"
 
 [node name="FinalWall1" parent="Objects/Walls" instance=ExtResource( 5 )]
 position = Vector2( 528, 1328 )
-max_health = 250
-health = 250
+max_health = 350
+health = 350
 section = "final"
 
 [node name="FinalWall2" parent="Objects/Walls" instance=ExtResource( 5 )]
 position = Vector2( 608, 1328 )
-max_health = 250
-health = 250
+max_health = 350
+health = 350
 section = "final"
 
 [node name="FinalWall3" parent="Objects/Walls" instance=ExtResource( 5 )]
 position = Vector2( 448, 1328 )
-max_health = 250
-health = 250
+max_health = 350
+health = 350
 section = "final"
 
 [node name="FinalWall4" parent="Objects/Walls" instance=ExtResource( 5 )]
 position = Vector2( 368, 1376 )
-max_health = 250
-health = 250
+max_health = 350
+health = 350
 section = "final"
 
 [node name="FinalWall5" parent="Objects/Walls" instance=ExtResource( 5 )]
 position = Vector2( 688, 1376 )
-max_health = 250
-health = 250
+max_health = 350
+health = 350
 section = "final"
 
 [node name="FinalWall6" parent="Objects/Walls" instance=ExtResource( 5 )]
 position = Vector2( 768, 1408 )
-max_health = 250
-health = 250
+max_health = 350
+health = 350
 section = "final"
 
 [node name="FinalWall7" parent="Objects/Walls" instance=ExtResource( 5 )]
 position = Vector2( 288, 1408 )
-max_health = 250
-health = 250
+max_health = 350
+health = 350
 section = "final"
 
 [node name="Decorations" type="YSort" parent="Objects"]
@@ -1080,64 +1081,64 @@ __meta__ = {
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Obstacles/StaticBody2D"]
 position = Vector2( 296.409, 1664.34 )
-shape = SubResource( 2 )
+shape = SubResource( 1 )
 
 [node name="CollisionShape2D11" type="CollisionShape2D" parent="Obstacles/StaticBody2D"]
 position = Vector2( 183.597, 1405.64 )
-shape = SubResource( 2 )
+shape = SubResource( 1 )
 
 [node name="CollisionShape2D12" type="CollisionShape2D" parent="Obstacles/StaticBody2D"]
 position = Vector2( 103.839, 1177.22 )
-shape = SubResource( 2 )
+shape = SubResource( 1 )
 
 [node name="CollisionShape2D4" type="CollisionShape2D" parent="Obstacles/StaticBody2D"]
 position = Vector2( 759.896, 1664.05 )
-shape = SubResource( 2 )
+shape = SubResource( 1 )
 
 [node name="CollisionShape2D13" type="CollisionShape2D" parent="Obstacles/StaticBody2D"]
 position = Vector2( 871.745, 1402.13 )
-shape = SubResource( 2 )
+shape = SubResource( 1 )
 
 [node name="CollisionShape2D14" type="CollisionShape2D" parent="Obstacles/StaticBody2D"]
 position = Vector2( 952.446, 1175.12 )
-shape = SubResource( 2 )
+shape = SubResource( 1 )
 
 [node name="CollisionShape2D15" type="CollisionShape2D" parent="Obstacles/StaticBody2D"]
 position = Vector2( 1047.8, 903.902 )
-shape = SubResource( 2 )
+shape = SubResource( 1 )
 
 [node name="CollisionShape2D16" type="CollisionShape2D" parent="Obstacles/StaticBody2D"]
 position = Vector2( 7.4054, 908.14 )
-shape = SubResource( 2 )
+shape = SubResource( 1 )
 
 [node name="CollisionShape2D5" type="CollisionShape2D" parent="Obstacles/StaticBody2D"]
 position = Vector2( 531.003, 1944.9 )
-shape = SubResource( 3 )
+shape = SubResource( 2 )
 
 [node name="CollisionShape2D6" type="CollisionShape2D" parent="Obstacles/StaticBody2D"]
 position = Vector2( 445.077, 1864.62 )
-shape = SubResource( 4 )
+shape = SubResource( 3 )
 
 [node name="CollisionShape2D7" type="CollisionShape2D" parent="Obstacles/StaticBody2D"]
 position = Vector2( 610.907, 1866.86 )
-shape = SubResource( 4 )
+shape = SubResource( 3 )
 
 [node name="CollisionShape2D2" type="CollisionShape2D" parent="Obstacles/StaticBody2D"]
 position = Vector2( 399.394, 1737.52 )
-shape = SubResource( 5 )
+shape = SubResource( 4 )
 
 [node name="CollisionShape2D3" type="CollisionShape2D" parent="Obstacles/StaticBody2D"]
 position = Vector2( 658.122, 1737.52 )
-shape = SubResource( 6 )
+shape = SubResource( 5 )
 
 [node name="CollisionShape2D8" type="CollisionShape2D" parent="Obstacles/StaticBody2D"]
 position = Vector2( -10.0908, -2.52271 )
-shape = SubResource( 7 )
+shape = SubResource( 6 )
 
 [node name="CollisionShape2D9" type="CollisionShape2D" parent="Obstacles/StaticBody2D"]
 position = Vector2( 1067.1, -10.0908 )
-shape = SubResource( 7 )
+shape = SubResource( 6 )
 
 [node name="CollisionShape2D10" type="CollisionShape2D" parent="Obstacles/StaticBody2D"]
 position = Vector2( 539.856, -436.733 )
-shape = SubResource( 8 )
+shape = SubResource( 7 )

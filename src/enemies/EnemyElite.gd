@@ -1,7 +1,9 @@
 extends EnemyType
 
 func init_sub(node):
-	max_health = 140
+	minimap_color = Color.firebrick
+	
+	max_health = 160
 	movement_speed = 50
 	height = 30
 	

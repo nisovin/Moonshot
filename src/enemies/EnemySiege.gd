@@ -5,7 +5,10 @@ const PROJECTILE_SPEED = 150
 var player_damage = 15
 
 func init_sub(node):
-	max_health = 150
+	minimap_color = Color.pink
+	minimap_big = true
+	
+	max_health = 200
 	movement_speed = 30
 	height = 45
 	avoid_players = true
@@ -18,9 +21,9 @@ func init_sub(node):
 
 	attack_melee = 0
 	attack_damage = 100
-	attack_range = 12 * Game.TILE_SIZE
+	attack_range = 15 * Game.TILE_SIZE
 	attack_range_min = 10 * Game.TILE_SIZE
-	attack_range_max = 15 * Game.TILE_SIZE
+	attack_range_max = 16 * Game.TILE_SIZE
 	attack_cooldown = 5000
 	
 	Audio.play("siege_spawn", Audio.MAP)

@@ -1,16 +1,48 @@
-extends Control
+extends TextureRect
 
 const SCALE = 16
 
+var ready = false
+var tile_corner
+var map_size
+
+func _ready():
+	yield(get_tree(), "idle_frame")
+	print(Game.level.map.corner)
+	
+	tile_corner = Game.level.map.corner
+	map_size = Game.level.map.map_size * Game.TILE_SIZE / SCALE
+	
+	var img = Image.new()
+	img.create(map_size.x, map_size.y, false, Image.FORMAT_RGBA8)
+	img.lock()
+	var objects = Game.level.map.objects
+	for x in map_size.x:
+		for y in map_size.y:
+			var tile = Vector2(x, y) + tile_corner
+			var color = Color.black
+			if objects.get_cellv(tile) >= 0:
+				img.set_pixel(x, y, Color(0, 0.25, 0.25))
+			else:
+				img.set_pixel(x, y, Color(0, 0, 0, 0.75))
+	img.unlock()
+	var tex = ImageTexture.new()
+	tex.create_from_image(img, 0)
+	texture = tex
+	
+	ready = true
+
 func _physics_process(delta):
+	if not ready or Game.level == null: return
 	update()
 	
+	var center_on = Game.level.player_spawn.position
+	if Game.player != null:
+		center_on = Game.player.position
+	rect_position = -(center_on / SCALE) + tile_corner + (get_parent().rect_size / 2)
+	
 func _draw():
-	if Game.player == null: return
-	
-	
-	# draw bg
-	draw_rect(Rect2(Vector2.ZERO, rect_size), Color(0, 0, 0, 0.75))
+	if not ready or Game.level == null: return
 	
 	# draw firewall
 	var firewall = get_tree().get_nodes_in_group("firewall")
@@ -30,13 +62,13 @@ func _draw():
 	for e in get_tree().get_nodes_in_group("enemies"):
 		if not e.dead:
 			var rel = get_relative_position(e.position)
-			if e.max_health >= 150:
-				big_ones.append(rel)
+			if e.minimap_big:
+				big_ones.append([rel, e.minimap_color])
 			else:
-				draw_rect(Rect2(rel, Vector2.ONE), Color.red)
+				draw_rect(Rect2(rel, Vector2.ONE), e.minimap_color)
 	for p in big_ones:
-		draw_rect(Rect2(p + Vector2.UP, Vector2(1, 3)), Color.orange)
-		draw_rect(Rect2(p + Vector2.LEFT, Vector2(3, 1)), Color.orange)
+		draw_rect(Rect2(p[0] + Vector2.UP, Vector2(1, 3)), p[1])
+		draw_rect(Rect2(p[0] + Vector2.LEFT, Vector2(3, 1)), p[1])
 		
 	# draw walls
 	for w in get_tree().get_nodes_in_group("walls"):
@@ -49,18 +81,22 @@ func _draw():
 	for p in get_tree().get_nodes_in_group("players"):
 		if p != Game.player and not p.dead:
 			var rel = get_relative_position(p.position)
-			draw_rect(Rect2(rel, Vector2.ONE), Color.lightcyan)
+			draw_rect(Rect2(rel, Vector2.ONE), Color.cyan)
 			
 	# draw myself
-	draw_rect(Rect2(rect_size / 2, Vector2.ONE), Color.yellow)
+	if Game.player != null:
+		var rel = get_relative_position(Game.player.position)
+		draw_rect(Rect2(rel, Vector2.ONE), Color.yellow)
+	#draw_rect(Rect2(rect_size / 2, Vector2.ONE), Color.yellow)
 
 	# draw border
-	draw_rect(Rect2(Vector2.ZERO, rect_size), Color.gray, false, 2)
+	#draw_rect(Rect2(Vector2.ZERO, rect_size), Color.gray, false, 2)
 
 func get_relative_position(pos):
-	var center = rect_size / 2
-	var rel = pos - Game.player.position
-	rel /= SCALE
-	rel.x = floor(rel.x) if rel.x < 0 else ceil(rel.x)
-	rel.y = floor(rel.y) if rel.y < 0 else ceil(rel.y)
-	return center + rel
+	return (pos / SCALE) - tile_corner
+#	var center = rect_size / 2
+#	var rel = pos - Game.player.position
+#	rel /= SCALE
+#	rel.x = floor(rel.x) if rel.x < 0 else ceil(rel.x)
+#	rel.y = floor(rel.y) if rel.y < 0 else ceil(rel.y)
+#	return center + rel

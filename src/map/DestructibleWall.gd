@@ -75,7 +75,8 @@ func apply_damage(dam):
 	return true
 
 master func repair(amount):
-	apply_damage(-amount)
+	if status < 3:
+		apply_damage(-amount)
 
 remotesync func update_status(new_status):
 	if new_status == 0 and status != 0:

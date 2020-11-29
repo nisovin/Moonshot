@@ -1,0 +1,2 @@
+adduser
+sudo aptitude install screen htop nload nano zip

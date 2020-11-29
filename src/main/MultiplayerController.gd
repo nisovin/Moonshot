@@ -7,6 +7,7 @@ var server_port = 20514
 var api_key = ""
 var auth_password = ""
 var bad_words = []
+var vip_ips = []
 var banned_ips = []
 var banned_uuids = []
 
@@ -34,6 +35,14 @@ func init_server():
 			api_key = data.key
 			auth_password = data.auth
 			if data.has("cap"): max_players = int(data.cap)
+	if file.file_exists("../vip_ips.txt"):
+		if file.open("../vip_ips.txt", File.READ) == OK:
+			while not file.eof_reached():
+				var l = file.get_line().strip_edges()
+				if l != "":
+					vip_ips.append(l)
+			file.close()
+			print("Loaded ", vip_ips.size(), " vips")
 	if file.file_exists("../bad_words.txt"):
 		if file.open("../bad_words.txt", File.READ) == OK:
 			while not file.eof_reached():
@@ -62,7 +71,7 @@ func init_server():
 	var peer = NetworkedMultiplayerENet.new()
 	peer.create_server(server_port, Game.MAX_PLAYERS)
 	get_tree().network_peer = peer
-	print("Server id ", server_id, " started on port ", server_port, " with player cap ", max_players)
+	print("Server id ", server_id, " started with version ", Game.VERSION, " on port ", server_port, " with player cap ", max_players)
 	
 	$NotifyTimer.start()
 	_on_NotifyTimer_timeout()
@@ -91,20 +100,24 @@ func _on_HTTPRequest_request_completed(result, response_code, headers, body: Poo
 	pass #print(result, " ", response_code, " ", body.get_string_from_utf8())
 
 func _on_server_player_connected(id):
-	print("Player connected: id=", id)
-	
-	var c = get_tree().multiplayer.get_network_connected_peers().size()
-	if c > max_players:
-		rpc_id(id, "disconnect_error", "Server is full")
-		get_tree().network_peer.disconnect_peer(id, false)
-		print("Server is full - " + max_players)
-		return
-	
 	var ip = get_tree().network_peer.get_peer_address(id)
+	print("Player connected: id=", id, " ip=", ip)
+	
+	
 	if banned_ips.find(ip) >= 0:
 		get_tree().network_peer.disconnect_peer(id, true)
 		print("Banned IP kicked: " + ip)
 		return
+		
+	if vip_ips.find(ip) >= 0:
+		print("  (vip)")
+	else:
+		var c = get_tree().multiplayer.get_network_connected_peers().size()
+		if c > max_players:
+			rpc_id(id, "disconnect_error", "Server is full")
+			get_tree().network_peer.disconnect_peer(id, false)
+			print("Server is full - " + max_players)
+			return
 	
 	var data = {}
 	data.version = Game.VERSION
@@ -135,16 +148,16 @@ remote func player_uuid(uuid: String):
 		return
 		
 	# find existing player
-#	if uuid in saved_players:
-#		var data = saved_players[uuid]
-#		data.id = id
-#		if data.exhaustion < Game.level.base_exhaustion:
-#			data.exhaustion = Game.level.base_exhaustion
-#		rpc_id(id, "restore_player")
-#		level.add_new_player(data)
-#		name_to_id[data.player_name.to_lower()] = id
-#		id_to_uuid[id] = uuid
-#		print("Player rejoined: id=", id, " name=" , data.player_name, " class=", data.class_id, " uuid=", uuid)
+	if uuid in saved_players:
+		var data = saved_players[uuid]
+		data.id = id
+		if data.exhaustion < Game.level.base_exhaustion:
+			data.exhaustion = Game.level.base_exhaustion
+		rpc_id(id, "restore_player")
+		level.add_new_player(data)
+		name_to_id[data.player_name.to_lower()] = id
+		id_to_uuid[id] = uuid
+		print("Player rejoined: id=", id, " name=" , data.player_name, " class=", data.class_id, " uuid=", uuid)
 
 remote func player_join(class_id, player_name: String, uuid: String):
 	var id = get_tree().get_rpc_sender_id()

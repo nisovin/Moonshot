@@ -3,12 +3,12 @@ extends Node2D
 enum GameState { PREGAME, STAGE1, BETWEEN, STAGE2, GAMEOVER }
 
 const EVENTS = {
-	"rage": 2,
-	"fatigue": 2,
-	"focuskeep": 2,
-	"bombers": 1,
-	"siege": 2,
-	"elites": 2
+	"rage": 5,
+	"fatigue": 5,
+	"bombers": 2,
+	"siege": 4,
+	"elites": 6,
+	"confusion": 1
 }
 
 var chat_history = []
@@ -30,10 +30,12 @@ onready var shrine1 = map.get_node(map.shrine1_path)
 onready var shrine2 = map.get_node(map.shrine2_path)
 
 var state = GameState.PREGAME
+var waiting = false
 var countdown = 0
 var time_started = 0
 var base_exhaustion = 0
 var time_of_day = "start"
+var dawn_counter = 0
 var current_shrine = null
 var next_event = 0
 var active_effects = []
@@ -54,6 +56,13 @@ func start_server():
 	$GameTick.start()
 	shrine1.connect("destroyed", self, "_on_shrine1_destroyed")
 	shrine2.connect("destroyed", self, "_on_shrine2_destroyed")
+
+func wait():
+	if state == GameState.PREGAME:
+		waiting = true
+		countdown = 0
+		return true
+	return false
 
 remotesync func start_game():
 	print("Game started")
@@ -93,7 +102,9 @@ func time_event(event):
 			$ExhaustionTick.start()
 			$FirewallTick.start()
 			enemy_manager.speed_up_spawning()
-			next_event = N.rand_int(30, 120)
+			dawn_counter += 1
+			if next_event == 0:
+				next_event = N.rand_int(30, 120)
 		elif event == "midday":
 			rpc("start_effect", Game.Effects.MIDDAY)
 		elif event == "afternoon":
@@ -128,7 +139,7 @@ func _on_shrine1_destroyed():
 	rpc("start_effect", Game.Effects.SHRINEDEATH)
 	for e in enemies_node.get_children():
 		if not e.dead:
-			e.hit({"damage": 60})
+			e.hit({"damage": 80})
 	for w in walls_node.get_children():
 		if w.status > 0 and w.position.y < shrine1.position.y + 10 * 16:
 			w.apply_damage(5000)
@@ -141,14 +152,17 @@ func _on_shrine1_destroyed():
 	shrine2.active = true
 	
 func _on_shrine2_destroyed():
-	rpc("add_system_message", "The moonstone has been destroyed. The bastion has been lost.")
-	state = GameState.GAMEOVER
-	gui.show_game_over()
+	rpc("gameover")
 	yield(get_tree().create_timer(10), "timeout")
 	if Game.is_solo():
 		Game.leave_game()
 	elif Game.is_server():
 		Game.restart_server()
+		
+remotesync func gameover():
+	add_system_message("The moonstone has been destroyed. The bastion has been lost.")
+	state = GameState.GAMEOVER
+	gui.show_game_over()
 
 func game_tick():
 	if state == GameState.PREGAME:
@@ -159,14 +173,14 @@ func game_tick():
 				countdown = 0
 		else:
 			var players = players_node.get_child_count()
-			if players >= Game.PLAYERS_TO_START or Game.is_solo():
+			if (not waiting and players >= Game.PLAYERS_TO_START) or Game.is_solo():
 				countdown = Game.START_COUNTDOWN
 				rpc("add_system_message", "The enemy forces will arrive from the north in " + str(Game.START_COUNTDOWN) + " seconds!")
 	elif state == GameState.STAGE1 or state == GameState.STAGE2:
 		if next_event > 0:
 			next_event -= 1
 			if next_event == 0:
-				next_event = N.rand_int(90, 180)
+				next_event = clamp(N.rand_int(90, 180) - dawn_counter * 15, 45, 180)
 				start_event()
 		if Game.is_server() and get_tree().multiplayer.get_network_connected_peers().size() == 0:
 			no_players_counter += 1
@@ -178,7 +192,6 @@ func game_tick():
 		for p in players_node.get_children():
 			if not p.dead:
 				p.increase_exhaustion(-2)
-			
 	
 	if spawning_paused_for > 0:
 		spawning_paused_for -= 1
@@ -196,17 +209,17 @@ func start_event(type = ""):
 	if type == "rage":
 		rpc("start_effect", Game.Effects.RAGE)
 		rpc("add_system_message", "The enemy force has become enraged!")
-		yield(get_tree().create_timer(20), "timeout")
+		yield(get_tree().create_timer(30), "timeout")
 		rpc("end_effect", Game.Effects.RAGE)
 	elif type == "fatigue":
 		rpc("start_effect", Game.Effects.FATIGUE)
 		rpc("add_system_message", "You have been cursed with fatigue!")
-		yield(get_tree().create_timer(20), "timeout")
+		yield(get_tree().create_timer(30), "timeout")
 		rpc("end_effect", Game.Effects.FATIGUE)
 	elif type == "confusion":
 		rpc("start_effect", Game.Effects.CONFUSION)
 		rpc("add_system_message", "You have been cursed with confusion!")
-		yield(get_tree().create_timer(15), "timeout")
+		yield(get_tree().create_timer(10), "timeout")
 		rpc("end_effect", Game.Effects.CONFUSION)
 	elif type == "focuskeep":
 		rpc("start_effect", Game.Effects.FOCUS_KEEP)
@@ -304,7 +317,7 @@ func add_new_player(data):
 	data.global_position = $PlayerSpawn.global_position
 	add_player_from_data(data)
 	rpc("add_new_player_remote", data)
-	if not Game.is_solo():
+	if not Game.is_solo() and not "respawn" in data:
 		rpc("add_system_message", data.player_name + " has joined the game")
 
 puppet func add_new_player_remote(data):
@@ -376,7 +389,7 @@ master func respawn():
 	if id in dead_players:
 		var old_data = dead_players[id]
 		var exh = old_data.exhaustion if old_data.exhaustion > base_exhaustion else base_exhaustion
-		var data = {"id": id, "class_id": old_data.class_id, "player_name": old_data.player_name, "uuid": old_data.uuid, "exhaustion": exh}
+		var data = {"id": id, "class_id": old_data.class_id, "player_name": old_data.player_name, "uuid": old_data.uuid, "exhaustion": exh, "respawn": true}
 		add_new_player(data)
 
 ###################

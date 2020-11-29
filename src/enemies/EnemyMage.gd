@@ -6,7 +6,7 @@ var enemy_node
 
 func init_sub(node):
 	enemy_node = node
-	max_health = 40
+	max_health = 50
 	movement_speed = 60
 	height = 35
 	avoid_players = true

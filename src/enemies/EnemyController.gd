@@ -72,7 +72,9 @@ func hit(data):
 	if "damage" in data:
 		var dam = data.damage
 		if Game.level.is_effect_active(Game.Effects.RAGE):
-			dam *= 2
+			dam *= 1.25
+		if owner.position.y < Game.level.firewall.position.y:
+			dam *= 0.25
 		owner.health -= dam
 		if owner.health <= 0:
 			dead = true

@@ -3,10 +3,10 @@ extends Node
 signal input_method_changed
 signal entered_level
 
-const MAX_PLAYERS = 100
-const PLAYERS_TO_START = 5
+const MAX_PLAYERS = 40
+const PLAYERS_TO_START = 1
 const START_COUNTDOWN = 30
-const VERSION = "0.1.2"
+const VERSION = "0.1.12"
 const TILE_SIZE = 16
 
 enum MPMode { NONE, SOLO, CLIENT, SERVER, HOST, REMOTE }
@@ -33,7 +33,7 @@ onready var multiplayer_controller = $MultiplayerController
 func _ready():
 	centered_message.visible = false
 	player_name_regex.compile("[^A-Za-z0-9_ ]")
-	chat_regex.compile("[^A-Za-z0-9_\\-()!.?@#$%&*+=:;'\" ]")
+	chat_regex.compile("[^A-Za-z0-9_\\-()!.?@#$%&*+=:;'\"<> ]")
 	load_persistent()
 
 func _unhandled_key_input(event):
@@ -197,6 +197,10 @@ func parse_command(cmd_player, command: String):
 			return "Player cap set to " + str(cap)
 	elif cmd == "startgame":
 		level.rpc("start_game")
+	elif cmd == "wait":
+		var ok = level.wait()
+		if ok:
+			return "Waiting for /startgame"
 	elif cmd == "maxenemies":
 		if param.is_valid_integer():
 			var cap = int(param)
