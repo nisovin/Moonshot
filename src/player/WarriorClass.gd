@@ -32,7 +32,7 @@ const RUSH_MAX_DISTANCE = 170
 const RUSH_CHARGE_TIME = 300
 const RUSH_SPEED = 800
 const RUSH_MAX_TIME = 750
-const RUSH_DAMAGE = 10
+const RUSH_DAMAGE = 20
 const RUSH_KNOCKBACK_STR = 300
 const RUSH_KNOCKBACK_DUR = 0.1
 const RUSH_STUN_DUR = 0.3
@@ -109,6 +109,7 @@ onready var ultimate_tween = $UltimateTween
 
 onready var rush_area = $RushArea
 onready var rush_arrow = $RushArrow
+onready var rush_arrow_tex = $RushArrow/NinePatch
 onready var rush_particles = $RushParticles
 
 func _ready():
@@ -261,7 +262,7 @@ func movement_press():
 	state = WarriorState.AIMING_RUSH
 	rush_start_time = OS.get_ticks_msec()
 	rush_arrow.visible = true
-	rush_arrow.scale.x = 1.0
+	rush_arrow_tex.rect_size.x = 50
 	if owner.move_dir != Vector2.ZERO:
 		rush_arrow.rotation = owner.move_dir.angle()
 	else:
@@ -278,7 +279,7 @@ func movement_release():
 	rpc("start_rush", owner.position, Vector2.RIGHT.rotated(rush_arrow.rotation), get_rush_distance())
 
 func update_rush_arrow():
-	rush_arrow.scale.x = get_rush_distance() / RUSH_MIN_DISTANCE
+	rush_arrow_tex.rect_size.x = get_rush_distance()
 	var v = owner.get_action_direction()
 	if v != Vector2.ZERO:
 		rush_arrow.rotation = v.angle()

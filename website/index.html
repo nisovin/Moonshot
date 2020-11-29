@@ -1,0 +1,101 @@
+<!doctype html>
+<html>
+
+<head>
+<title>Defense of Novalunis - Status</title>
+
+<script>
+
+var lastPlayers = -1;
+
+function update() {
+	var x = new XMLHttpRequest();
+	x.onreadystatechange = function() {
+		if (this.readyState == 4 && this.status == 200) {
+			var json = this.responseText;
+			var data = JSON.parse(json);
+			var html = '';
+			var players = 0;
+			if (data && data.servers) {
+				if (data.servers.length > 0) {
+					html = '<table><tr><th>Name</th><th>Status</th><th>Players</th></tr>';
+					for (var i = 0; i < data.servers.length; i++) {
+						var s = data.servers[i];
+						html += '<tr><td>' + s.name + '</td><td>' + s.status + '</td><td>' + s.players + '</td></tr>';
+						players += parseInt(s.players);
+					}
+					html += '</table>';
+				} else {
+					html = 'Server is offline.';
+				}
+			} else {
+				html = 'ERROR';
+			}
+			document.getElementById('serverlist').innerHTML = html;
+			if (players > 0 && lastPlayers == 0) {
+				if (Notification.permission == 'granted') {
+					var n = new Notification("Defense of Novalunis", {
+						body: "A player has joined the game!",
+						requireInteraction: true
+					});
+				}
+			}
+			lastPlayers = players;
+		}
+	};
+	x.open("GET", "/gamejams/get_servers.php", true);
+	x.send();
+}
+
+setInterval(update, 10000);
+setTimeout(update, 100);
+
+function enableNotifications() {
+	Notification.requestPermission().then(function(p) {
+		if (p == 'granted') {
+			document.getElementById('notifButton').remove();
+		}
+	});
+}
+
+setTimeout(function() {
+	if (Notification.permission == 'granted') {
+		document.getElementById('notifButton').remove();
+	}
+}, 50);
+
+</script>
+
+<style>
+h1 {
+	text-align: center;
+}
+#serverlist table {
+	border-collapse: collapse;
+	margin: 20px auto;
+}
+#serverlist table td, #serverlist table th {
+	border: 1px solid gray;
+	padding: 5px 10px;
+}
+#serverlist table th {
+	text-align: left;
+	font-weight: bold;
+	font-size: 125%;
+}
+</style>
+
+</head>
+
+<body>
+
+<h1>Defense of Novalunis</h1>
+<button type="button" onclick="enableNotifications()" id="notifButton">Enable Notifications</button>
+
+<hr>
+
+<div id="serverlist">
+</div>
+
+</body>
+</html>

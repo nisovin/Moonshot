@@ -6,12 +6,12 @@ signal entered_level
 const MAX_PLAYERS = 40
 const PLAYERS_TO_START = 1
 const START_COUNTDOWN = 30
-const VERSION = "0.1.12"
+const VERSION = "0.1.11"
 const TILE_SIZE = 16
 
 enum MPMode { NONE, SOLO, CLIENT, SERVER, HOST, REMOTE }
 
-enum Layer { WALLS = 1, PLAYERS = 2, ENEMIES = 4, PLAYER_HITBOX = 8, ENEMY_HITBOX = 16, TEMP_WALLS = 32, SHRINES = 64 }
+enum Layer { WALLS = 1, PLAYERS = 2, ENEMIES = 4, PLAYER_HITBOX = 8, ENEMY_HITBOX = 16, TEMP_WALLS = 32, SHRINES = 64, PLAYER_INVIS = 128 }
 enum PlayerClass { WARRIOR, ARCHER, PRIEST }
 enum EnemyClass { GRUNT, MAGE, ELITE, PHOENIX, BOMBER, SIEGE }
 enum Effects { MIDNIGHT, MIDDAY, SHRINEDEATH, RAGE, FATIGUE, FEAR, FOCUS_KEEP, CONFUSION }
@@ -128,6 +128,7 @@ func leave_game():
 	get_tree().network_peer = null
 	level.queue_free()
 	start_menu()
+	Input.set_mouse_mode(Input.MOUSE_MODE_VISIBLE)
 
 func join_game(clss):
 	pass

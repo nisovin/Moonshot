@@ -144,6 +144,8 @@ remotesync func damage(new_health, energy_damage = 0):
 			player_class.energy = clamp(player_class.energy - energy_damage, 0, 100)
 			#if Settings.gameplay_fct_self:
 			#	N.fct(self, round(energy_damage), Color.yellow)
+		if interact_with != null and interact_with.has_method("damaged"):
+			interact_with.damaged(self)
 		update_health_music()
 		Audio.play("hit", Audio.PLAYER)
 	health = new_health
@@ -199,7 +201,6 @@ func update_health_music():
 		Audio.music_transition("danger", 25, 3)
 	else:
 		Audio.music_transition("danger", 0, 3)
-	
 
 func increase_exhaustion(by):
 	exhaustion = clamp(exhaustion + by, 0, 100)
@@ -217,14 +218,12 @@ remotesync func set_movement(x, y, pos):
 
 func teleport(pos):
 	if state != PlayerState.NORMAL: return
-	Game.lock_player_input = true
 	state = PlayerState.TELEPORTING
 	$Tween.interpolate_property(self, "position", position, pos, 0.1, Tween.TRANS_QUAD, Tween.EASE_IN)
 	$Tween.start()
 	yield(get_tree().create_timer(0.1), "timeout")
 	position = pos
 	state = PlayerState.NORMAL
-	Game.lock_player_input = false
 	rpc("update_position", pos)
 
 puppet func update_position(pos, tp = false):
@@ -243,6 +242,10 @@ remotesync func update_health(val):
 func interact():
 	if interact_with != null:
 		interact_with.interact(self)
+		
+func uninteract():
+	if interact_with != null and interact_with.has_method("uninteract"):
+		interact_with.uninteract(self)
 
 func pause_movement():
 	state = PlayerState.ABILITY

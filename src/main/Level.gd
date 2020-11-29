@@ -79,14 +79,20 @@ remotesync func start_game():
 	Audio.start_music()
 
 func get_game_status():
+	var seconds = (OS.get_ticks_msec() - time_started) / 1000
+	var minutes = int(floor(seconds / 60))
+	seconds = seconds % 60
+	if seconds < 10:
+		seconds = "0" + str(seconds)
+	var duration = str(minutes) + ":" + str(seconds)
 	if state == GameState.PREGAME:
-		return "Game starting"
+		return "Waiting to start game"
 	elif state == GameState.STAGE1:
-		return "Moon shrine active"
+		return "Forward shrine active (" + duration + ")"
 	elif state == GameState.STAGE2:
-		return "Moon shrine destroyed"
+		return "Forward shrine destroyed (" + duration + ")"
 	elif state == GameState.GAMEOVER:
-		return "Game over"
+		return "Game over, restarting soon"
 	else:
 		return "Unknown"
 

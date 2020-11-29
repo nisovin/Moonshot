@@ -12,6 +12,7 @@ func init_sub(node):
 	movement_speed = 30
 	height = 45
 	avoid_players = true
+	stun_time_multiplier = 0.5
 
 	target_range = 40
 	target_lost_range = 500
@@ -38,7 +39,7 @@ remotesync func launch_boulder(pos, vel, target_pos):
 	boulder.init(pos, vel, target_pos)
 	if is_network_master():
 		boulder.connect("impact", self, "_on_impact")
-	Audio.play_at_position(pos, "siege_throw", Audio.ENEMIES, 0.3)
+	Audio.play_at_position(pos, "siege_throw", Audio.ENEMIES, 0.3, 0.8)
 	
 func _on_impact(targets):
 	for t in targets:

@@ -164,6 +164,7 @@ overlay={
 2d_physics/layer_5="Enemies Hitbox"
 2d_physics/layer_6="Temp Walls"
 2d_physics/layer_7="Shrines"
+2d_physics/layer_8="Player Invis"
 
 [logging]
 

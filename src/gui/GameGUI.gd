@@ -90,6 +90,7 @@ var chatting = false
 var showing_tooltip = null
 
 func _ready():
+	Input.set_mouse_mode(Input.MOUSE_MODE_CONFINED)
 	scroll.get_v_scrollbar().modulate = Color.transparent
 	chat_line.modulate = Color.transparent
 	Game.connect("entered_level", self, "_on_entered_level")
@@ -166,6 +167,7 @@ func _unhandled_input(event):
 		else:
 			$Menu.show()
 			Game.lock_player_input = true
+			Input.set_mouse_mode(Input.MOUSE_MODE_VISIBLE)
 	elif event.is_action_pressed("overlay"):
 		if overlay.visible:
 			close_overlay()
@@ -312,6 +314,7 @@ func hide_tooltip():
 	showing_tooltip = null
 
 func _on_Resume_pressed():
+	Input.set_mouse_mode(Input.MOUSE_MODE_CONFINED)
 	Game.lock_player_input = false
 	$Menu.hide()
 

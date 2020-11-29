@@ -59,7 +59,7 @@ func hit(data):
 		if stun_duration < knockback_duration:
 			stun_duration = knockback_duration
 	if "stun" in data and stun_duration < data.stun and data.stun > 0 and not type.immune_to_stun:
-		stun_duration = data.stun
+		stun_duration = data.stun * type.stun_time_multiplier
 		if "stun_break" in data:
 			stun_can_break = data.stun_break
 		else:

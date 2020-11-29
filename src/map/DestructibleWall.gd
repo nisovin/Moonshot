@@ -110,8 +110,17 @@ remotesync func update_status(new_status):
 
 func interact(body):
 	if status < 3:
+		for e in $RepairDetector.get_overlapping_bodies():
+			if e.is_in_group("enemies"):
+				return
 		start_repair()
+
+func uninteract(body):
+	stop_repair()
 	
+func damaged(body):
+	stop_repair()
+
 func start_repair():
 	repairing = true
 	repair_amount = 0

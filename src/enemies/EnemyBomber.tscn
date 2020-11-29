@@ -1,4 +1,4 @@
-[gd_scene load_steps=20 format=2]
+[gd_scene load_steps=21 format=2]
 
 [ext_resource path="res://enemies/EnemyBomber.gd" type="Script" id=1]
 [ext_resource path="res://paid/fire_head.png" type="Texture" id=2]
@@ -75,13 +75,25 @@ animations = [ {
 "speed": 6.0
 } ]
 
-[sub_resource type="CircleShape2D" id=14]
+[sub_resource type="ParticlesMaterial" id=14]
+flag_disable_z = true
+spread = 180.0
+gravity = Vector3( 0, 0, 0 )
+initial_velocity = 300.0
+orbit_velocity = 0.0
+orbit_velocity_random = 0.0
+scale = 4.0
+color = Color( 0.823529, 0.329412, 0, 1 )
+hue_variation = 0.09
+hue_variation_random = 0.99
+
+[sub_resource type="CircleShape2D" id=15]
 radius = 9.01001
 
-[sub_resource type="CapsuleShape2D" id=15]
+[sub_resource type="CapsuleShape2D" id=16]
 height = 15.4289
 
-[sub_resource type="CircleShape2D" id=16]
+[sub_resource type="CircleShape2D" id=17]
 radius = 150.0
 
 [node name="EnemyBomber" type="Node2D"]
@@ -91,29 +103,39 @@ script = ExtResource( 1 )
 position = Vector2( 4, -29 )
 frames = SubResource( 13 )
 animation = "walk_down"
-frame = 3
+frame = 2
 playing = true
 
 [node name="BlastRadius" type="Node2D" parent="."]
 script = ExtResource( 3 )
-color = Color( 1, 0.305882, 0, 0.180392 )
+color = Color( 1, 0.31, 0, 0.05 )
 radius = 150.0
 
+[node name="ExplodeParticles" type="Particles2D" parent="."]
+emitting = false
+amount = 100
+lifetime = 0.5
+one_shot = true
+explosiveness = 0.6
+randomness = 0.1
+process_material = SubResource( 14 )
+
 [node name="Collision" type="CollisionShape2D" parent="."]
-shape = SubResource( 14 )
+shape = SubResource( 15 )
 
 [node name="Hitbox" type="CollisionShape2D" parent="."]
 position = Vector2( -0.561234, -22.352 )
-shape = SubResource( 15 )
+shape = SubResource( 16 )
 
 [node name="TargetBox" type="Area2D" parent="."]
+visible = false
 monitoring = false
 monitorable = false
 collision_layer = 0
 collision_mask = 99
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="TargetBox"]
-shape = SubResource( 16 )
+shape = SubResource( 17 )
 disabled = true
 
 [node name="Tween" type="Tween" parent="."]

@@ -1,12 +1,12 @@
 extends EnemyType
 
-const BLAST_TIME = 1.25
+const BLAST_TIME = 1.5
 
 var enemy_node
 var exploded = false
 
 var attack_damage_to_walls = 750
-var attack_damage_to_shrines = 200
+var attack_damage_to_shrines = 300
 
 func init_sub(node):
 	enemy_node = node
@@ -59,10 +59,13 @@ func attack(entity, melee):
 
 remotesync func show_blast():
 	enemy_node.set_movement(Vector2.ZERO, enemy_node.position, 10)
-	$BlastRadius.show()
+	$BlastRadius.color.a = 0.25
+	$BlastRadius.update()
 	$Tween.interpolate_property(enemy_node.visual, "modulate", Color.white, Color.red, BLAST_TIME)
 	$Tween.start()
 	Audio.play_at_position(enemy_node.position, "bomber_ignite", Audio.ENEMIES)
 	yield(get_tree().create_timer(BLAST_TIME), "timeout")
 	if enemy_node.dead: return
 	Audio.play("bomber_explode", Audio.ENEMIES)
+	$BlastRadius.hide()
+	$ExplodeParticles.emitting = true

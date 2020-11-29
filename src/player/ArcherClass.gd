@@ -260,7 +260,7 @@ remotesync func start_shadow(pos):
 	owner.position = pos
 	owner.current_speed = owner.NORMAL_SPEED * SHADOW_SPEED_MULT
 	owner.collision_mask = Game.Layer.WALLS
-	owner.collision_layer = 0
+	owner.collision_layer = Game.Layer.PLAYER_INVIS
 	owner.targetable = false
 	owner.untarget()
 	shadow_tween.stop_all()
@@ -293,8 +293,7 @@ func ultimate_press():
 	state = ArcherState.AIMING_ULTIMATE
 	ult_marker.visible = true
 	ultimate_start_time = OS.get_ticks_msec()
-	if Game.using_controller:
-		owner.pause_movement()
+	owner.pause_movement()
 	
 func ultimate_release():
 	if state == ArcherState.AIMING_ULTIMATE and OS.get_ticks_msec() > ultimate_start_time + 250:

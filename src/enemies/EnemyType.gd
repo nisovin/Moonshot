@@ -7,6 +7,7 @@ var height = 30
 var avoid_players = false
 var custom_targeting = false
 var custom_pathing = false
+var stun_time_multiplier = 1.0
 var immune_to_knockback = false
 var immune_to_stun = false
 var minimap_color = Color.red
