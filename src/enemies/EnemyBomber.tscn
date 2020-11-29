@@ -103,7 +103,6 @@ script = ExtResource( 1 )
 position = Vector2( 4, -29 )
 frames = SubResource( 13 )
 animation = "walk_down"
-frame = 2
 playing = true
 
 [node name="BlastRadius" type="Node2D" parent="."]

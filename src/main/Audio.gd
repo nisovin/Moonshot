@@ -45,6 +45,7 @@ func update_bus_volume(bus, volume):
 
 func start_music():
 	if Game.is_server(): return
+	$MusicLoss.stop()
 	$MusicMain.stream = R.Sounds.music_main
 	$MusicDanger.stream = R.Sounds.music_danger
 	$MusicEpic.stream = R.Sounds.music_epic
@@ -55,7 +56,29 @@ func start_music():
 	$MusicDanger.play(0)
 	$MusicEpic.play(0)
 	
+func stop_music():
+	$MusicMain.stop()
+	$MusicDanger.stop()
+	$MusicEpic.stop()
+	$MusicLoss.stop()
+
+func start_loss_music():
+	$Tween.remove(self, "volume_main")
+	$Tween.remove(self, "volume_danger")
+	$Tween.remove(self, "volume_epic")
+	$MusicLoss.play()
+	$Tween.interpolate_method(self, "volume_main", db2linear($MusicMain.volume_db), 0, 2.5)
+	$Tween.interpolate_method(self, "volume_danger", db2linear($MusicDanger.volume_db), 0, 2.5)
+	$Tween.interpolate_method(self, "volume_epic", db2linear($MusicEpic.volume_db), 0, 2.5)
+	$Tween.interpolate_method(self, "volume_loss", 0, 1.0, 2.5)
+	$Tween.start()
+	yield(get_tree().create_timer(1.5), "timeout")
+	$MusicMain.stop()
+	$MusicDanger.stop()
+	$MusicEpic.stop()
+	
 func music_transition(type, volume = 50, time = 5):
+	if $MusicLoss.playing: return
 	volume /= 500.0
 	$Tween.remove(self, "volume_" + type)
 	$Tween.interpolate_method(self, "volume_" + type, db2linear(music_layers[type].volume_db), volume, time)
@@ -67,6 +90,8 @@ func volume_danger(vol):
 	$MusicDanger.volume_db = linear2db(vol)
 func volume_epic(vol):
 	$MusicEpic.volume_db = linear2db(vol)
+func volume_loss(vol):
+	$MusicLoss.volume_db = linear2db(vol)
 
 func play(sound_name, bus = SFX, volume = 1.0, avoid_overlap = 10):
 	if Game.is_server(): return null

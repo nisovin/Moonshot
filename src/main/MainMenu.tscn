@@ -1,4 +1,4 @@
-[gd_scene load_steps=25 format=2]
+[gd_scene load_steps=26 format=2]
 
 [ext_resource path="res://main/MainMenu.gd" type="Script" id=1]
 [ext_resource path="res://misc/bg3.png" type="Texture" id=2]
@@ -10,6 +10,7 @@
 [ext_resource path="res://sfx/rollover6.ogg" type="AudioStream" id=8]
 [ext_resource path="res://sfx/click3.ogg" type="AudioStream" id=9]
 [ext_resource path="res://gui/Minimal5x7.ttf" type="DynamicFontData" id=10]
+[ext_resource path="res://sfx/alert.ogg" type="AudioStream" id=11]
 
 [sub_resource type="DynamicFont" id=1]
 size = 32
@@ -66,6 +67,8 @@ font_data = ExtResource( 3 )
 font_data = ExtResource( 4 )
 
 [sub_resource type="DynamicFont" id=13]
+extra_spacing_char = 1
+extra_spacing_space = 2
 font_data = ExtResource( 10 )
 
 [sub_resource type="DynamicFont" id=14]
@@ -454,8 +457,206 @@ rect_min_size = Vector2( 400, 230 )
 custom_fonts/bold_font = SubResource( 12 )
 custom_fonts/normal_font = SubResource( 13 )
 bbcode_enabled = true
-bbcode_text = "Gotta put this in here still..."
-text = "Gotta put this in here still..."
+bbcode_text = "[center]
+
+[b]Acknowledgements[/b]
+
+Game created for [url=https://itch.io/jam/game-off-2020]GameOff 2020[/url]
+Theme: \"Moonshot\"
+
+Heavily inspired by Dwarves vs Zombies
+A Minecraft minigame created by [url=https://twitter.com/urealms]rawb[/url]
+
+Thanks to all the DvZ fans in [url=https://discord.gg/UDqfB44Bwq]the discord[/url]
+who helped test the game
+
+Created with [url=https://godotengine.org/]Godot Engine[/url]
+
+
+______________________________________
+
+[b]Design & Development[/b]
+
+Nisovin
+Marzhae
+
+
+______________________________________
+
+[b]Art[/b]
+
+Aeldae
+TonyArakawa
+Nisovin
+[url=https://finalbossblues.itch.io/time-fantasy-monsters]finalbossblues[/url]
+[url=https://cartoonsmart.com/acasas/]Acasas[/url]
+
+
+______________________________________
+
+[b]Sounds[/b]
+
+[url=https://soundimage.org/]Eric Matyas (soundimage)[/url]
+Michel Baradari
+artisticdude
+[url=https://github.com/nisovin/Moonshot/blob/main/sources.txt]Many other sources[/url]
+
+
+______________________________________
+
+[b]Music[/b]
+
+Oppressive Gloom by Kevin MacLeod
+[url=https://filmmusic.io/song/4174-oppressive-gloom]Link[/url]
+[url=http://creativecommons.org/licenses/by/4.0/]License[/url]
+
+Killers by Kevin MacLeod
+[url=https://incompetech.filmmusic.io/song/3952-killers]Link[/url]
+[url=http://creativecommons.org/licenses/by/4.0/]License[/url]
+
+Left Behind by Eric Matyas ([url=https://soundimage.org/]soundimage[/url])
+[url=https://soundimage.org/fantasy-3/]Link[/url]
+
+
+______________________________________
+
+[b]Engine Licenses[/b]
+
+This game uses Godot Engine, available under the following license:
+
+Copyright (c) 2007-2020 Juan Linietsky, Ariel Manzur. Copyright (c) 2014-2020 Godot Engine contributors.
+
+Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the \"Software\"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED \"AS IS\", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+-----
+
+Portions of this software are copyright © 2020 The FreeType Project (www.freetype.org). All rights reserved.
+
+-----
+
+Copyright (c) 2002-2016 Lee Salzman
+
+Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the \"Software\"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED \"AS IS\", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+-----
+
+MBedTLS is Copyright (C) 2013-2019 ARM
+
+Licensed under the Apache License, Version 2.0 (the \"License\"); you may not use this file except in compliance with the License. You may obtain a copy of the License at
+
+http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an \"AS IS\" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.
+
+[/center]"
+text = "
+
+Acknowledgements
+
+Game created for GameOff 2020
+Theme: \"Moonshot\"
+
+Heavily inspired by Dwarves vs Zombies
+A Minecraft minigame created by rawb
+
+Thanks to all the DvZ fans in the discord
+who helped test the game
+
+Created with Godot Engine
+
+
+______________________________________
+
+Design & Development
+
+Nisovin
+Marzhae
+
+
+______________________________________
+
+Art
+
+Aeldae
+TonyArakawa
+Nisovin
+finalbossblues
+Acasas
+
+
+______________________________________
+
+Sounds
+
+Eric Matyas (soundimage)
+Michel Baradari
+artisticdude
+Many other sources
+
+
+______________________________________
+
+Music
+
+Oppressive Gloom by Kevin MacLeod
+Link
+License
+
+Killers by Kevin MacLeod
+Link
+License
+
+Left Behind by Eric Matyas (soundimage)
+Link
+
+
+______________________________________
+
+Engine Licenses
+
+This game uses Godot Engine, available under the following license:
+
+Copyright (c) 2007-2020 Juan Linietsky, Ariel Manzur. Copyright (c) 2014-2020 Godot Engine contributors.
+
+Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the \"Software\"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED \"AS IS\", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+-----
+
+Portions of this software are copyright © 2020 The FreeType Project (www.freetype.org). All rights reserved.
+
+-----
+
+Copyright (c) 2002-2016 Lee Salzman
+
+Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the \"Software\"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED \"AS IS\", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+-----
+
+MBedTLS is Copyright (C) 2013-2019 ARM
+
+Licensed under the Apache License, Version 2.0 (the \"License\"); you may not use this file except in compliance with the License. You may obtain a copy of the License at
+
+http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an \"AS IS\" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.
+
+"
 
 [node name="CenterContainer" type="CenterContainer" parent="Credits/PanelContainer/VBoxContainer"]
 margin_top = 253.0
@@ -485,6 +686,10 @@ __meta__ = {
 
 [node name="HTTPRequest" type="HTTPRequest" parent="."]
 
+[node name="Timer" type="Timer" parent="."]
+wait_time = 10.0
+autostart = true
+
 [node name="Music" type="AudioStreamPlayer" parent="."]
 stream = ExtResource( 7 )
 volume_db = -20.0
@@ -499,6 +704,10 @@ bus = "SFX"
 [node name="Click" type="AudioStreamPlayer" parent="."]
 stream = ExtResource( 9 )
 bus = "SFX"
+
+[node name="Alert" type="AudioStreamPlayer" parent="."]
+stream = ExtResource( 11 )
+volume_db = -10.0
 [connection signal="mouse_entered" from="Menu/VBoxContainer/Singleplayer" to="." method="_on_button_over"]
 [connection signal="pressed" from="Menu/VBoxContainer/Singleplayer" to="." method="_on_Singleplayer_pressed"]
 [connection signal="mouse_entered" from="Menu/VBoxContainer/Multiplayer" to="." method="_on_button_over"]
@@ -512,5 +721,7 @@ bus = "SFX"
 [connection signal="mouse_entered" from="Menu/VBoxContainer/Quit" to="." method="_on_button_over"]
 [connection signal="pressed" from="Menu/VBoxContainer/Quit" to="." method="_on_Quit_pressed"]
 [connection signal="pressed" from="ServerList/PanelContainer/VBox/HBoxContainer/CancelButton" to="." method="_on_CancelButton_pressed"]
+[connection signal="meta_clicked" from="Credits/PanelContainer/VBoxContainer/RichTextLabel" to="." method="_on_RichTextLabel_meta_clicked"]
 [connection signal="pressed" from="Credits/PanelContainer/VBoxContainer/CenterContainer/CloseCredits" to="." method="_on_CloseCredits_pressed"]
 [connection signal="request_completed" from="HTTPRequest" to="." method="_on_HTTPRequest_request_completed"]
+[connection signal="timeout" from="Timer" to="." method="_on_Timer_timeout"]

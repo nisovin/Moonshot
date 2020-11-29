@@ -24,7 +24,7 @@ config/name="Defense of Novalunis"
 run/main_scene="res://bootstrap/Bootstrap.tscn"
 config/use_custom_user_dir=true
 config/custom_user_dir_name="DefenseOfNovalunis"
-config/icon="res://icon.png"
+config/icon="res://game_icon.png"
 config/dev=true
 config/dev.export=false
 
@@ -169,7 +169,6 @@ overlay={
 [logging]
 
 file_logging/enable_file_logging=true
-file_logging/enable_file_logging.pc=false
 file_logging/log_path="user://logs/moonshot.log"
 file_logging/enable_file_logging.server=true
 

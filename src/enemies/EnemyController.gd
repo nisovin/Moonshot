@@ -71,10 +71,11 @@ func hit(data):
 		owner.rpc("set_movement", Vector2.ZERO, owner.position)
 	if "damage" in data:
 		var dam = data.damage
-		if Game.level.is_effect_active(Game.Effects.RAGE):
-			dam *= 1.25
-		if owner.position.y < Game.level.firewall.position.y:
-			dam *= 0.25
+		if not "direct" in data:
+			if Game.level.is_effect_active(Game.Effects.RAGE):
+				dam *= 1.25
+			if owner.position.y < Game.level.firewall.position.y:
+				dam *= 0.25
 		owner.health -= dam
 		if owner.health <= 0:
 			dead = true

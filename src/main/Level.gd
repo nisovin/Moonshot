@@ -51,6 +51,7 @@ func _ready():
 	player_spawn.position = player_spawns.get_child(0).position
 	for key in EVENTS:
 		event_options[key] = EVENTS[key]
+	Audio.stop_music()
 
 func start_server():
 	$GameTick.start()
@@ -145,7 +146,7 @@ func _on_shrine1_destroyed():
 	rpc("start_effect", Game.Effects.SHRINEDEATH)
 	for e in enemies_node.get_children():
 		if not e.dead:
-			e.hit({"damage": 80})
+			e.hit({"damage": 100, "direct": true})
 	for w in walls_node.get_children():
 		if w.status > 0 and w.position.y < shrine1.position.y + 10 * 16:
 			w.apply_damage(5000)
@@ -159,16 +160,18 @@ func _on_shrine1_destroyed():
 	
 func _on_shrine2_destroyed():
 	rpc("gameover")
-	yield(get_tree().create_timer(10), "timeout")
 	if Game.is_solo():
+		yield(get_tree().create_timer(35), "timeout")
 		Game.leave_game()
 	elif Game.is_server():
+		yield(get_tree().create_timer(35), "timeout")
 		Game.restart_server()
 		
 remotesync func gameover():
 	add_system_message("The moonstone has been destroyed. The bastion has been lost.")
 	state = GameState.GAMEOVER
 	gui.show_game_over()
+	Audio.start_loss_music()
 
 func game_tick():
 	if state == GameState.PREGAME:
@@ -371,9 +374,10 @@ func get_game_state():
 
 func load_game_state(game_state):
 	state = game_state.state
-	if state == GameState.STAGE1 or state == GameState.STAGE2:
+	if state != GameState.PREGAME:
 		daynight_anim.play("daynight")
 		daynight_anim.seek(game_state.time)
+		Audio.start_music()
 	player_spawn.position = game_state.player_spawn
 	firewall.position.y = game_state.firewall
 	active_effects = game_state.effects

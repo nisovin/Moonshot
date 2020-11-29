@@ -6,7 +6,7 @@ signal entered_level
 const MAX_PLAYERS = 40
 const PLAYERS_TO_START = 1
 const START_COUNTDOWN = 30
-const VERSION = "0.1.11"
+const VERSION = "0.1.13"
 const TILE_SIZE = 16
 
 enum MPMode { NONE, SOLO, CLIENT, SERVER, HOST, REMOTE }
@@ -39,6 +39,11 @@ func _ready():
 func _unhandled_key_input(event):
 	if event.scancode == KEY_F11 and event.pressed:
 		OS.window_fullscreen = not OS.window_fullscreen
+		if Input.get_mouse_mode() == Input.MOUSE_MODE_CONFINED:
+			Input.set_mouse_mode(Input.MOUSE_MODE_VISIBLE)
+			yield(get_tree(), "idle_frame")
+			yield(get_tree(), "idle_frame")
+			Input.set_mouse_mode(Input.MOUSE_MODE_CONFINED)
 	
 func is_server():
 	return mp_mode == MPMode.SERVER

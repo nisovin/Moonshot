@@ -8,5 +8,5 @@ Game over screen X
 Reduce golem stun time X
 Fix warrior charge arrow X
 bomber explosion animation X
-start music on join
+start music on join X
 better particles in various places
