@@ -7,38 +7,38 @@
 [ext_resource path="res://map/shrine_water.png" type="Texture" id=7]
 [ext_resource path="res://map/shrine_gem.png" type="Texture" id=8]
 
-[sub_resource type="AtlasTexture" id=3]
+[sub_resource type="AtlasTexture" id=1]
 atlas = ExtResource( 7 )
 region = Rect2( 0, 0, 160, 176 )
 
-[sub_resource type="AtlasTexture" id=4]
+[sub_resource type="AtlasTexture" id=2]
 atlas = ExtResource( 7 )
 region = Rect2( 160, 0, 160, 176 )
 
-[sub_resource type="AtlasTexture" id=5]
+[sub_resource type="AtlasTexture" id=3]
 atlas = ExtResource( 7 )
 region = Rect2( 320, 0, 160, 176 )
 
-[sub_resource type="AtlasTexture" id=6]
+[sub_resource type="AtlasTexture" id=4]
 atlas = ExtResource( 7 )
 region = Rect2( 480, 0, 160, 176 )
 
-[sub_resource type="SpriteFrames" id=7]
+[sub_resource type="SpriteFrames" id=5]
 animations = [ {
-"frames": [ SubResource( 3 ), SubResource( 4 ), SubResource( 5 ), SubResource( 6 ) ],
+"frames": [ SubResource( 1 ), SubResource( 2 ), SubResource( 3 ), SubResource( 4 ) ],
 "loop": true,
 "name": "default",
 "speed": 5.0
 } ]
 
-[sub_resource type="Gradient" id=8]
+[sub_resource type="Gradient" id=6]
 offsets = PoolRealArray( 0, 0.717703, 1 )
 colors = PoolColorArray( 0, 0.560784, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0 )
 
-[sub_resource type="GradientTexture" id=9]
-gradient = SubResource( 8 )
+[sub_resource type="GradientTexture" id=7]
+gradient = SubResource( 6 )
 
-[sub_resource type="ParticlesMaterial" id=10]
+[sub_resource type="ParticlesMaterial" id=8]
 lifetime_randomness = 0.31
 emission_shape = 1
 emission_sphere_radius = 55.0
@@ -51,11 +51,11 @@ orbit_velocity = 0.0
 orbit_velocity_random = 0.0
 linear_accel = -2.0
 linear_accel_random = 0.14
-color_ramp = SubResource( 9 )
+color_ramp = SubResource( 7 )
 hue_variation = 0.02
 hue_variation_random = 0.36
 
-[sub_resource type="ParticlesMaterial" id=11]
+[sub_resource type="ParticlesMaterial" id=9]
 lifetime_randomness = 0.22
 emission_shape = 1
 emission_sphere_radius = 55.0
@@ -68,11 +68,11 @@ orbit_velocity = 0.0
 orbit_velocity_random = 0.0
 linear_accel = -2.0
 linear_accel_random = 0.14
-color_ramp = SubResource( 9 )
+color_ramp = SubResource( 7 )
 hue_variation = 0.02
 hue_variation_random = 0.36
 
-[sub_resource type="ParticlesMaterial" id=15]
+[sub_resource type="ParticlesMaterial" id=10]
 flag_disable_z = true
 spread = 180.0
 gravity = Vector3( 0, 0, 0 )
@@ -81,13 +81,13 @@ orbit_velocity = 0.0
 orbit_velocity_random = 0.0
 scale = 2.0
 
-[sub_resource type="CircleShape2D" id=12]
+[sub_resource type="CircleShape2D" id=11]
 radius = 36.8531
 
-[sub_resource type="CircleShape2D" id=13]
+[sub_resource type="CircleShape2D" id=12]
 radius = 62.3941
 
-[sub_resource type="CircleShape2D" id=14]
+[sub_resource type="CircleShape2D" id=13]
 radius = 99.9134
 
 [node name="Shrine" type="Area2D" groups=[
@@ -104,7 +104,8 @@ texture = ExtResource( 4 )
 
 [node name="Pool" type="AnimatedSprite" parent="."]
 position = Vector2( 0, -8 )
-frames = SubResource( 7 )
+frames = SubResource( 5 )
+frame = 2
 playing = true
 
 [node name="Moon" type="Sprite" parent="."]
@@ -174,14 +175,14 @@ texture = ExtResource( 8 )
 light_mask = 0
 amount = 40
 lifetime = 3.0
-process_material = SubResource( 10 )
+process_material = SubResource( 8 )
 
 [node name="MidnightParticles" type="Particles2D" parent="."]
 light_mask = 0
 emitting = false
 amount = 200
 lifetime = 3.0
-process_material = SubResource( 11 )
+process_material = SubResource( 9 )
 
 [node name="DeathParticles" type="Particles2D" parent="."]
 position = Vector2( 0, -26.0294 )
@@ -191,12 +192,12 @@ lifetime = 2.0
 one_shot = true
 explosiveness = 1.0
 visibility_rect = Rect2( -500, -500, 1000, 1000 )
-process_material = SubResource( 15 )
+process_material = SubResource( 10 )
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
 visible = false
 position = Vector2( 0.293762, -33.1754 )
-shape = SubResource( 12 )
+shape = SubResource( 11 )
 
 [node name="HealArea" type="Area2D" parent="."]
 visible = false
@@ -204,7 +205,7 @@ collision_layer = 0
 collision_mask = 2
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="HealArea"]
-shape = SubResource( 13 )
+shape = SubResource( 12 )
 
 [node name="CorruptionArea" type="Area2D" parent="."]
 visible = false
@@ -213,7 +214,7 @@ collision_layer = 0
 collision_mask = 4
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="CorruptionArea"]
-shape = SubResource( 14 )
+shape = SubResource( 13 )
 
 [node name="Timer" type="Timer" parent="."]
 autostart = true

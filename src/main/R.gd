@@ -1,5 +1,6 @@
 extends Node
 
+var MultiplayerController
 var Level
 var FCT
 
@@ -27,6 +28,7 @@ var Sounds
 var Icons
 
 func load_resources(is_server):
+	MultiplayerController = load("res://main/MultiplayerController.tscn")
 	Level = load("res://main/Level.tscn")
 	FCT = load("res://misc/FCT.tscn")
 	Player = load("res://player/Player.tscn")
@@ -56,6 +58,7 @@ func load_resources(is_server):
 			"music_main": load("res://music/track_main.ogg"),
 			"music_danger": load("res://music/track_choir.ogg"),
 			"music_epic": load("res://music/track_strings.ogg"),
+			"music_loss": load("res://music/left_behind.ogg"),
 			"teleport": load("res://sfx/teleport.wav"),
 			"warrior_attack1_swing": [
 				load("res://sfx/warrior_attack1_1.wav"),

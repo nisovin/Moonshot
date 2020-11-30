@@ -22,6 +22,7 @@ onready var music_layers = {
 var channels_avail = []
 var loops = {}
 var last_played = {}
+var no_music_loop = false
 
 func _ready():
 	if Game.is_server(): return
@@ -49,6 +50,7 @@ func start_music():
 	$MusicMain.stream = R.Sounds.music_main
 	$MusicDanger.stream = R.Sounds.music_danger
 	$MusicEpic.stream = R.Sounds.music_epic
+	$MusicLoss.stream = R.Sounds.music_loss
 	$MusicMain.volume_db = linear2db(0.1)
 	$MusicDanger.volume_db = linear2db(0)
 	$MusicEpic.volume_db = linear2db(0)
@@ -57,12 +59,17 @@ func start_music():
 	$MusicEpic.play(0)
 	
 func stop_music():
+	if Game.is_server(): return
+	no_music_loop = true
 	$MusicMain.stop()
 	$MusicDanger.stop()
 	$MusicEpic.stop()
 	$MusicLoss.stop()
+	yield(get_tree().create_timer(0.5), "timeout")
+	no_music_loop = false
 
 func start_loss_music():
+	if Game.is_server(): return
 	$Tween.remove(self, "volume_main")
 	$Tween.remove(self, "volume_danger")
 	$Tween.remove(self, "volume_epic")
@@ -153,6 +160,9 @@ func _on_sound_finished(s):
 	channels_avail.append(s)
 
 func _on_MusicMain_finished():
+	if no_music_loop:
+		no_music_loop = false
+		return
 	$MusicMain.play(0)
 	$MusicDanger.play(0)
 	$MusicEpic.play(0)

@@ -220,7 +220,7 @@ func _on_SpawnTimer_timeout():
 			if sped_up > 5:
 				options[Game.EnemyClass.BOMBER] = 4
 				options[Game.EnemyClass.SIEGE] = 10 if not need_bigger_enemies else 30
-			#options = {Game.EnemyClass.BOMBER: 1, Game.EnemyClass.SIEGE: 1}
+			#options = {Game.EnemyClass.BOMBER: 1}
 			var type_id = N.rand_weighted(options)
 			spawn({"id": next_enemy_id, "type_id": type_id, "position": loc})
 			next_enemy_id += 1

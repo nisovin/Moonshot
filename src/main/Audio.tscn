@@ -1,7 +1,6 @@
-[gd_scene load_steps=3 format=2]
+[gd_scene load_steps=2 format=2]
 
 [ext_resource path="res://main/Audio.gd" type="Script" id=1]
-[ext_resource path="res://music/left_behind.ogg" type="AudioStream" id=2]
 
 [node name="Audio" type="Node"]
 script = ExtResource( 1 )
@@ -20,7 +19,6 @@ bus = "Music"
 bus = "Music"
 
 [node name="MusicLoss" type="AudioStreamPlayer" parent="."]
-stream = ExtResource( 2 )
 
 [node name="Tween" type="Tween" parent="."]
 [connection signal="finished" from="MusicMain" to="." method="_on_MusicMain_finished"]

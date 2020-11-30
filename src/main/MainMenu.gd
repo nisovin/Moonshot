@@ -4,6 +4,7 @@ var join = false
 var last_players = -1
 
 func _ready():
+	Input.set_mouse_mode(Input.MOUSE_MODE_VISIBLE)
 	$VersionLabel.text = "Version: " + Game.VERSION
 	$ServerList.hide()
 	Audio.stop_music()

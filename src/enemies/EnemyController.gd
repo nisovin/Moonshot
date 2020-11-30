@@ -47,7 +47,7 @@ func init(type_id):
 func collide(collision):
 	if not dead and type.attack_melee > 0 and next_attack < OS.get_ticks_msec() and stun_duration <= 0 and knockback_duration <= 0:
 		var body = collision.collider
-		if body.is_in_group("players") or body.is_in_group("walls"):
+		if (body.is_in_group("players") or body.is_in_group("walls") or body.is_in_group("shrines")) and body.health > 0:
 			attack(body, true)
 
 func hit(data):

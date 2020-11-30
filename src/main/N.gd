@@ -17,6 +17,17 @@ func fct(obj, text, color, crit = false):
 	obj.add_child(t)
 	t.init(text, color, crit)
 
+func logit(text):
+	pass
+#	var file = File.new()
+#	if file.file_exists("user://logs/game.log"):
+#		file.open("user://logs/game.log", File.READ_WRITE)
+#		file.seek_end()
+#	else:
+#		file.open("user://logs/game.log", File.WRITE)
+#	file.store_line(text)
+#	file.close()
+
 func bitmask_get(bitmask: int, bit: int) -> bool:
 	return bitmask & (1 << bit) != 0
 

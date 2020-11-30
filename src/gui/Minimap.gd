@@ -8,7 +8,6 @@ var map_size
 
 func _ready():
 	yield(get_tree(), "idle_frame")
-	print(Game.level.map.corner)
 	
 	tile_corner = Game.level.map.corner
 	map_size = Game.level.map.map_size * Game.TILE_SIZE / SCALE
@@ -20,7 +19,6 @@ func _ready():
 	for x in map_size.x:
 		for y in map_size.y:
 			var tile = Vector2(x, y) + tile_corner
-			var color = Color.black
 			if objects.get_cellv(tile) >= 0:
 				img.set_pixel(x, y, Color(0, 0.25, 0.25))
 			else:

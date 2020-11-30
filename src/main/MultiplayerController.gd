@@ -1,7 +1,5 @@
 extends Node
 
-var level
-
 var server_id = 1
 var server_port = 20514
 var api_key = ""
@@ -91,7 +89,7 @@ func init_client(ip, port):
 # SERVER-SIDE
 	
 func _on_NotifyTimer_timeout():
-	var status = level.get_game_status().replace(" ", "+")
+	var status = Game.level.get_game_status().replace(" ", "+")
 	var players = get_tree().multiplayer.get_network_connected_peers().size()
 	var url = "https://nisovin.com/gamejams/update_server.php?key=" + api_key + "&id=" + str(server_id) + "&players=" + str(players) + "&status=" + status
 	$HTTPRequest.request(url)
@@ -121,21 +119,21 @@ func _on_server_player_connected(id):
 	
 	var data = {}
 	data.version = Game.VERSION
-	data.game_state = level.get_game_state()
+	data.game_state = Game.level.get_game_state()
 	rpc_id(id, "load_game_state", data)
 	
 func _on_server_player_disconnected(id):
 	var n = ""
-	var p = level.get_player_by_id(id)
+	var p = Game.level.get_player_by_id(id)
 	if p != null:
 		n = p.player_name
 		saved_players[p.uuid] = p.get_data()
 	else:
-		var data = level.get_dead_player_data(id)
+		var data = Game.level.get_dead_player_data(id)
 		if data != null:
 			n = data.player_name
 			saved_players[data.uuid] = data
-	level.remove_player(id)
+	Game.level.remove_player(id)
 	print("Player disconnected: id=", id, " name=", n)
 
 remote func player_uuid(uuid: String):
@@ -154,7 +152,7 @@ remote func player_uuid(uuid: String):
 		if data.exhaustion < Game.level.base_exhaustion:
 			data.exhaustion = Game.level.base_exhaustion
 		rpc_id(id, "restore_player")
-		level.add_new_player(data)
+		Game.level.add_new_player(data)
 		name_to_id[data.player_name.to_lower()] = id
 		id_to_uuid[id] = uuid
 		print("Player rejoined: id=", id, " name=" , data.player_name, " class=", data.class_id, " uuid=", uuid)
@@ -184,7 +182,7 @@ remote func player_join(class_id, player_name: String, uuid: String):
 	
 	# get/create player data
 	var data = {"id": id, "class_id": class_id, "player_name": player_name, "uuid": uuid, "exhaustion": Game.level.base_exhaustion}
-	level.add_new_player(data)
+	Game.level.add_new_player(data)
 	name_to_id[player_name.to_lower()] = id
 	id_to_uuid[id] = uuid
 	print("Player joined: id=", id, " name=" , player_name, " class=", class_id, " uuid=", uuid)
@@ -246,15 +244,16 @@ func restart_server():
 	id_to_uuid = {}
 	saved_players = {}
 	for id in get_tree().multiplayer.get_network_connected_peers():
-		rpc_id(id, "restart_game")
-	
-	yield(get_tree().create_timer(3), "timeout")
-	
-	var data = {}
-	data.version = Game.VERSION
-	data.game_state = level.get_game_state()
-	for id in get_tree().multiplayer.get_network_connected_peers():
-		rpc_id(id, "load_game_state", data)
+		get_tree().network_peer.disconnect_peer(id)
+		#rpc_id(id, "restart_game")
+#
+#	yield(get_tree().create_timer(2), "timeout")
+#
+#	var data = {}
+#	data.version = Game.VERSION
+#	data.game_state = level.get_game_state()
+#	for id in get_tree().multiplayer.get_network_connected_peers():
+#		rpc_id(id, "load_game_state", data)
 
 # CLIENT-SIDE
 
@@ -266,9 +265,13 @@ remote func load_game_state(data):
 		Game.show_centered_message("Game version mismatch: client=" + str(Game.VERSION) + "; server=" + str(data.version))
 		get_tree().network_peer = null
 		return
+	if Game.level == null:
+		Game.show_centered_message("ERROR!")
+		get_tree().network_peer = null
+		return
 	Game.hide_centered_message()
-	level.load_game_state(data.game_state)
-	level.visible = true
+	Game.level.load_game_state(data.game_state)
+	Game.level.visible = true
 	show_join_menu()
 	rpc_id(1, "player_uuid", OS.get_unique_id())
 	
@@ -289,7 +292,7 @@ remote func restart_game():
 func _on_join_option_selected(option, player_name):
 	if option == -1:
 		get_tree().network_peer = null
-		level.queue_free()
+		Game.free_level()
 		Game.start_menu()
 	else:
 		rpc_id(1, "player_join", option, player_name, OS.get_unique_id())
@@ -298,18 +301,20 @@ remote func disconnect_error(err):
 	dc_error = err
 
 func _on_disconnected_from_server():
-	level.queue_free()
+	get_tree().network_peer = null
+	Game.free_level()
 	Game.show_centered_message(dc_error if dc_error != null else "Disconnected")
 	dc_error = null
-	yield(get_tree().create_timer(5), "timeout")
+	yield(get_tree().create_timer(3), "timeout")
 	Game.hide_centered_message()
 	Game.start_menu()
 	
 func _on_failed_to_connect():
+	get_tree().network_peer = null
 	Game.show_centered_message("Failed to connect :(")
-	yield(get_tree().create_timer(5), "timeout")
+	yield(get_tree().create_timer(3), "timeout")
 	Game.hide_centered_message()
-	level.queue_free()
+	Game.free_level()
 	Game.start_menu()
 
 remote func invalid_name():
@@ -319,4 +324,5 @@ remote func invalid_name():
 	show_join_menu()
 
 func _on_client_player_disconnected(id):
-	level.remove_player(id)
+	if Game.level != null:
+		Game.level.remove_player(id)

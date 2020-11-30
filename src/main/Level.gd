@@ -90,6 +90,8 @@ func get_game_status():
 		return "Waiting to start game"
 	elif state == GameState.STAGE1:
 		return "Forward shrine active (" + duration + ")"
+	elif state == GameState.BETWEEN:
+		return "Forward shrine destroyed (" + duration + ")"
 	elif state == GameState.STAGE2:
 		return "Forward shrine destroyed (" + duration + ")"
 	elif state == GameState.GAMEOVER:
@@ -161,10 +163,10 @@ func _on_shrine1_destroyed():
 func _on_shrine2_destroyed():
 	rpc("gameover")
 	if Game.is_solo():
-		yield(get_tree().create_timer(35), "timeout")
+		yield(get_tree().create_timer(23), "timeout")
 		Game.leave_game()
 	elif Game.is_server():
-		yield(get_tree().create_timer(35), "timeout")
+		yield(get_tree().create_timer(23), "timeout")
 		Game.restart_server()
 		
 remotesync func gameover():
@@ -223,7 +225,7 @@ func start_event(type = ""):
 	elif type == "fatigue":
 		rpc("start_effect", Game.Effects.FATIGUE)
 		rpc("add_system_message", "You have been cursed with fatigue!")
-		yield(get_tree().create_timer(30), "timeout")
+		yield(get_tree().create_timer(20), "timeout")
 		rpc("end_effect", Game.Effects.FATIGUE)
 	elif type == "confusion":
 		rpc("start_effect", Game.Effects.CONFUSION)
@@ -445,6 +447,7 @@ master func send_chat(message: String):
 	var id = get_tree().get_rpc_sender_id()
 	var p = get_player_by_id(id)
 	if p != null:
+		print("<", p.player_name, "> ", message)
 		if message.begins_with("/"):
 			var ret = Game.parse_command(p, message)
 			if ret != null and ret != "":

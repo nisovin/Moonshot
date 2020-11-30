@@ -10,3 +10,4 @@ Fix warrior charge arrow X
 bomber explosion animation X
 start music on join X
 better particles in various places
+midnight should increase healing at shrine

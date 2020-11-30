@@ -35,20 +35,20 @@ const RUSH_MAX_TIME = 750
 const RUSH_DAMAGE = 20
 const RUSH_KNOCKBACK_STR = 300
 const RUSH_KNOCKBACK_DUR = 0.1
-const RUSH_STUN_DUR = 0.3
-const RUSH_COST = 45
-const RUSH_COOLDOWN = 1.0
+const RUSH_STUN_DUR = 0.5
+const RUSH_COST = 30
+const RUSH_COOLDOWN = 5.0
 
 const ULTIMATE_ATTACK_MULT = 3
 const ULTIMATE_ARMOR = 0.75
-const ULTIMATE_ENERGY_MULT = 2
+const ULTIMATE_ENERGY_MULT = 3
 const ULTIMATE_CD_MULT = 2.5
 const ULTIMATE_DURATION = 15
 const ULTIMATE_KILL_EXTEND = 1.5
 const ULTIMATE_MAX_DURATION = 30
 const ULTIMATE_MODULATE = Color(0.6, 0.9, 1)
-const ULTIMATE_SCALE = 1.4
-const ULTIMATE_COOLDOWN = 100.0
+const ULTIMATE_SCALE = 1.3
+const ULTIMATE_COOLDOWN = 1.0
 const ULTIMATE_CD_REDUCE_KILL = 0.4
 const ULTIMATE_CD_REDUCE_KILL_BLOW = 1.0
 
@@ -105,16 +105,21 @@ onready var attack1area = $Attack1Area
 
 onready var attack2area = $Attack2Area
 onready var attack2particles = $Attack2Particles
-onready var ultimate_tween = $UltimateTween
 
 onready var rush_area = $RushArea
 onready var rush_arrow = $RushArrow
 onready var rush_arrow_tex = $RushArrow/NinePatch
 onready var rush_particles = $RushParticles
 
+onready var ultimate_timer = $UltimateTimer
+onready var ultimate_timer_bar = $UltimateTimer/Bar
+onready var ultimate_timer_label = $UltimateTimer/Label
+onready var ultimate_tween = $UltimateTween
+
 func _ready():
 	attack1visual.visible = false
 	rush_arrow.visible = false
+	ultimate_timer.visible = false
 
 func get_data():
 	var data = {}
@@ -328,6 +333,7 @@ func ultimate_press():
 	if state != WarriorState.NORMAL: return
 	if ultimate_cd > 0: return
 	ultimate_cd = ULTIMATE_COOLDOWN
+	ultimate_timer.show()
 	rpc("ultimate")
 	
 func ultimate_release():
@@ -362,12 +368,19 @@ func _physics_process(delta):
 	if Game.level.is_effect_active(Game.Effects.MIDNIGHT) or Game.level.is_effect_active(Game.Effects.SHRINEDEATH):
 		regen *= 2
 	if Game.level.is_effect_active(Game.Effects.FATIGUE):
-		regen *= 0.25
+		regen *= 0.35
 	regen *= ((100 - owner.exhaustion * ENERGY_EXHAUSTION_MULT) / 100.0)
 	if ultimate_duration > 0:
 		ultimate_duration -= delta
-		if ultimate_duration < 0 and is_network_master():
-			rpc("end_ultimate")
+		if is_network_master():
+			if ultimate_duration < 0:
+				rpc("end_ultimate")
+				ultimate_timer.hide()
+			else:
+				ultimate_timer_bar.rect_size.x = ceil(ultimate_duration * 2.5)
+				ultimate_timer_bar.rect_position.x = -ultimate_timer_bar.rect_size.x / 2
+				ultimate_timer_label.text = str(int(ceil(ultimate_duration)))
+			
 		if aoe_cd > 0: aoe_cd -= delta * ULTIMATE_CD_MULT
 		if rush_cd > 0: rush_cd -= delta * ULTIMATE_CD_MULT
 		regen *= ULTIMATE_ENERGY_MULT

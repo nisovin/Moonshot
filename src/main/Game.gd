@@ -6,7 +6,7 @@ signal entered_level
 const MAX_PLAYERS = 40
 const PLAYERS_TO_START = 1
 const START_COUNTDOWN = 30
-const VERSION = "0.1.13"
+const VERSION = "0.1.15"
 const TILE_SIZE = 16
 
 enum MPMode { NONE, SOLO, CLIENT, SERVER, HOST, REMOTE }
@@ -27,8 +27,9 @@ var saved_player_name = ""
 var player_name_regex = RegEx.new()
 var chat_regex = RegEx.new()
 
+var multiplayer_controller = null
+
 onready var centered_message = $CanvasLayer/CenteredMessage/Label
-onready var multiplayer_controller = $MultiplayerController
 
 func _ready():
 	centered_message.visible = false
@@ -78,6 +79,13 @@ func save_persistent():
 		file.store_var(data)
 		file.close()
 
+func create_mp_controller():
+	if multiplayer_controller != null:
+		remove_child(multiplayer_controller)
+		multiplayer_controller.queue_free()
+	multiplayer_controller = R.MultiplayerController.instance()
+	add_child(multiplayer_controller)
+
 func start_server():
 	mp_mode = MPMode.SERVER
 	R.load_resources(true)
@@ -87,7 +95,7 @@ func start_server():
 	level = R.Level.instance()
 	add_child(level)
 	
-	multiplayer_controller.level = level
+	create_mp_controller()
 	multiplayer_controller.init_server()
 	
 	level.start_server()
@@ -97,12 +105,11 @@ func restart_server():
 	if is_solo():
 		leave_game()
 	else:
-		level.queue_free()
+		free_level()
 		yield(get_tree(), "idle_frame")
 		yield(get_tree(), "idle_frame")
 		level = R.Level.instance()
 		add_child(level)
-		multiplayer_controller.level = level
 		multiplayer_controller.restart_server()
 		level.start_server()
 
@@ -116,27 +123,22 @@ func start_client(ip, port):
 	add_child(level)
 	level.visible = false
 	
-	multiplayer_controller.level = level
+	create_mp_controller()
 	multiplayer_controller.init_client(ip, port)
-
-func restart_client():
-	level.name = "OldLevel"
-	level.queue_free()
-	yield(get_tree(), "idle_frame")
-	yield(get_tree(), "idle_frame")
-	level = R.Level.instance()
-	add_child(level)
-	level.visible = false
-	multiplayer_controller.level = level
+#
+#func restart_client():
+#	free_level()
+#	yield(get_tree(), "idle_frame")
+#	yield(get_tree(), "idle_frame")
+#	level = R.Level.instance()
+#	add_child(level)
+#	level.visible = false
 	
 func leave_game():
 	get_tree().network_peer = null
-	level.queue_free()
+	free_level()
 	start_menu()
 	Input.set_mouse_mode(Input.MOUSE_MODE_VISIBLE)
-
-func join_game(clss):
-	pass
 
 func start_solo():
 	mp_mode = MPMode.SOLO
@@ -181,6 +183,14 @@ func get_enemy_by_id(id):
 
 func get_tile_pos(v):
 	return Vector2(int(floor(v.x / TILE_SIZE)), int(floor(v.y / TILE_SIZE)))
+
+func free_level():
+	if level != null and not level.is_queued_for_deletion():
+		level.queue_free()
+		yield(get_tree(), "idle_frame")
+		yield(get_tree(), "idle_frame")
+		level = null
+		player = null
 
 func parse_command(cmd_player, command: String):
 	if not is_host(): return null
@@ -233,8 +243,8 @@ func parse_command(cmd_player, command: String):
 			return "Unable to find player: " + param
 	elif cmd == "destroyshrine":
 		if level.current_shrine != null:
-			level.current_shrine.apply_damage(1000)
-			return "Dealt 1000 damage to current shrine"
+			level.current_shrine.apply_damage(5000)
+			return "Dealt 5000 damage to current shrine"
 	elif cmd == "killenemies":
 		for e in level.enemies_node.get_children():
 			e.hit({"damage": 1000})
