@@ -211,7 +211,7 @@ func calculate_path_to_target():
 	# get next nav point
 	var next_point = null
 	if dist_to_target < 128:
-		var col = space_state.intersect_ray(owner.position, target_position, [], 1)
+		var col = space_state.intersect_ray(owner.position, target_position, [], Game.Layer.WALLS)
 		if not col:
 			next_point = target_position
 	if next_point == null:

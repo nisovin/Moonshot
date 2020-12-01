@@ -12,7 +12,7 @@ var tick = 0
 func _physics_process(delta):
 	if Game.mp_mode == Game.MPMode.SOLO: return
 	tick += 1
-	if tick >= 6:
+	if tick >= 3:
 		tick = 0
 	var has_motion = (owner.move_dir != Vector2.ZERO and owner.current_speed > 0) or owner.player_class.is_moving()
 	if has_motion or sync_move:

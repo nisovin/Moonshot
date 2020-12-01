@@ -105,7 +105,7 @@ texture = ExtResource( 4 )
 [node name="Pool" type="AnimatedSprite" parent="."]
 position = Vector2( 0, -8 )
 frames = SubResource( 5 )
-frame = 2
+frame = 1
 playing = true
 
 [node name="Moon" type="Sprite" parent="."]
